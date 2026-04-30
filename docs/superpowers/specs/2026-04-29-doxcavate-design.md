@@ -416,6 +416,9 @@ draft
   changed claims; persona runs only if the change is reader-visible
   (sectioning, anchors, voice). Internal-only edits skip persona by
   default.
+- **Halt paths** for drastically broken drafts are described in
+  [Escape hatches](#86-escape-hatches-too-many-issues-to-fix-in-one-pass).
+  The loop never silently truncates a draft that needs to be rethought.
 
 ### 8.4 Opt-in deviations from the default
 
@@ -458,6 +461,81 @@ codebase is large:
 Both agents are **read-only**. They never edit the doc. The authoring
 agent applies findings in the main context, which keeps responsibility
 clear and the resulting changes auditable.
+
+### 8.6 Escape hatches: too many issues to fix in one pass
+
+The cap of ≤7 ranked items + the ranking are how the review enforces
+brevity on healthy docs. They are **not** a way to silently truncate
+genuinely broken drafts. Two escape conditions halt the loop and
+surface the situation so the plan can be rethought rather than
+papered over.
+
+#### 8.6.1 `E_TOO_MANY_CONTRADICTIONS` (factcheck overflow)
+
+The factcheck pass halts and emits a structured diagnosis when
+contradicted claims cross either threshold:
+
+- **Ratio threshold:** more than 7 contradicted claims AND > 30% of
+  extracted claims contradicted.
+- **Absolute threshold:** more than 20 contradicted claims, regardless
+  of ratio.
+
+Output:
+
+```yaml
+result: halt
+reason: E_TOO_MANY_CONTRADICTIONS
+contradictions: <count> of <total claims>
+ratio: <percentage>
+top_examples:               # ranked; most drastic first
+  - claim: <contradicted claim>
+    evidence: <what the code actually says>
+  - claim: ...
+    evidence: ...
+hypothesis: <best guess at root cause — stale assumptions, scope too
+  broad, draft based on misunderstanding of the area, code refactored
+  since prior doc, etc.>
+```
+
+doxcavate does **not** silently apply fixes from a draft that fails
+this check — the doc is too far from reality for surface fixes to
+help. The user is offered three recovery paths:
+
+- **Redraft** — typical when the draft misunderstood the area.
+- **Narrow scope** — when the draft tried to cover too much.
+- **Re-investigate** — re-run the production-sources pass (existing
+  docs, code, commits) before drafting again.
+
+#### 8.6.2 `E_PERSONA_OVERFLOW` (persona overflow)
+
+The persona reviewer self-reports the same situation in its own
+domain. If it would have to drop **substantive** (non-nit) items to
+fit the ≤7 cap, it returns an overflow result instead of the normal
+ranked list:
+
+```yaml
+result: halt
+reason: E_PERSONA_OVERFLOW
+diagnosis: |
+  <one paragraph from the persona's perspective on what's
+  fundamentally wrong with the draft>
+recommendation: <e.g., "redraft with X reorganization", "narrow
+  scope to Y", "this doc kind is wrong for the audience and the
+  draft should be re-classified as <other-kind>">
+```
+
+The same recovery options apply. Note that overflow is not the same
+as "the persona sees flaws beyond rank 7" — those just get dropped per
+the brevity rule. Overflow is reserved for cases where the doc fails
+its persona structurally and patches at the line level won't help.
+
+#### 8.6.3 Why explicit halt instead of silent truncation
+
+Silent truncation of a broken draft trains future readers to distrust
+the doc — they hit one wrong claim and stop trusting the rest. Explicit
+halts cost more upfront but produce docs that stay trustworthy. The
+escape hatches are the design choice that makes the brevity cap
+honest.
 
 ## 9. Related services
 
