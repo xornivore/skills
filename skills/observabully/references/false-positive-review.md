@@ -216,9 +216,11 @@ context value; confirm it is on a frame that wraps the candidate.
 **Correct (do not drop) — candidate survives:**
 
 ```python
-# Candidate: poor-practices / missing context — tenant_id absent from span
-# FP check: tenant_id is never set as a span attribute or log field anywhere
-# in this file's call chain. The candidate is real — forward it.
+# Candidate: structure-for-telemetry / ambient state instead of context
+# propagation — "no tenant_id in the operation context"
+# FP check sees: no tenant_id setting anywhere in the same file — no
+# processor, no contextvar, no span attribute on a parent frame. The
+# candidate's complaint stands.
 from opentelemetry import trace
 
 tracer = trace.get_tracer(__name__)
@@ -226,7 +228,6 @@ tracer = trace.get_tracer(__name__)
 
 def handle_request(payload: dict) -> dict:
     with tracer.start_as_current_span("request.handle"):
-        # tenant_id is available in payload but never attached to the span.
         result = process_payload(payload)
         return result
 
@@ -239,24 +240,39 @@ def process_payload(payload: dict) -> dict:
 **Wrong (drop the candidate) — false positive:**
 
 ```python
-# Candidate: poor-practices / missing context — tenant_id absent from span
-# FP check: the parent frame (handle_request) sets tenant_id on the span
-# before calling process_payload; the attribute propagates to child spans
-# via the OTel context. The candidate "missing tenant_id" is wrong. Drop it.
+# Candidate: structure-for-telemetry / ambient state instead of context
+# propagation — "no tenant_id in the operation context"
+# FP check sees: _tenant_var and install_tenant_processor are visible in
+# the same file. The processor attaches tenant_id to every span
+# automatically. The candidate's "missing tenant_id" complaint is wrong
+# because the value is propagated via the contextvar/processor pipeline.
+import contextvars
+
 from opentelemetry import trace
 
 tracer = trace.get_tracer(__name__)
 
+_tenant_var: contextvars.ContextVar[str] = contextvars.ContextVar(
+    "tenant_id", default=""
+)
 
-def handle_request(tenant_id: str, payload: dict) -> dict:
-    with tracer.start_as_current_span("request.handle") as span:
-        span.set_attribute("tenant_id", tenant_id)
+
+def install_tenant_processor() -> None:
+    """Wired in the same file's main(); attaches tenant_id from the
+    contextvar to every span as it starts."""
+    ...
+
+
+def handle_request(payload: dict) -> dict:
+    with tracer.start_as_current_span("request.handle"):
+        # tenant_id is NOT set here — the processor reads _tenant_var
+        # (set by upstream middleware) and attaches it to every span.
         result = process_payload(payload)
         return result
 
 
 def process_payload(payload: dict) -> dict:
-    # tenant_id is already on the parent span; no gap here.
+    # tenant_id arrives via the processor; no gap here.
     return _transform(payload)
 ```
 
