@@ -10,3 +10,7 @@ node_modules/
 
 # worktrees
 .worktrees/
+
+# skills CLI local installs
+.claude/
+skills-lock.json
