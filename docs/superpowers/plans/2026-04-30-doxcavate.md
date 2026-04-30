@@ -9,7 +9,7 @@ readable by humans and agents alike.
 **Architecture:** Skill packaged as Markdown content (no runtime code). `SKILL.md`
 is the entry point: lean, with mode routing (survey vs draft), a decision flow,
 and a reference index pointing to detail files. `references/` holds deep content
-for each spec section. `templates/` provides skeletons for the six doc kinds.
+for each spec section. `assets/` provides skeletons for the six doc kinds.
 Triggered when the user invokes the skill or asks doxcavate to inspect or
 document a codebase.
 
@@ -22,6 +22,12 @@ is content for Claude Code, not executable code.
 plan lifts content from numbered spec sections — when a step says "transcribe
 spec section N.M," paste the exact prose, then adapt to skill-instruction voice
 ("when invoked, do X" rather than "doxcavate does X").
+
+**Authoring rules:** This plan must follow `skills/CLAUDE.md` (skill-authoring
+conventions for this repo, derived from the agentskills.io specification at
+<https://agentskills.io/specification>). Read it before starting Task 1. The
+plan's structure (folders, file naming, frontmatter shape) is already aligned
+to those rules — the rules are the *why*; the plan is the *how*.
 
 ---
 
@@ -44,14 +50,18 @@ skills/doxcavate/
 │   ├── investigation-and-sources.md
 │   ├── review-methodology.md
 │   └── personas.md
-└── templates/
-    ├── how-it-works.md
-    ├── learning-path.md
-    ├── service-map.md
-    ├── glossary.md
-    ├── runbook.md
-    └── index.md
+└── assets/
+    ├── how-it-works-template.md
+    ├── learning-path-template.md
+    ├── service-map-template.md
+    ├── glossary-template.md
+    ├── runbook-template.md
+    └── index-template.md
 ```
+
+The `assets/` folder name and the file-reference depth (one level from
+`SKILL.md`) match the agentskills.io specification — see `skills/CLAUDE.md`
+for the full set of authoring rules.
 
 Plus repo-level changes:
 
@@ -65,7 +75,7 @@ Plus repo-level changes:
 
 **Files:**
 
-- Create: `skills/doxcavate/` (empty dirs `references/` and `templates/`)
+- Create: `skills/doxcavate/` (empty dirs `references/` and `assets/`)
 
 - [ ] **Step 1: Install skill-creator (per repo CLAUDE.md rule 1)**
 
@@ -79,7 +89,7 @@ command is idempotent.
 - [ ] **Step 2: Create the skill folder layout**
 
 ```bash
-mkdir -p skills/doxcavate/references skills/doxcavate/templates
+mkdir -p skills/doxcavate/references skills/doxcavate/assets
 ```
 
 - [ ] **Step 3: Verify the layout**
@@ -88,7 +98,7 @@ mkdir -p skills/doxcavate/references skills/doxcavate/templates
 ls -la skills/doxcavate/
 ```
 
-Expected: shows `references/` and `templates/` subdirs.
+Expected: shows `references/` and `assets/` subdirs.
 
 - [ ] **Step 4: No commit yet** — Task 2 commits the first real content.
 
@@ -106,6 +116,8 @@ Expected: shows `references/` and `templates/` subdirs.
 ---
 name: doxcavate
 description: Use when invoked in a codebase that has sparse or missing documentation, to produce durable, structured docs that humans and agents can both read fluently. Two modes — `survey` (proposes a doc plan in `docs/index.md`) and `draft` (writes one specific doc end-to-end). Triggered by phrases like "doxcavate this repo", "doxcavate the X", "what should be documented?", or any explicit request to inventory or write project documentation.
+license: MIT
+compatibility: Designed for Claude Code (or similar agentskills.io-compatible clients).
 ---
 
 # doxcavate
@@ -119,8 +131,14 @@ are sparse.
 npx skills add xornivore/skills@doxcavate --agent claude-code -y
 ```
 
-<!-- This SKILL.md is a stub during scaffolding. Task 5 fills it in. -->
+<!-- This SKILL.md is a stub during scaffolding. Task 16 fills it in. -->
 ```
+
+The frontmatter satisfies the agentskills.io spec: `name` matches the parent
+directory (`skills/doxcavate/`), is lowercase + hyphen-only, and is under
+64 characters; `description` is under 1024 characters and describes both
+*what* and *when*; `license` matches the repo LICENSE; `compatibility`
+declares the intended client family.
 
 - [ ] **Step 2: Lint**
 
@@ -137,8 +155,8 @@ git add skills/doxcavate/SKILL.md
 git commit -m "feat(doxcavate): scaffold SKILL.md with frontmatter and install command"
 ```
 
-Note: the `references/` and `templates/` dirs are empty so git won't track them
-yet. They'll get tracked when their first file lands in Phase 3 / Phase 4.
+Note: the `references/` and `assets/` dirs are empty so git won't track them
+yet. They'll get tracked when their first file lands in Phase 2 / Phase 3.
 
 ---
 
@@ -721,7 +739,7 @@ git commit -m "feat(doxcavate): add review personas reference"
 
 ---
 
-## Phase 3 — Templates (one per doc kind)
+## Phase 3 — Templates (one per doc kind, in `assets/`)
 
 Each template is a skeleton. Templates are copied verbatim into the
 target doc location at the start of drafting; the skill fills in the
@@ -732,11 +750,15 @@ Each template starts with the front-matter block and includes every
 required structural anchor for its kind. Placeholders use angle brackets
 (`<like-this>`).
 
-### Task 10: `templates/how-it-works.md`
+Per the agentskills.io spec, templates live under `assets/` (the
+canonical slot for "templates, images, data files"). File names use the
+`-template.md` suffix so the role is obvious from the filename.
+
+### Task 10: `assets/how-it-works-template.md`
 
 **Files:**
 
-- Create: `skills/doxcavate/templates/how-it-works.md`
+- Create: `skills/doxcavate/assets/how-it-works-template.md`
 
 - [ ] **Step 1: Write the file**
 
@@ -791,17 +813,17 @@ pnpm lint
 - [ ] **Step 3: Commit**
 
 ```bash
-git add skills/doxcavate/templates/how-it-works.md
-git commit -m "feat(doxcavate): add how-it-works template"
+git add skills/doxcavate/assets/how-it-works-template.md
+git commit -m "feat(doxcavate): add how-it-works template asset"
 ```
 
 ---
 
-### Task 11: `templates/learning-path.md`
+### Task 11: `assets/learning-path-template.md`
 
 **Files:**
 
-- Create: `skills/doxcavate/templates/learning-path.md`
+- Create: `skills/doxcavate/assets/learning-path-template.md`
 
 - [ ] **Step 1: Write the file**
 
@@ -856,17 +878,17 @@ pnpm lint
 - [ ] **Step 3: Commit**
 
 ```bash
-git add skills/doxcavate/templates/learning-path.md
-git commit -m "feat(doxcavate): add learning-path template"
+git add skills/doxcavate/assets/learning-path-template.md
+git commit -m "feat(doxcavate): add learning-path template asset"
 ```
 
 ---
 
-### Task 12: `templates/service-map.md`
+### Task 12: `assets/service-map-template.md`
 
 **Files:**
 
-- Create: `skills/doxcavate/templates/service-map.md`
+- Create: `skills/doxcavate/assets/service-map-template.md`
 
 - [ ] **Step 1: Write the file**
 
@@ -909,17 +931,17 @@ pnpm lint
 - [ ] **Step 3: Commit**
 
 ```bash
-git add skills/doxcavate/templates/service-map.md
-git commit -m "feat(doxcavate): add service-map template"
+git add skills/doxcavate/assets/service-map-template.md
+git commit -m "feat(doxcavate): add service-map template asset"
 ```
 
 ---
 
-### Task 13: `templates/glossary.md`
+### Task 13: `assets/glossary-template.md`
 
 **Files:**
 
-- Create: `skills/doxcavate/templates/glossary.md`
+- Create: `skills/doxcavate/assets/glossary-template.md`
 
 - [ ] **Step 1: Write the file**
 
@@ -960,17 +982,17 @@ pnpm lint
 - [ ] **Step 3: Commit**
 
 ```bash
-git add skills/doxcavate/templates/glossary.md
-git commit -m "feat(doxcavate): add glossary template"
+git add skills/doxcavate/assets/glossary-template.md
+git commit -m "feat(doxcavate): add glossary template asset"
 ```
 
 ---
 
-### Task 14: `templates/runbook.md`
+### Task 14: `assets/runbook-template.md`
 
 **Files:**
 
-- Create: `skills/doxcavate/templates/runbook.md`
+- Create: `skills/doxcavate/assets/runbook-template.md`
 
 - [ ] **Step 1: Write the file**
 
@@ -1020,17 +1042,17 @@ pnpm lint
 - [ ] **Step 3: Commit**
 
 ```bash
-git add skills/doxcavate/templates/runbook.md
-git commit -m "feat(doxcavate): add runbook template"
+git add skills/doxcavate/assets/runbook-template.md
+git commit -m "feat(doxcavate): add runbook template asset"
 ```
 
 ---
 
-### Task 15: `templates/index.md`
+### Task 15: `assets/index-template.md`
 
 **Files:**
 
-- Create: `skills/doxcavate/templates/index.md`
+- Create: `skills/doxcavate/assets/index-template.md`
 
 - [ ] **Step 1: Write the file**
 
@@ -1076,8 +1098,8 @@ pnpm lint
 - [ ] **Step 3: Commit**
 
 ```bash
-git add skills/doxcavate/templates/index.md
-git commit -m "feat(doxcavate): add index template"
+git add skills/doxcavate/assets/index-template.md
+git commit -m "feat(doxcavate): add index template asset"
 ```
 
 ---
@@ -1183,14 +1205,14 @@ Invoked
 
 ## Templates
 
-When drafting a new doc, copy the matching template:
+When drafting a new doc, copy the matching template from `assets/`:
 
-- `templates/how-it-works.md`
-- `templates/learning-path.md`
-- `templates/service-map.md`
-- `templates/glossary.md`
-- `templates/runbook.md`
-- `templates/index.md`
+- `assets/how-it-works-template.md`
+- `assets/learning-path-template.md`
+- `assets/service-map-template.md`
+- `assets/glossary-template.md`
+- `assets/runbook-template.md`
+- `assets/index-template.md`
 
 ## Top-level action checklist (when invoked)
 
@@ -1266,7 +1288,7 @@ npx skills add xornivore/skills@doxcavate --agent claude-code -y
 
 - [`SKILL.md`](./SKILL.md) — entry point and routing.
 - [`references/`](./references/) — deep content per topic.
-- [`templates/`](./templates/) — skeletons for the six doc kinds.
+- [`assets/`](./assets/) — skeletons for the six doc kinds.
 - [Design spec](../../docs/superpowers/specs/2026-04-29-doxcavate-design.md).
 ```
 
@@ -1311,13 +1333,13 @@ If any step is unclear or a referenced file doesn't exist, fix inline.
 
 - Expected route: DRAFT mode for `runbook-deploy.md`.
 - Next: discovery → load index → run production sources → copy
-  `templates/runbook.md` → fill → factcheck → persona (operator
+  `assets/runbook-template.md` → fill → factcheck → persona (operator
   brief) → apply → focused factcheck → done.
 
 - [ ] **Step 3: Walk through "doxcavate the ingestion pipeline"**
 
 - Expected route: DRAFT mode for `how-it-works-ingestion-pipeline.md`.
-- Next: same as above with `templates/how-it-works.md` and the
+- Next: same as above with `assets/how-it-works-template.md` and the
   skeptical-engineer persona.
 
 - [ ] **Step 4: Walk through a hostile-repo case**
@@ -1335,7 +1357,24 @@ Imagine a target repo with no `docs/`, no `.doxcavate.yml`, no
 
 If any of these paths is unclear in the skill content, fix inline.
 
-- [ ] **Step 5: Run a final lint**
+- [ ] **Step 5: Run the agentskills.io reference validator**
+
+```bash
+npx skills-ref validate ./skills/doxcavate
+```
+
+Expected: validator exits 0. Checks `name` matches the parent dir, frontmatter
+fields conform to spec constraints (lengths, character sets), and the file
+structure is consistent with the spec.
+
+If `npx skills-ref` fails to resolve (the package isn't published on npm),
+install from source per the project's GitHub README at
+<https://github.com/agentskills/agentskills/tree/main/skills-ref> and re-run.
+
+If the validator reports issues, fix them inline before continuing — the
+skill must be spec-conformant before merge per `skills/CLAUDE.md`.
+
+- [ ] **Step 6: Run a final lint**
 
 ```bash
 pnpm lint
@@ -1343,11 +1382,11 @@ pnpm lint
 
 Expected: `0 error(s)`.
 
-- [ ] **Step 6: Commit any inline fixes**
+- [ ] **Step 7: Commit any inline fixes**
 
 ```bash
 git add skills/doxcavate/
-git commit -m "fix(doxcavate): smoke-walk fixes"
+git commit -m "fix(doxcavate): smoke-walk and validator fixes"
 ```
 
 If no fixes were needed, skip the commit.
@@ -1378,7 +1417,7 @@ implementation plan at
 - \`skills/doxcavate/SKILL.md\` — entry point with routing, hard rules,
   and reference index.
 - \`skills/doxcavate/references/\` — deep content per spec section.
-- \`skills/doxcavate/templates/\` — skeletons for the six doc kinds.
+- \`skills/doxcavate/assets/\` — skeletons for the six doc kinds.
 - \`skills/doxcavate/README.md\` — per-skill README.
 - Top-level \`README.md\` updated to list doxcavate in the skills table.
 
