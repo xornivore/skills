@@ -147,9 +147,96 @@ integration as an enhancement.
 Survey mode is fan-out by default. Draft mode is inline by default and
 escalates to fan-out as scope grows.
 
-## 6. Doc structure
+## 6. Production sources
 
-### 6.1 Front-matter (required on docs doxcavate writes)
+doxcavate produces docs from three sources. Each has a specific role and
+none is trusted on its own. §5 covers *how* doxcavate explores; this
+section covers *what* it reads.
+
+### 6.1 Code (source of truth)
+
+Code is the primary input — it is what doxcavate ultimately documents.
+Both survey and draft modes read code via inline Read/Grep or fan-out
+Agent dispatches (§5). When sources disagree, **code always wins.**
+Existing docs and commit history can suggest framing but they cannot
+override what the code currently does.
+
+### 6.2 Existing docs (treated as hypotheses)
+
+doxcavate scans the repo for any markdown — repo-root `README.md`,
+`docs/**`, `**/README.md`, `**/CONTRIBUTING.md`, package READMEs, doc
+comments embedded in code, etc. Existing claims are read as
+**hypotheses to verify**, not facts to repeat. doxcavate cross-checks
+each against code:
+
+- **Verified** → fold into the new doc; if the framing is good, adapt it.
+- **Contradicted** → flag in the survey output (or the relevant
+  `index.md`'s `## Doc plan` table) so the drift can be addressed.
+  doxcavate does **not** silently rewrite or delete pre-existing docs.
+- **Unverifiable** (e.g., a claim about an external service doxcavate
+  cannot reach) → carry forward with an explicit
+  `> note: from existing doc <path>; not independently verified`
+  callout.
+
+Pre-existing docs that don't follow doxcavate's structural-anchor
+convention are still readable (per §7.3) — verification does not
+require structural conformance.
+
+### 6.3 Code commits (motivation + drift signal)
+
+Git history is doxcavate's source of *why*. Code shows what; commits
+show why and when. Used for:
+
+- **Origin and evolution.** For the (lower-priority) conceptual layer
+  of `learning-path-*`, `git log` against the relevant paths surfaces
+  when a subsystem was introduced and what motivated the major changes
+  since.
+- **Decisions.** Commit messages frequently encode non-obvious choices.
+  doxcavate harvests these as candidate items for `## Background`
+  sections and as a v2 ADR seed list.
+- **Drift indication.** When refreshing an existing doc, doxcavate
+  diffs the documented paths against `last_verified_commit` (front-
+  matter) to scope what changed since the doc was last verified. If
+  the front-matter is missing, doxcavate falls back to "any commit
+  touching the documented paths in the last 90 days."
+
+doxcavate does **not** perform author attribution from `git blame`.
+Knowing who wrote something is rarely useful in docs and risks
+encoding social structure that ages badly.
+
+doxcavate quotes commit subjects (with short SHAs) when a single commit
+explains a non-obvious choice. Long commit-message bodies are
+summarized, not quoted in full.
+
+### 6.4 Reconciliation order
+
+When all three sources are consulted (typical for survey mode and for
+drafting a doc that has prior art), doxcavate reads in this order:
+
+1. **Existing docs** — cheap, low-context, gives a map of what's
+   already claimed.
+2. **Code** — establishes ground truth.
+3. **Commits** — adds motivation, dates, and drift context.
+
+Then reconciles: code wins on facts; commits supply motivation when
+prose is missing it; existing docs are graded
+(verified / contradicted / unverifiable) and the result is folded into
+the survey output or the new doc.
+
+### 6.5 Future sources (deferred)
+
+Out of scope for v1 but anchored here for design extensibility:
+
+- **PRs and issues** (GitHub / Linear / etc.) — richer motivation than
+  raw commits, especially for recent changes. Requires an external API
+  dependency, hence deferred.
+- **Tests** — encode expected behavior; especially useful for
+  `## Verification` anchors and for catching code-vs-docs drift at the
+  behavior level. Deferred until the basic three-source loop is stable.
+
+## 7. Doc structure
+
+### 7.1 Front-matter (required on docs doxcavate writes)
 
 ```yaml
 ---
@@ -161,7 +248,7 @@ last_verified_at: <ISO date of that write>
 ---
 ```
 
-### 6.2 Required structural anchors per kind
+### 7.2 Required structural anchors per kind
 
 - **`how-it-works-*`** — `## Summary` (≤3 sentences),
   `## Entry points` (file:line list),
@@ -188,14 +275,14 @@ last_verified_at: <ISO date of that write>
   `## Doc plan` (in survey-mode root index: prioritized list of docs that
   should exist, with status markers).
 
-### 6.3 Tolerance for pre-existing docs
+### 7.3 Tolerance for pre-existing docs
 
 The structural anchor requirement applies to docs doxcavate **creates or
 rewrites**. doxcavate must read pre-existing docs without complaint, even
 when they don't follow the convention. Migrating an old doc to the
 convention is an explicit user request, not a side effect.
 
-### 6.4 Sizing
+### 7.4 Sizing
 
 Word-count targets keep "sizeable" honest:
 
@@ -205,7 +292,7 @@ Word-count targets keep "sizeable" honest:
 - `service-map.md` and `glossary.md` are reference shapes — they grow with
   the codebase, not with prose.
 
-## 7. Related services
+## 8. Related services
 
 doxcavate documents *integration points*, not service internals. For each
 external service:
@@ -220,7 +307,7 @@ If `.doxcavate.yml` lists sibling repo paths or accessible OpenAPI / proto
 URLs, doxcavate may follow them to enrich the service-map entry — but it
 never writes docs *into* a sibling repo from outside.
 
-## 8. Out of scope (v1)
+## 9. Out of scope (v1)
 
 - **Doc freshness / drift detection.** The `## Verification` anchor and
   `last_verified_commit` enable a future sibling skill to audit and
@@ -231,7 +318,7 @@ never writes docs *into* a sibling repo from outside.
   they need commit-time discipline that a doc-after-the-fact skill can't
   manufacture.
 
-## 9. Non-goals
+## 10. Non-goals
 
 - Replacing existing docs that already work.
 - Producing exhaustive reference material. The skill's value is durable,
@@ -239,7 +326,7 @@ never writes docs *into* a sibling repo from outside.
 - Mandating a single layout. The skill follows the host repo's convention
   when one exists.
 
-## 10. Open questions
+## 11. Open questions
 
 - Should survey mode produce a single root `docs/index.md` or also seed
   per-subdir `index.md` stubs? (Leaning: root only; subdir indexes appear
