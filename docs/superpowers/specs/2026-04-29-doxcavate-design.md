@@ -42,8 +42,9 @@ doxcavate sniffs before writing anything. Discovery order:
 
 1. `$DOXCAVATE_CONFIG` env var → honor it.
 2. `.doxcavate.yml` at repo root → honor it.
-3. `~/.config/doxcavate/<repo-key>.yml` → honor it
-   (see §3.2 — supports shadow mode and "hostile repo" use).
+3. `~/.config/doxcavate/<repo-key>.yml` → honor it (see
+   [Repo keying for external state](#32-repo-keying-for-external-state)
+   — supports shadow mode and "hostile repo" use).
 4. `CLAUDE.md` / `AGENTS.md` / `GEMINI.md` declares a docs path →
    honor it.
 5. Repo already has a `docs/` tree or co-located `<area>/docs/` dirs →
@@ -150,14 +151,17 @@ escalates to fan-out as scope grows.
 ## 6. Production sources
 
 doxcavate produces docs from three sources. Each has a specific role and
-none is trusted on its own. §5 covers *how* doxcavate explores; this
-section covers *what* it reads.
+none is trusted on its own.
+[Investigation methodology](#5-investigation-methodology) covers *how*
+doxcavate explores; this section covers *what* it reads.
 
 ### 6.1 Code (source of truth)
 
 Code is the primary input — it is what doxcavate ultimately documents.
 Both survey and draft modes read code via inline Read/Grep or fan-out
-Agent dispatches (§5). When sources disagree, **code always wins.**
+Agent dispatches (see
+[Investigation methodology](#5-investigation-methodology)). When
+sources disagree, **code always wins.**
 Existing docs and commit history can suggest framing but they cannot
 override what the code currently does.
 
@@ -179,8 +183,9 @@ each against code:
   callout.
 
 Pre-existing docs that don't follow doxcavate's structural-anchor
-convention are still readable (per §7.3) — verification does not
-require structural conformance.
+convention are still readable (per
+[Tolerance for pre-existing docs](#73-tolerance-for-pre-existing-docs))
+— verification does not require structural conformance.
 
 ### 6.3 Code commits (motivation + drift signal)
 
