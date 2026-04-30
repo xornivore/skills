@@ -45,7 +45,9 @@ Invoked
 
 ## Mode summary
 
-- **survey** — produce or refresh the repo's top-level doc index as a
+Two **invocation modes**:
+
+- **survey** — produce or refresh the top-level doc index as a
   prioritized doc plan. No leaf docs are written. See
   [invocation-modes](./references/invocation-modes.md).
 - **draft** — produce or update one specific doc end-to-end. Always
@@ -54,24 +56,41 @@ Invoked
   [invocation-modes](./references/invocation-modes.md) and
   [doc-kinds](./references/doc-kinds.md).
 
+Three **storage modes** decide where docs and config live:
+
+- **integrated** *(default)* — everything in the host repo.
+- **leaves-only** — substance leaves in the repo; meta docs (`index.md`,
+  `glossary.md`, `service-map.md`) and config in the shadow tree. For
+  the partially-hostile-repo case.
+- **shadow** — everything in a user-local shadow tree. For the
+  fully-hostile-repo case.
+
+See [layout-and-discovery](./references/layout-and-discovery.md) for
+discovery, mode selection, and the repo-keying convention.
+
 ## Hard rules
 
-1. **Never silently write outside the host repo.** Shadow mode is opt-in
-   and requires user acknowledgment on first write. See
+1. **Never silently write outside the host repo.** Shadow and
+   leaves-only are opt-in and require user acknowledgment on first
+   write. See
    [layout-and-discovery](./references/layout-and-discovery.md).
 2. **Never silently add meta-files** (`.doxcavate.yml`, `docs/`) to a
    repo that has none. Ask first.
-3. **Code wins on facts.** When sources disagree, the code is the
+3. **In `leaves-only`, leaves committed to the repo must not link to
+   shadow-located meta docs.** Shadow paths are per-machine and
+   per-user; rendering them into a committed leaf would break for
+   everyone else. Leaf-to-leaf links inside the repo are fine.
+4. **Code wins on facts.** When sources disagree, the code is the
    ground truth. See
    [investigation-and-sources](./references/investigation-and-sources.md).
-4. **Factcheck is non-skippable.** No flag, no prompt hint, no config
+5. **Factcheck is non-skippable.** No flag, no prompt hint, no config
    override skips the factcheck pass. See
    [review-methodology](./references/review-methodology.md).
-5. **Persona output is capped at 7 ranked items.** No exceptions. If
+6. **Persona output is capped at 7 ranked items.** No exceptions. If
    the reviewer would have to drop substantive items to fit, it emits
    `E_PERSONA_OVERFLOW` and halts. See
    [review-methodology](./references/review-methodology.md).
-6. **No `git blame` author attribution** in any doc doxcavate writes.
+7. **No `git blame` author attribution** in any doc doxcavate writes.
 
 ## Reference index
 
@@ -83,8 +102,9 @@ Invoked
   required structural anchors per kind, sizing targets. Read when
   drafting or reviewing structural conformance.
 - [layout-and-discovery](./references/layout-and-discovery.md) —
-  config sniffing, integrated vs shadow modes, repo keying. Read at
-  the discovery step (always the first step).
+  config sniffing, the three storage modes (integrated, leaves-only,
+  shadow), repo keying. Read at the discovery step (always the first
+  step).
 - [invocation-modes](./references/invocation-modes.md) — survey vs
   draft, routing rules, action checklists. Read once mode is decided.
 - [investigation-and-sources](./references/investigation-and-sources.md)
