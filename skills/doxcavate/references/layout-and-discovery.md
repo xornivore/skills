@@ -83,8 +83,8 @@ front-matter so the two trees never get confused if both ever coexist.
 
 ## Repo keying for external state
 
-When config or docs live outside the repo, doxcavate needs a stable key
-per repo. Resolution order:
+When config or docs live outside the repo, compute a stable key per
+repo. Resolution order:
 
 1. `git remote get-url origin` — slugified host + path
    (e.g., `github.com_acme_widgets`). Preferred.
@@ -135,25 +135,15 @@ the name:
 
 When in doubt, ask. Record the answer in the active config file.
 
-## Action checklist (when invoked)
+## Action checklist
 
-When doxcavate is invoked in a new repo:
-
-1. Walk the discovery order; resolve the config file path (or that none
-   exists yet).
-2. If no config exists and a write is about to happen, ask the user once
-   which mode to use:
-
-   - `integrated` — commits both leaves and meta docs to this repo.
-   - `partial` — commits substance leaves to this repo; meta docs
-     (`index.md`, `glossary.md`, `service-map.md`) live in the shadow
-     tree.
-   - `shadow` — nothing is committed to this repo; everything lives in
-     the shadow tree.
-
-   Record the answer in the appropriate config location.
-3. Compute and pin the `<repo-key>` (preferring the `origin` remote URL
+1. Walk the discovery order above; resolve the config file path (or
+   note that none exists yet).
+2. If no config exists and a write is about to happen, match signals
+   to a mode in the table above and ask the user once (use the
+   effect-based prompt wording, not internal mode names). Record the
+   answer in the appropriate config location.
+3. Compute and pin `<repo-key>` (preferring the `origin` remote URL
    slug; falling back to a 12-char SHA1 of the repo path).
-4. Resolve the docs root(s) using sniffed conventions or the hybrid
-   default. In `partial`, resolve two roots: the repo leaves root
-   and the shadow meta-docs root.
+4. Resolve the docs root(s). In `partial`, resolve two roots: the
+   repo leaves root and the shadow meta-docs root.
