@@ -357,9 +357,6 @@ Render rule: when emitting a finding that quotes a code region matching any of
 these, replace the offending substring with `[redacted]` and surface the field
 name and shape in the finding's `why_this_matters`.
 
-**Audit:** for every emitted finding from this rubric, the rendered output must
-not contain a substring matching any regex in the list above.
-
 ## What NOT to flag
 
 - Logs in `cmd/*` startup output (banner, version, listening address) — these
@@ -382,3 +379,6 @@ When the agent reaches step 4.3 dimension 2:
 4. Forward candidates to step 4.4. Shape per
    [assets/finding-template.md](../assets/finding-template.md) — see
    [output-schema](./output-schema.md).
+
+**Audit:** for every emitted finding from this rubric, the rendered output must
+not contain a substring matching any regex in the secret/PII set above.
