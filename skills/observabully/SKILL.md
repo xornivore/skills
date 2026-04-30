@@ -1,6 +1,6 @@
 ---
 name: observabully
-description: Audits source code for observability gaps — missing telemetry, poor logging practices, and code structure that resists instrumentation — then emits a ranked, bounded finding list. Invoke when the user says "observabully this", "observabully `pkg/foo`", "audit observability", "review telemetry", "find missing spans", "audit o11y on this PR", "review my logging", or "is this instrumented well enough?". Read-only; never edits files.
+description: Audits source code for observability gaps — missing telemetry, poor observability practices, and code structure that resists instrumentation — then emits a ranked, bounded finding list. Invoke when the user says "observabully this", "observabully `pkg/foo`", "audit observability", "review telemetry", "find missing spans", "audit o11y on this PR", "review my logging", or "is this instrumented well enough?". Read-only; never edits files.
 license: MIT
 compatibility: Designed for Claude Code (or similar agentskills.io-compatible clients).
 ---
@@ -53,7 +53,8 @@ Do not invoke for:
    sensitive data describes the shape (`a log call passes a raw email
    field`) and never quotes the line verbatim. **Audit:** findings must
    not contain string literals matching the regex set in
-   [poor-practices](./references/poor-practices.md).
+   [poor-practices](./references/poor-practices.md) (basic email, JWT,
+   bearer-token shapes).
 
 4. **Bounded output.** Default cap 20 findings; overflow surfaces with
    a count and a "narrow the target" prompt. Never silently truncate.
@@ -63,15 +64,16 @@ Do not invoke for:
 5. **Skipped files are explained.** Every excluded file is counted in
    the footer aggregate under one of the fixed reason words from
    [precheck](./references/precheck.md). Never silently exclude.
-   **Audit:** `scanned + skipped` in the footer equals the resolved
+   **Audit:** `scanned` + `skipped` in the footer equals the resolved
    file count from step 4.1.
 
 6. **No library prescription unless detected.** If the codebase imports
    OTel / slog / zap / structlog, suggestions use that vocabulary.
    Otherwise stay neutral ("a span", "a structured log") — never push
    a specific library. **Audit:** for each finding, the suggestion's
-   library tokens must appear somewhere in the file set's imports — or
-   the suggestion uses neutral vocabulary only.
+   library tokens (`otel`, `slog`, `zap`, `structlog`, etc.) must
+   appear somewhere in the file set's imports — or the suggestion uses
+   neutral vocabulary only.
 
 ## Reference index
 
