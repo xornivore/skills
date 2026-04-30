@@ -38,15 +38,17 @@ navigational role of `index.md` files at multiple levels.
 
 ## 3. Layout & path discovery
 
-doxcavate sniffs the host repo before writing anything:
+doxcavate sniffs before writing anything. Discovery order:
 
-1. If `.doxcavate.yml` exists at repo root → honor it (path config,
-   related-repo pointers).
-2. Else if `CLAUDE.md` / `AGENTS.md` / `GEMINI.md` declares a docs path →
+1. `$DOXCAVATE_CONFIG` env var → honor it.
+2. `.doxcavate.yml` at repo root → honor it.
+3. `~/.config/doxcavate/<repo-key>.yml` → honor it
+   (see §3.2 — supports shadow mode and "hostile repo" use).
+4. `CLAUDE.md` / `AGENTS.md` / `GEMINI.md` declares a docs path →
    honor it.
-3. Else if the repo already has a `docs/` tree or `<pkg>/docs/` co-located
-   dirs → match the existing convention.
-4. Else → default to **hybrid layout**:
+5. Repo already has a `docs/` tree or co-located `<area>/docs/` dirs →
+   match the existing convention.
+6. Default to **hybrid layout**:
    - Repo-root `docs/` for cross-cutting docs:
      `docs/index.md`, `docs/glossary.md`, `docs/service-map.md`,
      `docs/runbook-*.md`, `docs/learning-path-*.md`.
@@ -56,8 +58,52 @@ doxcavate sniffs the host repo before writing anything:
      `<module>/docs/` — match whatever the repo already calls a
      "code area").
 
-Whatever the choice, doxcavate writes it back to `.doxcavate.yml` (creating
-it on first run) so subsequent invocations don't re-decide.
+Whatever the choice, doxcavate writes it back to the active config file
+(creating it on first run) so subsequent invocations don't re-decide.
+
+### 3.1 Storage modes
+
+doxcavate supports two storage modes:
+
+- **integrated** *(default)* — config and docs live inside the host repo
+  (`.doxcavate.yml`, repo-root `docs/`, co-located `<area>/docs/`). The
+  team gets the docs in version control where they belong.
+- **shadow** — config and docs live in a user-local tree, fully outside
+  the host repo:
+  - Config: `~/.config/doxcavate/<repo-key>.yml`
+  - Docs root: `~/.local/share/doxcavate/<repo-key>/docs/`
+    (mirrors the same hybrid layout, just re-rooted)
+
+  Shadow exists for the **solo-contributor-in-a-hostile-repo** case: a
+  contributor wants to make progress on personal documentation sanity in
+  a codebase where committing meta-files or new top-level dirs is not
+  practical (team resistance, frozen scope, contractor boundaries, etc.).
+  Shadow docs use the same kinds, anchors, and sizing as integrated docs;
+  the only differences are the root path and a `shadow: true` flag in
+  the front-matter so the two trees never get confused if both ever
+  coexist.
+
+### 3.2 Repo keying for external state
+
+When config or docs live outside the repo, doxcavate needs a stable key
+per repo. Resolution order:
+
+1. `git remote get-url origin` → slugified host + path
+   (e.g., `github.com_acme_widgets`). Preferred.
+2. Else: SHA1 of the repo's absolute filesystem path, truncated to 12
+   chars.
+
+The chosen key is recorded in the config so the same repo doesn't get
+re-keyed if its remote changes later.
+
+### 3.3 Mode selection
+
+- **Explicit:** the active config file sets `mode: integrated | shadow`.
+- **Implicit:** if no config is found and doxcavate is about to write the
+  first artifact, it asks the user once whether to go integrated or
+  shadow, then writes the answer to the appropriate config location.
+  doxcavate never silently writes outside the repo, and never silently
+  adds meta-files to a repo that doesn't already have any.
 
 ## 4. Invocation modes
 
@@ -195,10 +241,10 @@ never writes docs *into* a sibling repo from outside.
 
 ## 10. Open questions
 
-- Should `.doxcavate.yml` be standardized as part of v1, or should the
-  first release ship without a config file and rely on `CLAUDE.md`
-  hints + sniffing? (Leaning: ship sniffing first, add the config file
-  in v1.1 only if friction shows up.)
 - Should survey mode produce a single root `docs/index.md` or also seed
   per-subdir `index.md` stubs? (Leaning: root only; subdir indexes appear
   the first time a leaf doc lands in that subdir during draft mode.)
+- In shadow mode, should doxcavate write a single user-local "meta-index"
+  (`~/.local/share/doxcavate/index.md`) that lists all repos the user has
+  shadow-documented? (Leaning: yes, but v1.1 — not strictly needed for
+  the first release.)
