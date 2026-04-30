@@ -19,7 +19,7 @@ The `@<skill-name>` must match the skill's registered name, not article shorthan
 
 | Name | Description |
 | --- | --- |
-| _none yet_ | _Skills will be listed here as they are added._ |
+| [doxcavate](./skills/doxcavate/SKILL.md) | Produces durable, structured documentation in codebases with sparse docs. Two modes (`survey`, `draft`); review-gated by factcheck and persona passes. |
 
 ## Authoring
 
