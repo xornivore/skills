@@ -115,40 +115,39 @@ equivalent emitting a stable event name for the operation.
 **Severity:** `med` at internal layers; `high` at user-facing boundaries.
 
 **Why-template:** "Throughput, latency, and failure-rate dashboards built on
-log queries cannot count this operation — it is invisible to log-based
-observability."
+log queries cannot count this operation, and alerting on error rate for it is
+impossible without an anchor event to query."
 
-**Suggest-template:** "emit one structured log at start (event name + key
-inputs) and one at end (status, duration, key outputs)."
+**Suggest-template:** "emit one structured log at start with event name
+`{verb}.{noun}.start` plus key inputs as fields, and one at end with event
+name `{verb}.{noun}.done` plus status, duration, and key outputs."
 
 **Correct (do not flag):**
 
 ```python
 import logging
-import time
 
 logger = logging.getLogger(__name__)
 
 
 def process_job(job_id: str, payload: dict) -> dict:
     logger.info("job.process.start", extra={"job_id": job_id, "size": len(payload)})
-    t0 = time.monotonic()
-
     result = _run(payload)
-
-    logger.info(
-        "job.process.done",
-        extra={"job_id": job_id, "duration_ms": int((time.monotonic() - t0) * 1000)},
-    )
+    logger.info("job.process.done", extra={"job_id": job_id, "status": "ok"})
     return result
 ```
 
 **Wrong (flag this):**
 
 ```python
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 def process_job(job_id: str, payload: dict) -> dict:
-    # No structured log at entry or exit — the operation is invisible
-    # to log-based dashboards.
+    # No structured log at entry or exit — the operation is uncountable
+    # in log-query dashboards and unalertable on error rate.
     result = _run(payload)
     return result
 ```
@@ -160,14 +159,16 @@ executes repeatedly and contains no counter increment, histogram record, or
 gauge update measuring throughput, latency, or error rate for that specific
 path.
 
-**Severity:** `med`; `low` when an aggregate metric on the parent path already
-covers it.
+**Severity:** `med`; `low` when the enclosing function (the direct caller
+visible in the same file) already records a counter or histogram on this
+code path.
 
 **Why-template:** "Performance regressions in this path are invisible — no
 metric to detect a 10x slowdown or a stuck loop."
 
-**Suggest-template:** "increment a counter on entry/exit; record an exit-side
-histogram for latency; tag with op name."
+**Suggest-template:** "increment a counter named `{op_name}.calls` on entry,
+a counter `{op_name}.errors` on exit-with-error, and a histogram
+`{op_name}.duration_seconds` on exit; tag with op name."
 
 **Correct (do not flag):**
 
@@ -232,9 +233,8 @@ from opentelemetry.propagate import inject
 
 
 def call_downstream(ctx_headers: dict, url: str) -> dict:
-    headers = {}
+    headers = dict(ctx_headers)
     inject(headers)  # propagates traceparent + tracestate
-    headers.update(ctx_headers)
     resp = requests.get(url, headers=headers, timeout=5)
     resp.raise_for_status()
     return resp.json()
@@ -244,8 +244,9 @@ def call_downstream(ctx_headers: dict, url: str) -> dict:
 
 ```python
 def call_downstream(ctx_headers: dict, url: str) -> dict:
-    # No header injection — the downstream service starts a new trace root.
-    resp = requests.get(url, timeout=5)
+    headers = dict(ctx_headers)
+    # No inject(headers) — the downstream service starts a new trace root.
+    resp = requests.get(url, headers=headers, timeout=5)
     resp.raise_for_status()
     return resp.json()
 ```
