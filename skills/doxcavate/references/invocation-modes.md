@@ -1,7 +1,6 @@
 # Invocation modes
 
-doxcavate has two modes. Pick from the user's prompt; ask once when
-ambiguous.
+Two modes. Route based on the user's prompt; ask once when ambiguous.
 
 ## survey
 
@@ -50,8 +49,8 @@ the shadow tree — so subsequent invocations can read them back.
   identify the target, follow the production sources flow
   ([investigation-and-sources](./investigation-and-sources.md)), draft
   the doc using the matching template ([doc-kinds](./doc-kinds.md)),
-  then run review ([review-methodology](./review-methodology.md)) before
-  declaring done.
+  then run review ([review-loop](./review-loop.md)) before declaring
+  done.
 
 In `partial`, when drafting a leaf, never link from the leaf to a
 shadow-located meta doc. Linking between leaves (relative paths inside

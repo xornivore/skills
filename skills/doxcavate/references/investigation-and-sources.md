@@ -16,21 +16,21 @@ Adaptive:
   deeper synthesis.
 
 If `superpowers:dispatching-parallel-agents` is available, defer to it
-for survey mode. **doxcavate must not require superpowers** — it works
-with the host's native tools alone, and treats superpowers integration as
-an enhancement.
+for survey mode. **Do not require superpowers** — work with the host's
+native tools alone, and treat superpowers integration as an
+enhancement.
 
 Survey mode is fan-out by default. Draft mode is inline by default and
 escalates to fan-out as scope grows.
 
 ## Production sources
 
-doxcavate produces docs from three sources. Each has a specific role and
-none is trusted on its own.
+Three sources feed every draft. Each has a specific role; none is
+trusted on its own.
 
 ### Code (source of truth)
 
-Code is the primary input — it is what doxcavate ultimately documents.
+Code is the primary input — it is what the skill ultimately documents.
 Both survey and draft modes read code via inline Read/Grep or fan-out
 Agent dispatches (see [Investigation methodology](#investigation-methodology)).
 When sources disagree, **code always wins.** Existing docs and commit
@@ -111,7 +111,7 @@ Out of scope for v1 but anchored here for design extensibility:
 
 ## Related services
 
-doxcavate documents *integration points*, not service internals. For each
+Document *integration points*, not service internals. For each
 external service discovered during investigation:
 
 1. Identify the integration call sites (HTTP clients, gRPC stubs, env
@@ -120,9 +120,9 @@ external service discovered during investigation:
 3. Reference it from `## External dependencies` in any `how-it-works-*`
    doc that touches the service.
 
-If `.doxcavate.yml` lists sibling repo paths or accessible OpenAPI / proto
-URLs, doxcavate may follow them to enrich the service-map entry — but it
-**never writes docs into a sibling repo from outside.**
+If `.doxcavate.yml` lists sibling repo paths or accessible OpenAPI /
+proto URLs, follow them to enrich the service-map entry — but
+**never write docs into a sibling repo from outside.**
 
 ## Action checklist (during draft mode)
 

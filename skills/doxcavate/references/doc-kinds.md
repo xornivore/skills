@@ -1,8 +1,8 @@
 # Doc kinds
 
-doxcavate writes a small, fixed vocabulary of doc kinds. File-name prefixes
-are part of the contract — agents grep, route, and link by prefix without
-parsing prose.
+Write only the doc kinds in the small, fixed vocabulary below. File-name
+prefixes are part of the contract — agents grep, route, and link by
+prefix without parsing prose.
 
 ## Taxonomy
 
@@ -19,7 +19,7 @@ Architecture-overview docs are deliberately not a separate slot. Their role is
 split between the conceptual layer of `learning-path-*` and the navigational
 role of `index.md` files at multiple levels.
 
-## Front-matter (required on docs doxcavate writes)
+## Front-matter (canonical schema; required on every doc this skill writes)
 
 ```yaml
 ---
@@ -72,10 +72,10 @@ matrix.
 
 ## Tolerance for pre-existing docs
 
-The structural anchor requirement applies to docs doxcavate **creates or
-rewrites**. Read pre-existing docs without complaint, even when they don't
-follow the convention. Migrating an old doc to the convention is an explicit
-user request, not a side effect.
+The structural anchor requirement applies only to docs **created or
+rewritten** by this skill. Read pre-existing docs without complaint,
+even when they don't follow the convention. Migrating an old doc to
+the convention is an explicit user request, not a side effect.
 
 ## Sizing
 
