@@ -1,0 +1,18 @@
+msg_file="$1"
+
+# 1. Conventional-commits format (commitlint).
+pnpm exec commitlint --edit "$msg_file" || exit 1
+
+# 2. Reject AI-tool attribution unless explicitly authored by the user.
+#    Patterns intentionally case-insensitive. Add new tools as needed.
+if grep -E -i '^Co-Authored-By:[[:space:]]*(Claude|Codex|Copilot|GPT|ChatGPT|Anthropic)' "$msg_file" >/dev/null; then
+  echo "ERROR: AI-tool Co-Authored-By trailers are not permitted." >&2
+  echo "       Remove the trailer or, if intentional, bypass via 'git commit --no-verify' (discouraged)." >&2
+  exit 1
+fi
+
+if grep -E -i '(generated with[[:space:]]*\[?claude code\]?|made with[[:space:]]*claude|authored with[[:space:]]*codex|copilot[- ]assisted)' "$msg_file" >/dev/null; then
+  echo "ERROR: AI-tool attribution footers are not permitted." >&2
+  echo "       Remove the footer or, if intentional, bypass via 'git commit --no-verify' (discouraged)." >&2
+  exit 1
+fi
