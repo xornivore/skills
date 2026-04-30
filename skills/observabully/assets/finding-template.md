@@ -29,5 +29,5 @@ fp-dropped: {n_fp_dropped}
 shown: {n_shown} of {n_total} findings{overflow_note}
 ```
 
-- `{skip_reasons_grouped}` — reason-keyed counts, comma-separated, e.g. `generated: 8, no-io: 6, test-fixture: 4, pure-data: 1`. Reasons come from the fixed set in `references/precheck.md`.
+- `{skip_reasons_grouped}` — reason-keyed counts, comma-separated, e.g. `generated: 8, no-io: 6, test-fixture: 4, pure-data: 1, vendored: 2`. Reasons come from the fixed set in `references/precheck.md`.
 - `{overflow_note}` — when `n_shown < n_total`, append a single leading space, then an en-dash, then a space, then the literal text `narrow the target with a path or glob`. Otherwise empty.

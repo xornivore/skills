@@ -291,7 +291,7 @@ def process_payload(payload: dict) -> dict:
 When the agent reaches step 4.4:
 
 1. For each candidate produced by step 4.3, run checks 1–4 in order.
-2. Drop on the first check that returns yes. Increment `n_fp_dropped`.
+2. Drop on the first check that returns yes. Increment `n_fp_dropped`. The accumulator variable `n_fp_dropped` populates the `fp-dropped` field in the footer rendered at step 4.5.
 3. Surviving candidates pass to step 4.5 with their original dimension,
    severity, why-template, and suggest-template intact — see
    [output-schema](./output-schema.md).

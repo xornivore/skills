@@ -43,9 +43,7 @@ Example finding block:
 
 Sort surviving findings by the following three-tier key, in order:
 
-1. **Dimension severity.** `missing-telemetry` at request boundaries outranks
-   `structure-for-telemetry`, which outranks `poor-practices`. Severity per
-   finding is `high` / `med` / `low` per the rubric file.
+1. **Dimension order, then per-finding severity.** Sort first by dimension name in this fixed order: `missing-telemetry` > `structure-for-telemetry` > `poor-practices`. Within a single dimension, sort by per-finding severity `high` > `med` > `low` (severity is assigned by the rubric file that produced the finding). A `low` `missing-telemetry` finding therefore outranks a `high` `poor-practices` finding — dimension order dominates.
 2. **Blast radius.** Findings on a public/exported boundary outrank findings
    inside an internal helper.
 3. **File path** (lexical, for stability).
@@ -57,7 +55,7 @@ After all findings are emitted, render the footer block once:
 ```text
 ---
 scanned: 47 files
-skipped: 19 (generated: 8, no-io: 6, test-fixture: 4, pure-data: 1)
+skipped: 21 (generated: 8, no-io: 6, test-fixture: 4, pure-data: 1, vendored: 2)
 fp-dropped: 12
 shown: 20 of 23 findings — narrow the target with a path or glob
 ```
