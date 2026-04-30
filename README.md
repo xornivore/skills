@@ -1,7 +1,6 @@
 # xornivore/skills
 
-Personal [Claude Code](https://claude.com/claude-code) skills by Ivan Ilichev.
-Public for sharing; curated for self-use.
+[Claude Code](https://claude.com/claude-code) skills; public for sharing; curated for self-use.
 
 ## Installing skills
 
