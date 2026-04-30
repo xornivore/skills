@@ -14,6 +14,12 @@ npx skills add anthropics/skills@skill-creator --agent claude-code -y
 
 `superpowers:writing-skills` is acceptable as a secondary when available.
 
+Skill-authoring conventions (folder layout, frontmatter rules, validation)
+live in [`skills/CLAUDE.md`](./skills/CLAUDE.md). It encodes the
+[agentskills.io specification](https://agentskills.io/specification) plus
+repo-specific rules and is loaded automatically when working under
+`skills/`.
+
 ## 2. Worktrees
 
 Non-trivial changes happen on a feature branch inside `./.worktrees/<branch>/`

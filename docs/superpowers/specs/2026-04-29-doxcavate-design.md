@@ -391,7 +391,7 @@ Examples of the bar:
 | --- | --- |
 | "This section feels too long." | "Lines 45-60 repeat the env-var list from line 12. Replace with 'See env vars above.'" |
 | "I'd phrase this differently." | "'Orchestrates ingestion' is ambiguous — code shows a fixed-size goroutine pool. Replace with 'spawns a fixed-size goroutine pool that processes ingestion tasks concurrently'." |
-| "Add more detail." | "Verification block omits env vars set in `setup.sh:23`. Add `grep -E '^export DOX_' setup.sh`." |
+| "Add more detail." | "Verification block omits env vars set in `setup.sh:23`. Add `grep -E '^export INGEST_' setup.sh`." |
 | "Not beginner-friendly enough." | "A newcomer won't know what 'ingestion topic' means. Either link to the glossary entry or define it inline on line 8." |
 | "Consider restructuring." | "Move `## Verification` above `## External dependencies` — the operator persona needs verification first." |
 
