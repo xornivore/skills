@@ -126,7 +126,7 @@ cannot filter or aggregate by `user_id` or `item_count`; every variation
 creates a new unique message that breaks cardinality-bounded dashboards."
 
 **Suggest-template:** "emit the log with a stable message string and pass
-values as structured fields — `logger.info(\"{verb}.{noun}\", count=n,
+values as structured fields — `logger.info("{verb}.{noun}", count=n,
 user_id=user)`."
 
 **Correct (do not flag):**
@@ -200,11 +200,10 @@ func (s *Server) HandleLogin(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-**Authoring note:** when producing a finding from this pattern, the finding
-text must describe the shape (e.g., "a log call passes a raw email field")
-rather than quoting the matched line verbatim. This is hard rule 3 from the
-spec. Apply the redaction rule from the regex set BEFORE adding the candidate
-to the queue.
+When producing a finding from this pattern, the finding text must describe the
+shape (e.g., "a log call passes a raw email field") rather than quoting the
+matched line verbatim. This is hard rule 3 from the spec. Apply the redaction
+rule from the regex set BEFORE adding the candidate to the queue.
 
 ## Pattern: log spam in tight loops
 
@@ -214,9 +213,10 @@ transition" condition. The loop must iterate at request rate or on a
 hot ticker; apply this only when the loop body executes more than once per
 inbound request or per scheduler tick.
 
-**Severity:** `med` when the loop runs at request rate; `low` when the loop is
-bounded to a small, compile-time-known N (e.g., iterating over a fixed config
-slice of fewer than 10 entries).
+**Severity:** `med` when the enclosing function is an HTTP handler, RPC method,
+queue consumer, or hot-ticker callback (recognizable by signature or transport
+registration in the same file); `low` when the loop iterates over a value
+bounded at the call site by a literal or const N < 10.
 
 **Why-template:** "A single request produces thousands of log lines — log
 volume drowns alerting, rate-limits ingestion, and increases retention cost
@@ -284,18 +284,22 @@ reference) defaulting to `time.Now`, then inject a fake clock in tests."
 **Correct (do not flag):**
 
 ```go
-type Clock func() time.Time
+type Recorder struct {
+    clock func() time.Time
+}
 
-func RecordLatency(ctx context.Context, rec metrics.Recorder, clock Clock, start time.Time) {
-    rec.RecordDuration(ctx, "op.duration_seconds", clock().Sub(start))
+func (r *Recorder) RecordLatency(ctx context.Context, rec metrics.Recorder, start time.Time) {
+    rec.RecordDuration(ctx, "op.duration_seconds", r.clock().Sub(start))
 }
 ```
 
 **Wrong (flag this):**
 
 ```go
-func RecordLatency(ctx context.Context, rec metrics.Recorder, start time.Time) {
-    rec.RecordDuration(ctx, "op.duration_seconds", time.Now().Sub(start)) // ambient time.Now()
+type Recorder struct{}
+
+func (r *Recorder) RecordLatency(ctx context.Context, rec metrics.Recorder, start time.Time) {
+    rec.RecordDuration(ctx, "op.duration_seconds", time.Now().Sub(start))
 }
 ```
 
@@ -314,7 +318,7 @@ context — operators see `ingest: write: connection refused` but not which key,
 retry, or batch the call was for."
 
 **Suggest-template:** "include op-relevant fields as interpolations or typed
-error attributes — `fmt.Errorf(\"{op_name} key=%s attempt=%d: %w\", {key},
+error attributes — `fmt.Errorf("{op_name} key=%s attempt=%d: %w", {key},
 {n}, err)` or a structured-error type with named fields."
 
 **Correct (do not flag):**
@@ -350,8 +354,7 @@ finding-render time.
 - **JWT:** `eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}`
 - **Bearer token header:** `[Bb]earer\s+[A-Za-z0-9._\-]{16,}`
 - **AWS access key ID:** `AKIA[0-9A-Z]{16}`
-- **High-entropy hex/base64 >= 32 chars near a key-like token** (`secret`,
-  `token`, `key`, `password`, `pwd`).
+- **High-entropy hex/base64 >= 32 chars near a key-like token:** `(?i)\b(secret|token|key|password|pwd)\b[^=]{0,16}[=:\s]\s*['"]?[A-Za-z0-9+/=_-]{32,}`
 
 Render rule: when emitting a finding that quotes a code region matching any of
 these, replace the offending substring with `[redacted]` and surface the field
