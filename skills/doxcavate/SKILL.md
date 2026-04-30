@@ -59,7 +59,7 @@ Two **invocation modes**:
 Three **storage modes** decide where docs and config live:
 
 - **integrated** *(default)* — everything in the host repo.
-- **leaves-only** — substance leaves in the repo; meta docs (`index.md`,
+- **partial** — substance leaves in the repo; meta docs (`index.md`,
   `glossary.md`, `service-map.md`) and config in the shadow tree. For
   the partially-hostile-repo case.
 - **shadow** — everything in a user-local shadow tree. For the
@@ -70,13 +70,13 @@ discovery, mode selection, and the repo-keying convention.
 
 ## Hard rules
 
-1. **Never silently write outside the host repo.** Shadow and
-   leaves-only are opt-in and require user acknowledgment on first
+1. **Never silently write outside the host repo.** `partial` and
+   `shadow` are opt-in and require user acknowledgment on first
    write. See
    [layout-and-discovery](./references/layout-and-discovery.md).
 2. **Never silently add meta-files** (`.doxcavate.yml`, `docs/`) to a
    repo that has none. Ask first.
-3. **In `leaves-only`, leaves committed to the repo must not link to
+3. **In `partial`, leaves committed to the repo must not link to
    shadow-located meta docs.** Shadow paths are per-machine and
    per-user; rendering them into a committed leaf would break for
    everyone else. Leaf-to-leaf links inside the repo are fine.
@@ -102,7 +102,7 @@ discovery, mode selection, and the repo-keying convention.
   required structural anchors per kind, sizing targets. Read when
   drafting or reviewing structural conformance.
 - [layout-and-discovery](./references/layout-and-discovery.md) —
-  config sniffing, the three storage modes (integrated, leaves-only,
+  config sniffing, the three storage modes (integrated, partial,
   shadow), repo keying. Read at the discovery step (always the first
   step).
 - [invocation-modes](./references/invocation-modes.md) — survey vs

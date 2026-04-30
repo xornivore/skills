@@ -70,7 +70,7 @@ host repo:
 - **integrated** *(default)* — config and docs live inside the host repo
   (`.doxcavate.yml`, repo-root `docs/`, co-located `<area>/docs/`). The
   team gets the docs in version control where they belong.
-- **leaves-only** — substance leaves
+- **partial** — substance leaves
   (`how-it-works-*`, `learning-path-*`, `runbook-*`) live in the host
   repo; meta docs (`index.md`, `glossary.md`, `service-map.md`) and
   config live in the shadow tree:
@@ -78,7 +78,7 @@ host repo:
   - Config: `~/.config/doxcavate/<repo-key>.yml`.
   - Meta-docs root: `~/.local/share/doxcavate/<repo-key>/docs/`.
 
-  Leaves-only exists for the **partially-hostile-repo** case: the team
+  `partial` exists for the **partially-hostile-repo** case: the team
   accepts substance docs (a `how-it-works-foo.md` next to the code is
   uncontroversial) but pushes back on navigation/meta files that read as
   documentation infrastructure. The doc plan, glossary, and service map
@@ -104,7 +104,7 @@ host repo:
   differences are the root path and a `shadow: true` flag in the
   front-matter so the two trees never get confused if both ever coexist.
 
-In `leaves-only` mode, repo-committed leaves carry `shadow: false` and
+In `partial` mode, repo-committed leaves carry `shadow: false` and
 shadow-located meta docs carry `shadow: true`. The flag remains a
 per-doc statement, not a per-mode one.
 
@@ -124,7 +124,7 @@ re-keyed if its remote changes later.
 ### 3.3 Mode selection
 
 - **Explicit:** the active config file sets
-  `mode: integrated | leaves-only | shadow`.
+  `mode: integrated | partial | shadow`.
 - **Implicit:** if no config is found and doxcavate is about to write the
   first artifact, it asks the user once which of the three modes to use,
   then writes the answer to the appropriate config location. doxcavate
@@ -132,7 +132,7 @@ re-keyed if its remote changes later.
   meta-files to a repo that doesn't already have any.
 
 The implicit prompt should explain the three modes briefly and lead with
-**leaves-only** when the repo has source-adjacent code areas but no
+**partial** when the repo has source-adjacent code areas but no
 existing `docs/` tree — that's the case the mode was designed for.
 
 ## 4. Invocation modes
@@ -153,7 +153,7 @@ mode (see [Storage modes](#31-storage-modes)):
 
 - `integrated` — repo-root `docs/index.md` (or whatever path discovery
   resolved).
-- `leaves-only` — `~/.local/share/doxcavate/<repo-key>/docs/index.md`.
+- `partial` — `~/.local/share/doxcavate/<repo-key>/docs/index.md`.
   The repo never receives an `index.md` in this mode.
 - `shadow` — `~/.local/share/doxcavate/<repo-key>/docs/index.md`.
 
@@ -290,13 +290,13 @@ subject: <slug matching the file name suffix; omit for singletons>
 related: [<other doc slugs>]
 last_verified_commit: <repo HEAD sha at the moment doxcavate wrote/refreshed this doc>
 last_verified_at: <ISO date of that write>
-shadow: false  # true iff this doc lives in a shadow tree (shadow mode, or meta docs in leaves-only)
+shadow: false  # true iff this doc lives in a shadow tree (shadow mode, or meta docs in partial)
 ---
 ```
 
 The `shadow` flag is a per-doc statement, not a per-mode one. In
 `integrated` mode every doc has `shadow: false`; in `shadow` mode every
-doc has `shadow: true`; in `leaves-only` mode leaves carry `false` and
+doc has `shadow: true`; in `partial` mode leaves carry `false` and
 meta docs carry `true`. See
 [Storage modes](#31-storage-modes).
 
@@ -330,7 +330,7 @@ meta docs carry `true`. See
 **Leaves vs meta.** `how-it-works-*`, `learning-path-*`, and `runbook-*`
 are *leaves* — substance docs about specific code or operations.
 `index.md`, `glossary.md`, and `service-map.md` are *meta* — navigation
-and reference docs about the docs themselves. The `leaves-only`
+and reference docs about the docs themselves. The `partial`
 [storage mode](#31-storage-modes) keeps leaves in the repo and writes
 meta docs to the shadow tree.
 

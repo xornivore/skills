@@ -26,10 +26,10 @@ The index path is always resolved against the active storage mode (see
 | Mode | Index path |
 | --- | --- |
 | `integrated` | repo-root `docs/index.md` (or whatever path discovery resolved) |
-| `leaves-only` | `~/.local/share/doxcavate/<repo-key>/docs/index.md` |
+| `partial` | `~/.local/share/doxcavate/<repo-key>/docs/index.md` |
 | `shadow` | `~/.local/share/doxcavate/<repo-key>/docs/index.md` |
 
-In `leaves-only`, the repo never receives an `index.md`. The doc plan,
+In `partial`, the repo never receives an `index.md`. The doc plan,
 glossary, and service map are still produced and persisted — just under
 the shadow tree — so subsequent invocations can read them back.
 
@@ -53,6 +53,6 @@ the shadow tree — so subsequent invocations can read them back.
   then run review ([review-methodology](./review-methodology.md)) before
   declaring done.
 
-In `leaves-only`, when drafting a leaf, never link from the leaf to a
+In `partial`, when drafting a leaf, never link from the leaf to a
 shadow-located meta doc. Linking between leaves (relative paths inside
 the repo) is fine.

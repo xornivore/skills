@@ -65,7 +65,7 @@ shadow: false  # set true only when the doc lives outside the host repo (see lay
 substance docs about specific code or operations. `index.md`,
 `glossary.md`, and `service-map.md` are *meta* — navigation and
 reference docs about the docs themselves. The split matters for the
-`leaves-only` storage mode: leaves go to the host repo, meta docs go to
+`partial` storage mode: leaves go to the host repo, meta docs go to
 the shadow tree. See
 [layout-and-discovery](./layout-and-discovery.md) for the storage-mode
 matrix.

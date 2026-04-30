@@ -36,7 +36,7 @@ Config and docs live inside the host repo (`.doxcavate.yml`, repo-root
 `docs/`, co-located `<area>/docs/`). The team gets the docs in version
 control where they belong.
 
-### leaves-only
+### partial
 
 Substance leaves (`how-it-works-*`, `learning-path-*`, `runbook-*`) live
 in the host repo; meta docs (`index.md`, `glossary.md`, `service-map.md`)
@@ -46,7 +46,7 @@ and config live in the shadow tree:
 - Config: `~/.config/doxcavate/<repo-key>.yml`.
 - Meta-docs root: `~/.local/share/doxcavate/<repo-key>/docs/`.
 
-Leaves-only exists for the **partially-hostile-repo** case: the team
+`partial` exists for the **partially-hostile-repo** case: the team
 accepts substance docs (a `how-it-works-foo.md` next to the code is
 uncontroversial) but pushes back on navigation/meta files that read as
 documentation infrastructure. The doc plan, glossary, and service map
@@ -61,7 +61,7 @@ are fine; meta-to-leaf references from the shadow tree to repo-committed
 leaves use repo-relative paths and resolve correctly when read alongside
 the repo.
 
-In `leaves-only` mode, repo-committed leaves carry `shadow: false` and
+In `partial` mode, repo-committed leaves carry `shadow: false` and
 shadow-located meta docs carry `shadow: true`.
 
 ### shadow
@@ -97,17 +97,43 @@ if its remote changes later.
 ## Mode selection
 
 - **Explicit:** the active config file sets
-  `mode: integrated | leaves-only | shadow`.
+  `mode: integrated | partial | shadow`.
 - **Implicit:** if no config is found and a write is about to happen, ask
   the user once which of the three modes to use, then write the answer
   to the appropriate config location.
 
-When the prompt fires, lead with **leaves-only** if the repo has
-source-adjacent code areas but no existing `docs/` tree — that's the
-case the mode was designed for.
-
 Never silently write outside the host repo. Never silently add meta-files
 to a repo that doesn't already have any.
+
+## Mode by signal
+
+When running implicit mode selection, recognize the situation rather
+than the mode name. The table below maps observable signals to the
+recommended mode; the implicit prompt should describe the *effect*
+("substance docs near code, navigation in a user-local tree") rather
+than the internal name.
+
+| Signal | Recommended mode |
+| --- | --- |
+| Repo has an existing `docs/` tree, a `.doxcavate.yml`, or a `CLAUDE.md` / `AGENTS.md` declaring a docs path | `integrated` |
+| Repo has source-adjacent code areas (`pkg/`, `services/`, etc.) but no top-level `docs/` and no doc meta-files; user is fine committing substance docs near code but not navigation/infrastructure files | `partial` |
+| User signals "I can't commit anything to this repo" (contractor codebase, frozen scope, fully read-only or external repo, personal exploration) | `shadow` |
+| Inferred default contradicts an explicit user preference | honor the user; record the answer in the config |
+
+User-facing wording for the implicit prompt — describe the effect, not
+the name:
+
+1. "Commit everything to this repo" → `integrated`. Default when the
+   team welcomes documentation.
+2. "Commit substance docs (`how-it-works`, `learning-path`, `runbook`)
+   near the code; keep navigation/reference docs (`index`, `glossary`,
+   `service-map`) in a user-local tree" → `partial`. Default when the
+   team accepts docs near code but pushes back on top-level
+   documentation infrastructure.
+3. "Keep everything in a user-local tree, off-repo entirely" →
+   `shadow`. Default when nothing can be committed to the codebase.
+
+When in doubt, ask. Record the answer in the active config file.
 
 ## Action checklist (when invoked)
 
@@ -119,7 +145,7 @@ When doxcavate is invoked in a new repo:
    which mode to use:
 
    - `integrated` — commits both leaves and meta docs to this repo.
-   - `leaves-only` — commits substance leaves to this repo; meta docs
+   - `partial` — commits substance leaves to this repo; meta docs
      (`index.md`, `glossary.md`, `service-map.md`) live in the shadow
      tree.
    - `shadow` — nothing is committed to this repo; everything lives in
@@ -129,5 +155,5 @@ When doxcavate is invoked in a new repo:
 3. Compute and pin the `<repo-key>` (preferring the `origin` remote URL
    slug; falling back to a 12-char SHA1 of the repo path).
 4. Resolve the docs root(s) using sniffed conventions or the hybrid
-   default. In `leaves-only`, resolve two roots: the repo leaves root
+   default. In `partial`, resolve two roots: the repo leaves root
    and the shadow meta-docs root.
