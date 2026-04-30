@@ -297,7 +297,169 @@ Word-count targets keep "sizeable" honest:
 - `service-map.md` and `glossary.md` are reference shapes — they grow with
   the codebase, not with prose.
 
-## 8. Related services
+## 8. Review methodology
+
+Each new doc artifact goes through two review passes after the initial
+draft: a **factcheck pass** that grounds the doc in code, and a
+**persona pass** that asks whether the doc serves its intended reader.
+The two passes have distinct concerns and run in this order — facts
+before craft.
+
+### 8.1 Factcheck pass
+
+Mechanical, exhaustive. doxcavate extracts every factual claim from the
+draft and verifies it against the codebase:
+
+- **Claim shapes:** file paths, function/method/type names, "X calls Y"
+  relationships, env vars, hostnames, config keys, command names and
+  flags, file:line entry-point references.
+- **Verification:** Read or Grep per claim; Bash where it helps. For
+  larger drafts, fan out a dispatched agent — verification is
+  parallel-shaped.
+- **Outcomes:**
+  - **Verified** → leave the claim in place.
+  - **Contradicted** → fix the doc; never silently leave the bad
+    claim in.
+  - **Unverifiable** (claim about an external service the skill cannot
+    reach) → carry the claim forward with an explicit
+    `> note: not independently verified` callout.
+- **Verification block as byproduct.** The grep patterns and shell
+  commands the pass actually ran become the doc's `## Verification`
+  anchor for `how-it-works-*` and `runbook-*`. The block is **commands
+  only** for v1 — any reader (human or future drift-detection skill)
+  can run them and compare results to the prose. Capturing expected
+  output is a v2 expansion that pairs with drift detection.
+- **Never skippable.** Factcheck is what makes a doxcavate doc worth
+  trusting. There is no flag to skip it.
+
+### 8.2 Persona pass
+
+Heuristic. doxcavate adopts a persona keyed to the doc's kind and
+re-reads the draft as that reader. Briefs are concrete on purpose —
+abstract personas don't catch real failure modes.
+
+| Doc kind | Persona |
+| --- | --- |
+| `how-it-works-*` | Skeptical technical reviewer (seasoned engineer) who will grep what you claim. |
+| `learning-path-*` | Newcomer at hour zero who doesn't share your assumptions. |
+| `runbook-*` | Operator who needs concise, actionable instructions leading to system recovery. |
+| `service-map.md` | Completeness reviewer — looking for missing integrations and unstated assumptions. |
+| `glossary.md` | Completeness reviewer — looking for missing terms and inconsistent definitions. |
+| `index.md` | Skim-reader who needs to find the right doc in <30 seconds. |
+
+#### 8.2.1 Output contract
+
+The persona pass returns a **ranked list of ≤7 items**, each shaped:
+
+```yaml
+location: <line range or anchor in the draft>
+problem: <one sentence describing what's wrong>
+proposed_change: <one sentence describing what to do about it>
+patch: |                  # optional
+  <verbatim replacement text>
+```
+
+- The cap of 7 is hard. If the reviewer sees more than 7 issues, it
+  triages and drops the lowest-ranked items. A 30-item review list is
+  a reviewer-noise smell, not a doc-quality signal.
+- **Items are ordered by priority, descending.** Substance first; nits
+  last.
+- **Patches when possible.** If the reviewer can produce the literal
+  replacement text, it ships it in `patch`. The authoring agent applies
+  the patch verbatim. If the reviewer lacks context to write a good
+  patch, it ships the tuple without `patch` and the authoring agent
+  writes the fix.
+
+#### 8.2.2 Quality bar
+
+The reviewer is **not** for bikeshedding or relentless critique:
+
+- **Actionable, not aesthetic.** Every item names a specific change to
+  apply.
+- **Fix when possible.** "Identify a problem" without "propose a fix"
+  is acceptable only when the fix requires context the reviewer cannot
+  reach.
+- **No taste arguments.** Two ways of phrasing the same fact, neither
+  ambiguous nor wrong, is bikeshedding — skip it.
+- **Brevity is a feature.** The cap exists to enforce triage; ranking
+  exists so the lowest-priority items get dropped, not the
+  highest-priority ones.
+
+Examples of the bar:
+
+| Don't | Do |
+| --- | --- |
+| "This section feels too long." | "Lines 45-60 repeat the env-var list from line 12. Replace with 'See env vars above.'" |
+| "I'd phrase this differently." | "'Orchestrates ingestion' is ambiguous — code shows a fixed-size goroutine pool. Replace with 'spawns a fixed-size goroutine pool that processes ingestion tasks concurrently'." |
+| "Add more detail." | "Verification block omits env vars set in `setup.sh:23`. Add `grep -E '^export DOX_' setup.sh`." |
+| "Not beginner-friendly enough." | "A newcomer won't know what 'ingestion topic' means. Either link to the glossary entry or define it inline on line 8." |
+| "Consider restructuring." | "Move `## Verification` above `## External dependencies` — the operator persona needs verification first." |
+
+### 8.3 Loop and termination
+
+```text
+draft
+  → factcheck
+  → persona (≤7 ranked items)
+  → authoring agent applies all items
+  → focused factcheck (only the regions the persona pass changed)
+  → done
+```
+
+- **Default: single round.** One factcheck, one persona pass, one
+  focused factcheck on the applied changes. No automatic re-run of
+  persona.
+- **Done** = focused factcheck clean, no outstanding contradictions.
+  Unverifiable claims aren't contradictions; they ship with the
+  `> note: not independently verified` callout.
+- **Doc updates** (refresh of an existing doc): factcheck scopes to
+  changed claims; persona runs only if the change is reader-visible
+  (sectioning, anchors, voice). Internal-only edits skip persona by
+  default.
+
+### 8.4 Opt-in deviations from the default
+
+Two deviations are supported, signaled either via prompt hint or
+`.doxcavate.yml`:
+
+- **Thorough mode** — runs to fixed-point with a hard cap of 3 full
+  rounds. Stops when the persona pass returns zero items, the
+  factcheck pass shows zero contradictions, or the cap fires. Use
+  when stakes warrant it (a cornerstone runbook, a learning path many
+  newcomers will touch).
+- **Skip persona** — runs factcheck only. Use for bulk-migration or
+  format-only edits. Never available for newly drafted docs.
+
+```yaml
+# .doxcavate.yml
+review:
+  thorough: false        # default; true = run-to-fixed-point, cap 3 rounds
+  persona: required      # default; "optional" = honor "skip persona" prompt hints
+```
+
+Prompt hints recognized by the skill: "rigorously" / "thorough review"
+→ thorough mode; "skip persona" / "mechanical" / "format-only" → skip
+persona (only when `review.persona: optional`).
+
+### 8.5 Dispatched agents for review
+
+Both passes can be dispatched as agents when the doc is long or the
+codebase is large:
+
+- **Factcheck dispatch:** "Here is the draft. Here is the codebase.
+  Return every factual claim and the verification result (verified /
+  contradicted / unverifiable) with evidence."
+- **Persona dispatch:** "You are `<persona>`. Read this draft. Return
+  the persona-pass output contract: a ranked list of ≤7 items, each
+  with `location` / `problem` / `proposed_change` and an optional
+  `patch`. Brevity is a feature. If you have more than 7 items, you've
+  stopped triaging — drop the bottom ones."
+
+Both agents are **read-only**. They never edit the doc. The authoring
+agent applies findings in the main context, which keeps responsibility
+clear and the resulting changes auditable.
+
+## 9. Related services
 
 doxcavate documents *integration points*, not service internals. For each
 external service:
@@ -312,7 +474,7 @@ If `.doxcavate.yml` lists sibling repo paths or accessible OpenAPI / proto
 URLs, doxcavate may follow them to enrich the service-map entry — but it
 never writes docs *into* a sibling repo from outside.
 
-## 9. Out of scope (v1)
+## 10. Out of scope (v1)
 
 - **Doc freshness / drift detection.** The `## Verification` anchor and
   `last_verified_commit` enable a future sibling skill to audit and
@@ -323,7 +485,7 @@ never writes docs *into* a sibling repo from outside.
   they need commit-time discipline that a doc-after-the-fact skill can't
   manufacture.
 
-## 10. Non-goals
+## 11. Non-goals
 
 - Replacing existing docs that already work.
 - Producing exhaustive reference material. The skill's value is durable,
@@ -331,7 +493,7 @@ never writes docs *into* a sibling repo from outside.
 - Mandating a single layout. The skill follows the host repo's convention
   when one exists.
 
-## 11. Open questions
+## 12. Open questions
 
 - Should survey mode produce a single root `docs/index.md` or also seed
   per-subdir `index.md` stubs? (Leaning: root only; subdir indexes appear
@@ -340,3 +502,6 @@ never writes docs *into* a sibling repo from outside.
   (`~/.local/share/doxcavate/index.md`) that lists all repos the user has
   shadow-documented? (Leaning: yes, but v1.1 — not strictly needed for
   the first release.)
+- Should review personas be configurable per-repo (e.g., a custom
+  oncall persona for a codebase with very specific operational
+  conventions)? (Leaning: v2; v1 default briefs cover most cases.)
