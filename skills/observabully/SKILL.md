@@ -77,6 +77,8 @@ Do not invoke for:
 
 ## Reference index
 
+The action-checklist steps below (1–5) correspond to spec sections 4.1–4.5. Reference files refer to step numbers in the 4.x form; treat checklist step N as spec step 4.N.
+
 Read each reference only at the action step that loads it. Each
 reference ends with an `## Action checklist` — load and jump there.
 
