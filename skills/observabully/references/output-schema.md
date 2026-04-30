@@ -1,7 +1,7 @@
 # Output schema
 
-This reference loads at pipeline step 4.5. It controls how findings render
-and how the footer reports run accounting. Read it at step 4.5 — not before.
+Load this reference at pipeline step 4.5 (rank and emit). It controls
+finding render format and footer accounting. Read it at step 4.5 — not before.
 
 ## Finding shape
 
@@ -24,14 +24,14 @@ Example finding block:
 
 ### Field rules
 
-- **index** — 1-based, stable within a single run.
+- **index** — 1-based; stable within a single run.
 - **dimension** — one of `missing-telemetry`, `poor-practices`,
   `structure-for-telemetry`.
 - **severity** — `high` | `med` | `low`. Severity is decided by the rubric
   file that produced the finding.
 - **`file:line`** — line numbers point to the most informative line for the
   finding (start of the operation, not start of the file).
-- **why this matters** — 1-2 lines, concrete consequence. "A failure in any
+- **why this matters** — 1–2 lines, concrete consequence. "A failure in any
   one is currently indistinguishable from the others in production logs" is
   acceptable; "improves observability" is not.
 - **suggest** — the *shape* of the fix, not a code patch. Names a span,
