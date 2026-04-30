@@ -97,7 +97,7 @@ from opentelemetry import trace
 tracer = trace.get_tracer(__name__)
 
 
-def process_order(ctx: dict, order_id: str, payload: dict) -> dict:
+def handle_order(ctx: dict, order_id: str, payload: dict) -> dict:
     with tracer.start_as_current_span("order.process"):
         validated = _validate(payload)
         saved = _save(order_id, validated)
@@ -210,8 +210,6 @@ def record_event(tenant_id: str, event: dict) -> None:
 **Wrong (flag this):**
 
 ```python
-import os
-
 from opentelemetry import trace
 
 tracer = trace.get_tracer(__name__)
@@ -219,9 +217,10 @@ tracer = trace.get_tracer(__name__)
 _current_tenant = ""  # package-level ambient state
 
 
-def record_event(event: dict) -> None:
+def record_event(tenant_id: str, event: dict) -> None:
     with tracer.start_as_current_span("event.record") as span:
-        # Reads ambient state — concurrent requests overwrite each other.
+        # Parameter is ignored — ambient global wins, telemetry attaches the
+        # wrong value when concurrent requests overwrite the global.
         span.set_attribute("tenant_id", _current_tenant)
         _write(_current_tenant, event)
 ```
