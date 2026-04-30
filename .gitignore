@@ -1,0 +1,12 @@
+# pnpm / node
+node_modules/
+.pnpm-store/
+*.log
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+
+# worktrees
+.worktrees/
