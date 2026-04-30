@@ -173,6 +173,10 @@ infer intent from hedged prose.
   "may", "might", "could", "ideally", "we suggest", "perhaps".
   These are fine in human prose; in skill bodies they water down
   the directive and cost reliable triggering.
+- "should" deserves its own line. To a human reader it carries the
+  weight of "you really ought to do this." To a model it reads as
+  a soft hint that can be safely ignored. When a rule is
+  non-negotiable, write "must" or "always" — never "should".
 - Frame the reader as the actor: "When invoked, do X" beats
   "Doxcavate does X". The skill body addresses the agent that's
   about to act.
@@ -293,37 +297,50 @@ skill. This is rule 1 in the top-level `CLAUDE.md`.
 
 ## 9. Common anti-patterns
 
-Quick-reference list of what tends to go wrong. Use during review.
+Quick-reference list of what tends to go wrong, grouped by surface.
+Use during review.
+
+### Frontmatter
 
 - **Vague description.** "Helps with X." or "Useful for Y." — won't
-  trigger reliably. Fix with the formula in section 2 (`description`).
-- **Internal-jargon description.** Talks about classes / APIs /
-  builders, not what the user types. Fix by leading with user
-  vocabulary.
+  trigger reliably. Apply the formula in section 2 (`description`).
+- **Internal-jargon description.** Talks about classes, APIs, or
+  builder names, not what the user actually types. Lead with the
+  user's vocabulary.
 - **Name / folder mismatch.** `name: foo` in `skills/bar/SKILL.md` —
   fails the spec contract.
-- **Frontmatter angle brackets.** Any `<…>` text inside a frontmatter
-  value — risks being interpreted as tag syntax in the agent's
-  startup context.
-- **Wrong filename case.** `skill.md`, `Skill.md`, `SKILL.MD`. Only
-  `SKILL.md` (uppercase basename, lowercase extension) is recognized.
+- **Angle brackets in frontmatter.** Any `<…>` text inside a
+  frontmatter value — risks tag-syntax interpretation in the agent's
+  stage-1 startup context.
+
+### Structure
+
+- **Wrong filename case.** `skill.md`, `Skill.md`, or `SKILL.MD`.
+  The skills CLI only recognizes `SKILL.md` (basename uppercase,
+  extension lowercase).
+- **`templates/` folder.** The spec slot for templates is `assets/`.
+  Use `assets/<kind>-template.md`.
+
+### Body voice and content
+
 - **Hedged body voice.** Skill body reads in the conditional mood
-  ("we may want to", "ideally", "could") instead of giving the agent
-  direct orders. Rewrite as imperatives.
+  ("we may want to", "ideally", "could") instead of giving the
+  agent direct orders. Rewrite as imperatives. Watch `should` in
+  particular — see section 3.1.
 - **Rules without examples.** A standalone rule with no
-  correct/wrong pair makes the rule abstract. Add a concrete example
-  unless the rule is one-line obvious.
+  correct/wrong pair leaves the rule abstract. Add a concrete
+  example unless the rule is one-line obvious.
 - **Missing audit cues.** A mechanically-checkable rule with no
-  "how to detect violations" note costs reviewer time and can't be
-  automated later.
-- **Bloated `SKILL.md`.** Body over 500 lines or full of long
-  reference material that should live in `references/`. Defeats
-  stage-2 of progressive disclosure.
-- **Eager reference loading.** SKILL.md tells the agent to "read all
-  references on activation" instead of pulling them at the action
-  step that needs them. Defeats stage-3.
-- **`templates/` folder name.** Spec uses `assets/`. Always
-  `assets/<kind>-template.md`.
+  "how to detect violations" note costs reviewer time and blocks
+  automation later.
+
+### Progressive disclosure
+
+- **Bloated `SKILL.md`.** Body over 500 lines, or full of long
+  reference material that belongs in `references/`. Defeats stage 2.
+- **Eager reference loading.** SKILL.md instructs the agent to
+  "read all references on activation" instead of pulling each
+  reference at the step that needs it. Defeats stage 3.
 
 ## 10. Quick checklist (before opening a PR)
 
