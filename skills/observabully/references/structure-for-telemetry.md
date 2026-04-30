@@ -78,8 +78,9 @@ not lexical — there is no single call site that represents the full unit of
 work.
 
 **Severity:** `med`; `high` when the entry point is a public boundary (HTTP
-handler, RPC method, CLI entry, queue consumer — recognizable by signature or
-transport registration in the same file) calling the scattered helpers.
+handler, RPC method, CLI entry, queue consumer, or scheduled job — recognizable
+by signature or transport registration in the same file) calling the scattered
+helpers.
 
 **Why-template:** "There is no single point at which to attach a boundary span
 or success/failure log — operators reading traces see disconnected sub-spans
@@ -97,7 +98,7 @@ from opentelemetry import trace
 tracer = trace.get_tracer(__name__)
 
 
-def handle_order(ctx: dict, order_id: str, payload: dict) -> dict:
+def handle_order(order_id: str, payload: dict) -> dict:
     with tracer.start_as_current_span("order.process"):
         validated = _validate(payload)
         saved = _save(order_id, validated)
@@ -112,7 +113,7 @@ from opentelemetry import trace
 tracer = trace.get_tracer(__name__)
 
 
-def handle_order(ctx: dict, order_id: str, payload: dict) -> dict:
+def handle_order(order_id: str, payload: dict) -> dict:
     # No enclosing span — sub-steps emit orphaned spans with no shared parent.
     validated = _validate(payload)
     saved = _save(order_id, validated)
@@ -142,9 +143,8 @@ telemetry attaches the typed name as a `failure_kind` attribute."
 
 ```go
 var (
-    ErrMissingField  = errors.New("missing field")
+    ErrMissingField   = errors.New("missing field")
     ErrSchemaMismatch = errors.New("schema mismatch")
-    ErrRateLimited   = errors.New("rate limited")
 )
 
 func Validate(req *Request) error {
