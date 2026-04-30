@@ -10,7 +10,9 @@
     "lint:fix": "markdownlint-cli2 --fix \"**/*.md\" \"#node_modules\" \"#.worktrees\"",
     "prepare": "husky"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "markdownlint-cli2": "^0.22.1"
+  },
   "lint-staged": {
     "*.md": "markdownlint-cli2 --fix"
   }
