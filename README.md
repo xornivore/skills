@@ -19,6 +19,7 @@ The `@<skill-name>` must match the skill's registered name, not article shorthan
 | Name | Description |
 | --- | --- |
 | [doxcavate](./skills/doxcavate/SKILL.md) | Produces durable, structured documentation in codebases with sparse docs. Two modes (`survey`, `draft`); review-gated by factcheck and persona passes. |
+| [observabully](./skills/observabully/SKILL.md) | Audits a codebase for missing telemetry, poor o11y practices, and code structure that resists instrumentation. Read-only ranked finding list, FP-reviewed and bounded. |
 
 ## Authoring
 
