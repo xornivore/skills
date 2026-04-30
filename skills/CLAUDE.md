@@ -95,8 +95,6 @@ environment requirements.
 
 - Recommended ≤ 500 lines. Move detailed reference material into
   `references/`.
-- The body should support **progressive disclosure**: cover the most
-  common cases inline, link to `references/` for depth.
 - Lead with: triggers ("when to use"), routing/decision flow, hard
   rules, then a reference index.
 - Voice is imperative ("when invoked, do X"), not descriptive
@@ -106,7 +104,37 @@ environment requirements.
   `[no-section-sign rule](../docs/CLAUDE.md#cross-references-between-sections)`
   applies here too.
 
-## 4. Install command
+## 4. Progressive disclosure
+
+The agentskills.io spec defines three loading stages — your skill must
+be structured so each stage delivers what the agent needs without
+loading the next prematurely.
+
+| Stage | Trigger | What loads | Token budget |
+| --- | --- | --- | --- |
+| 1 — Metadata | Agent startup (every session) | `name` + `description` from frontmatter | ~100 tokens |
+| 2 — Instructions | Agent decides the skill matches the task | Full `SKILL.md` body | < 5000 tokens recommended |
+| 3 — Resources | A specific action step calls for them | Files under `references/`, `assets/`, `scripts/` | as needed |
+
+Authoring practices that make progressive disclosure work:
+
+- **Front-load discovery in `description`.** A vague description
+  starves stage 1 — agents won't reach stage 2.
+- **Keep `SKILL.md` lean and decision-focused.** Triggers, routing,
+  hard rules, and a reference index. Detail goes in `references/`.
+  This is what keeps stage 2 small.
+- **Pull references in at the moment they're needed**, not eagerly in
+  a "see also" preamble. The `SKILL.md` action checklist is the right
+  place: each step references the file it needs (e.g., "Run
+  discovery; see [layout-and-discovery](./references/layout-and-discovery.md)").
+- **Split `references/` by topic, not by document length.** One topic
+  per file means agents load only the slice they need. A 2000-line
+  `everything.md` defeats stage 3.
+- **`assets/` and `scripts/` are stage-3 too.** Don't inline template
+  bodies in `SKILL.md`; link to `assets/<kind>-template.md` and let
+  the agent read it when it's about to use it.
+
+## 5. Install command
 
 Every `SKILL.md` and per-skill `README.md` MUST show the install
 command:
@@ -117,7 +145,7 @@ npx skills add xornivore/skills@<skill-name> --agent claude-code -y
 
 This is also rule 6 in the top-level `CLAUDE.md`.
 
-## 5. Validation
+## 6. Validation
 
 Before opening a PR for a new or modified skill:
 
@@ -134,14 +162,14 @@ The validator must exit 0 before the PR is mergeable. CI integration
 for `skills-ref` is tracked as a follow-up; until then, validation is
 a hard rule but a manual gate.
 
-## 6. README sync
+## 7. README sync
 
 Every skill under `skills/` MUST appear in the top-level `README.md`
 skills table with a one-line description and a link to its `SKILL.md`.
 This is rule 4 in the top-level `CLAUDE.md` — restated here because
 adding a skill always pairs with a README update.
 
-## 7. Authoring loop
+## 8. Authoring loop
 
 Use `skill-creator` (from `anthropics/skills`) as the primary authoring
 tool. `superpowers:writing-skills` is acceptable as a secondary when
@@ -154,7 +182,7 @@ npx skills add anthropics/skills@skill-creator --agent claude-code -y
 Then invoke the skill-creator skill to scaffold or edit the target
 skill. This is rule 1 in the top-level `CLAUDE.md`.
 
-## 8. Quick checklist (before opening a PR)
+## 9. Quick checklist (before opening a PR)
 
 - [ ] Folder name matches `name` frontmatter
 - [ ] `name` is 1-64 lowercase-and-hyphen chars, no edge or

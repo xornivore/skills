@@ -6,12 +6,16 @@
 durable, structured documentation in codebases where written docs are sparse —
 readable by humans and agents alike.
 
-**Architecture:** Skill packaged as Markdown content (no runtime code). `SKILL.md`
-is the entry point: lean, with mode routing (survey vs draft), a decision flow,
-and a reference index pointing to detail files. `references/` holds deep content
-for each spec section. `assets/` provides skeletons for the six doc kinds.
-Triggered when the user invokes the skill or asks doxcavate to inspect or
-document a codebase.
+**Architecture:** Skill packaged as Markdown content (no runtime code).
+Designed around the agentskills.io **progressive disclosure** model — three
+load stages: metadata (`name` + `description` only) at agent startup; full
+`SKILL.md` body when the skill activates; references / assets / scripts only
+when an action step calls for them. `SKILL.md` is the lean entry point: mode
+routing (survey vs draft), a decision flow, hard rules, and a reference index.
+`references/` holds deep content per spec section, loaded on demand at the
+step that needs it. `assets/` provides templates loaded at the moment a doc
+is being drafted. Triggered when the user invokes the skill or asks doxcavate
+to inspect or document a codebase.
 
 **Tech Stack:** Markdown only. Validation by `pnpm lint`
 (`markdownlint-cli2` already in repo). Skill installed via the `skills` CLI
@@ -1188,20 +1192,27 @@ Invoked
 
 ## Reference index
 
+> Read each reference only at the action step that calls for it — not
+> eagerly during activation. This is how the skill stays lean in the
+> agent's context (progressive disclosure, stage 3).
+
 - [doc-kinds](./references/doc-kinds.md) — taxonomy, front-matter,
-  required structural anchors per kind, sizing targets.
+  required structural anchors per kind, sizing targets. Read when
+  drafting or reviewing structural conformance.
 - [layout-and-discovery](./references/layout-and-discovery.md) —
-  config sniffing, integrated vs shadow modes, repo keying.
+  config sniffing, integrated vs shadow modes, repo keying. Read at
+  the discovery step (always the first step).
 - [invocation-modes](./references/invocation-modes.md) — survey vs
-  draft, routing rules, action checklists.
+  draft, routing rules, action checklists. Read once mode is decided.
 - [investigation-and-sources](./references/investigation-and-sources.md)
   — adaptive investigation, the three production sources (code,
-  existing docs, commits), reconciliation order.
+  existing docs, commits), reconciliation order. Read at the start of
+  any draft.
 - [review-methodology](./references/review-methodology.md) — factcheck
   + persona two-pass loop, output contract, opt-in deviations,
-  dispatched agents, escape hatches.
+  dispatched agents, escape hatches. Read after a draft is produced.
 - [personas](./references/personas.md) — review-persona briefs per
-  doc kind.
+  doc kind. Read when constructing the persona-pass dispatch prompt.
 
 ## Templates
 
