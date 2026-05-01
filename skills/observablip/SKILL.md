@@ -1,11 +1,11 @@
 ---
-name: observabully
-description: Audits source code for observability gaps — missing telemetry, poor observability practices, and code structure that resists instrumentation — then emits a ranked, bounded finding list. Invoke when the user says "observabully this", "observabully `pkg/foo`", "audit observability", "review telemetry", "find missing spans", "audit o11y on this PR", "review my logging", or "is this instrumented well enough?". Read-only; never edits files.
+name: observablip
+description: Audits source code for observability gaps — missing telemetry, poor observability practices, and code structure that resists instrumentation — then emits a ranked, bounded finding list. Invoke when the user says "observablip this", "observablip `pkg/foo`", "audit observability", "review telemetry", "find missing spans", "audit o11y on this PR", "review my logging", or "is this instrumented well enough?". Read-only; never edits files.
 license: MIT
 compatibility: Designed for Claude Code (or similar agentskills.io-compatible clients).
 ---
 
-# observabully
+# observablip
 
 Audits source files for observability gaps across three dimensions —
 missing telemetry, poor practices, and code structure that resists
@@ -15,26 +15,26 @@ files in the target codebase.
 ## Install
 
 ```bash
-npx skills add xornivore/skills@observabully --agent claude-code -y
+npx skills add xornivore/skills@observablip --agent claude-code -y
 ```
 
 ## When to use
 
 Invoke when the user:
 
-- Uses an explicit invocation phrase: "observabully this",
-  "observabully `pkg/foo`", "audit o11y on this PR".
+- Uses an explicit invocation phrase: "observablip this",
+  "observablip `pkg/foo`", "audit o11y on this PR".
 - Asks for an observability or telemetry review: "audit observability",
   "review telemetry", "find missing spans", "review my logging".
 - Asks a diagnostic question: "is this instrumented well enough?"
 
 Do not invoke for:
 
-- Requests to write or apply telemetry — observabully is read-only.
+- Requests to write or apply telemetry — observablip is read-only.
 - Security review, performance review, correctness review, or test
   coverage review.
 - Vendor selection ("should I use Datadog or Honeycomb?").
-- Audits from runtime data (traces, logs, metrics dumps). observabully
+- Audits from runtime data (traces, logs, metrics dumps). observablip
   reads source files only.
 
 ## Hard rules

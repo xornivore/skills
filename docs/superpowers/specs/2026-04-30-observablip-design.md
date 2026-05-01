@@ -1,9 +1,9 @@
-# observabully — design
+# observablip — design
 
 A read-only Claude Code skill that audits a target codebase for poor
 observability practices, missing telemetry, and code structure that
 makes proper telemetry hard to add. Output is a ranked list of
-findings; observabully never edits files.
+findings; observablip never edits files.
 
 ## 1. Goal
 
@@ -11,12 +11,12 @@ Reviewing real-world code for observability gaps is high-value but
 tedious. The reviewer has to hold three different concerns in mind at
 once — *what's not instrumented*, *what's instrumented badly*, and
 *what's structured in a way that resists instrumentation* — and apply
-them across a codebase the reviewer doesn't fully know. observabully
+them across a codebase the reviewer doesn't fully know. observablip
 does that walk in one shot, filters out files where the questions
 don't apply, and surfaces a small number of high-signal findings the
 user can act on.
 
-The skill targets the user invocation pattern "observabully this
+The skill targets the user invocation pattern "observablip this
 package" / "audit telemetry in `pkg/foo`" / "find missing spans" /
 "review o11y on this PR". It is "quick" by design — single mode, lean
 SKILL.md, no patches, no fixtures, no executables.
@@ -29,7 +29,7 @@ SKILL.md, no patches, no fixtures, no executables.
 - Recommend specific telemetry vendors or backends.
 - Operate from artifacts other than source files (no binaries, traces,
   or runtime data).
-- Score, grade, or rate the codebase. observabully enumerates issues;
+- Score, grade, or rate the codebase. observablip enumerates issues;
   the user judges magnitude.
 - Provide a survey/repo-wide posture mode. (Considered and dropped —
   doxcavate-mimicry without clear demand. Add later if needed.)
@@ -49,7 +49,7 @@ Inputs:
 - `--max <N>` — optional. Output cap (default 20). Overflow is
   surfaced, never silently truncated.
 
-Trigger phrases the `description` field must front-load: "observabully
+Trigger phrases the `description` field must front-load: "observablip
 this", "audit observability", "review telemetry", "find missing
 spans", "audit o11y in …", "review my logging".
 
@@ -183,7 +183,7 @@ shown: 20 of 23 findings — narrow the target with a path or glob
 Each rule has an audit cue mechanical enough for a reviewer (or future
 skill-review agent) to check.
 
-1. **Read-only.** observabully never edits files, never executes code
+1. **Read-only.** observablip never edits files, never executes code
    in the target codebase, and never runs commands inside the target.
    **Audit:** no `Edit` / `Write` / `Bash` tool calls touching paths
    inside the target during a run.
@@ -222,7 +222,7 @@ skill-review agent) to check.
 Per `skills/CLAUDE.md` rule 1.
 
 ```text
-skills/observabully/
+skills/observablip/
 ├── SKILL.md                          # entry, lean, decision-focused
 ├── README.md                         # human-facing, links to SKILL.md
 ├── references/
@@ -247,13 +247,13 @@ Target ~150-200 lines, well under the 500-line cap from
 Sections, in order:
 
 1. **Frontmatter.**
-   - `name: observabully`
+   - `name: observablip`
    - `description:` what + when + user trigger phrases (the trigger
      list from section 3, front-loaded). Must contain no `<` or `>`
      per the frontmatter-safety rule.
    - `license: MIT`
    - `compatibility: Designed for Claude Code (or similar agentskills.io-compatible clients).`
-2. **Install command** — `npx skills add xornivore/skills@observabully --agent claude-code -y`.
+2. **Install command** — `npx skills add xornivore/skills@observablip --agent claude-code -y`.
 3. **When to use** / when not to use.
 4. **Hard rules** — the six from section 6, each with its audit cue.
 5. **Reference index** — one bullet per reference file, tagged with
@@ -264,7 +264,7 @@ Sections, in order:
    section 4, each linking to the reference it loads.
 
 Voice: imperative, no hedging. "When invoked, do X" beats
-"observabully does X." Per repo rule 3.1.
+"observablip does X." Per repo rule 3.1.
 
 ## 9. Validation
 
@@ -273,7 +273,7 @@ Three gates, in order:
 1. **Spec conformance.**
    - `pnpm lint` clean (markdownlint-cli2 over `**/*.md`, with the
      specs dir excluded by config).
-   - `npx skills-ref validate ./skills/observabully` exits 0.
+   - `npx skills-ref validate ./skills/observablip` exits 0.
 2. **Self-audit cues.** Each hard rule in section 6 carries a
    mechanical audit cue. A reviewer can run them by hand without
    re-deriving the test.
@@ -300,11 +300,11 @@ no code to unit-test.
 
 These belong in the implementation plan, not in the skill itself:
 
-- Add an `observabully` row to the top-level `README.md` skills
+- Add an `observablip` row to the top-level `README.md` skills
   table (per repo rule 4).
-- Implementation lands on the existing `skill/observabully` worktree
-  branch in `.worktrees/observabully`.
-- Conventional-commit format: `feat(observabully): describe the
+- Implementation lands on the existing `skill/observablip` worktree
+  branch in `.worktrees/observablip`.
+- Conventional-commit format: `feat(observablip): describe the
   skill`. No AI-tool attribution per repo rule 7.
 - Pre-commit hook auto-fixes staged Markdown via `lint-staged`. Do
   not bypass with `--no-verify`.

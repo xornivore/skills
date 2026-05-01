@@ -1,14 +1,14 @@
-# observabully Implementation Plan
+# observablip Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build the `observabully` Claude Code skill — a read-only auditor that walks a target codebase, applies a three-dimension o11y rubric (missing telemetry, poor practices, structure-for-telemetry), filters via a precheck and a false-positive review pass, and emits a ranked, bounded list of findings.
+**Goal:** Build the `observablip` Claude Code skill — a read-only auditor that walks a target codebase, applies a three-dimension o11y rubric (missing telemetry, poor practices, structure-for-telemetry), filters via a precheck and a false-positive review pass, and emits a ranked, bounded list of findings.
 
 **Architecture:** Skill packaged as Markdown content (no runtime code). One invocation mode (`audit`). `SKILL.md` is the lean entry point: pipeline routing, hard rules, reference index. `references/` holds the precheck rubric, three dimension rubrics, the FP-review rubric, and the output-schema spec — each loaded only at the pipeline step that needs it (stage-3 progressive disclosure). `assets/finding-template.md` is the per-finding fill template loaded at emit time.
 
-**Tech Stack:** Markdown only. Validation by `pnpm lint` (`markdownlint-cli2` already in repo) and `npx skills-ref validate` against the agentskills.io spec. Skill installed via `npx skills add xornivore/skills@observabully --agent claude-code -y`. The skill is content for Claude Code, not executable code.
+**Tech Stack:** Markdown only. Validation by `pnpm lint` (`markdownlint-cli2` already in repo) and `npx skills-ref validate` against the agentskills.io spec. Skill installed via `npx skills add xornivore/skills@observablip --agent claude-code -y`. The skill is content for Claude Code, not executable code.
 
-**Spec source:** `docs/superpowers/specs/2026-04-30-observabully-design.md`. The plan lifts content from numbered spec sections — when a step says "transcribe spec section N.M," paste the spec prose, then adapt to skill-instruction voice ("when invoked, do X" rather than "observabully does X").
+**Spec source:** `docs/superpowers/specs/2026-04-30-observablip-design.md`. The plan lifts content from numbered spec sections — when a step says "transcribe spec section N.M," paste the spec prose, then adapt to skill-instruction voice ("when invoked, do X" rather than "observablip does X").
 
 **Authoring rules:** Follow `skills/CLAUDE.md` (skill-authoring conventions for this repo, derived from the agentskills.io specification). Read it before starting Task 1. The plan's structure (folders, file naming, frontmatter shape) is already aligned to those rules.
 
@@ -16,15 +16,15 @@
 
 ## Working environment
 
-- Branch: `skill/observabully` (already created from `main`).
-- Worktree: `.worktrees/observabully/`.
+- Branch: `skill/observablip` (already created from `main`).
+- Worktree: `.worktrees/observablip/`.
 - All commands run from the worktree root.
 - `pnpm install` has already run; husky is active. `pnpm lint` is clean at baseline.
 
 ## File structure
 
 ```text
-skills/observabully/
+skills/observablip/
 ├── SKILL.md
 ├── README.md
 ├── references/
@@ -40,11 +40,11 @@ skills/observabully/
 
 Plus one modification:
 
-- `README.md` (top-level) — add an `observabully` row to the Skills table.
+- `README.md` (top-level) — add an `observablip` row to the Skills table.
 
 ## Voice rules (apply to all skill files)
 
-- Imperative: "when invoked, do X" — not "observabully does X." Per `skills/CLAUDE.md` 3.1.
+- Imperative: "when invoked, do X" — not "observablip does X." Per `skills/CLAUDE.md` 3.1.
 - Strip hedge tokens (`may`, `might`, `could`, `ideally`, `we suggest`, `perhaps`).
 - Replace `should` with `must` / `always` for non-negotiable rules.
 - Each standalone rule paired with a correct example **and** a wrong example, per `skills/CLAUDE.md` 3.2.
@@ -63,29 +63,29 @@ Plus one modification:
 
 **Files:**
 
-- Create: `skills/observabully/` (dir, plus `references/` and `assets/` subdirs)
-- Create: `skills/observabully/assets/finding-template.md`
+- Create: `skills/observablip/` (dir, plus `references/` and `assets/` subdirs)
+- Create: `skills/observablip/assets/finding-template.md`
 
 **Source spec sections:** 5 (Output schema), 7 (Folder layout).
 
 - [ ] **Step 1: Create the directory tree**
 
 ```bash
-mkdir -p skills/observabully/references skills/observabully/assets
+mkdir -p skills/observablip/references skills/observablip/assets
 ```
 
 - [ ] **Step 2: Verify the directories exist and are empty**
 
 ```bash
-find skills/observabully -type d
+find skills/observablip -type d
 ```
 
 Expected:
 
 ```text
-skills/observabully
-skills/observabully/references
-skills/observabully/assets
+skills/observablip
+skills/observablip/references
+skills/observablip/assets
 ```
 
 - [ ] **Step 3: Write `assets/finding-template.md`**
@@ -139,15 +139,15 @@ Expected: `0 error(s)`.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add skills/observabully/assets/finding-template.md
-git commit -m "feat(observabully): scaffold skill dirs and finding template"
+git add skills/observablip/assets/finding-template.md
+git commit -m "feat(observablip): scaffold skill dirs and finding template"
 ```
 
 ---
 
 ## Phase 2 — References (rubric content)
 
-Each task in this phase creates one file under `skills/observabully/references/`. Each file is a standalone reference loaded only at the pipeline step that needs it. Cross-references between files use relative links (`[name](./other.md)`) — never deeper than one level.
+Each task in this phase creates one file under `skills/observablip/references/`. Each file is a standalone reference loaded only at the pipeline step that needs it. Cross-references between files use relative links (`[name](./other.md)`) — never deeper than one level.
 
 Voice rules from the top of this plan apply throughout. Every standalone rule gets a correct/wrong example pair.
 
@@ -155,7 +155,7 @@ Voice rules from the top of this plan apply throughout. Every standalone rule ge
 
 **Files:**
 
-- Create: `skills/observabully/references/output-schema.md`
+- Create: `skills/observablip/references/output-schema.md`
 
 **Source spec sections:** 4.5 (Rank and emit), 5 (Output schema), 6 (Hard rules — restate rules 4 and 5 as they bind to output).
 
@@ -214,8 +214,8 @@ Expected: `0 error(s)`.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add skills/observabully/references/output-schema.md
-git commit -m "feat(observabully): add output-schema reference"
+git add skills/observablip/references/output-schema.md
+git commit -m "feat(observablip): add output-schema reference"
 ```
 
 ---
@@ -224,7 +224,7 @@ git commit -m "feat(observabully): add output-schema reference"
 
 **Files:**
 
-- Create: `skills/observabully/references/precheck.md`
+- Create: `skills/observablip/references/precheck.md`
 
 **Source spec sections:** 4.2 (Per-file precheck), 6 (rule 5 Skip accounting).
 
@@ -306,8 +306,8 @@ pnpm lint
 - [ ] **Step 3: Commit**
 
 ```bash
-git add skills/observabully/references/precheck.md
-git commit -m "feat(observabully): add precheck reference"
+git add skills/observablip/references/precheck.md
+git commit -m "feat(observablip): add precheck reference"
 ```
 
 ---
@@ -316,7 +316,7 @@ git commit -m "feat(observabully): add precheck reference"
 
 **Files:**
 
-- Create: `skills/observabully/references/missing-telemetry.md`
+- Create: `skills/observablip/references/missing-telemetry.md`
 
 **Source spec sections:** 4.3 dimension 1.
 
@@ -403,7 +403,7 @@ The implementer must populate the `[same shape]` placeholders with full pattern 
 - [ ] **Step 2: Verify no `[same shape]` placeholders remain**
 
 ```bash
-grep -n '\[same shape\]\|\[transcribe' skills/observabully/references/missing-telemetry.md
+grep -n '\[same shape\]\|\[transcribe' skills/observablip/references/missing-telemetry.md
 ```
 
 Expected: no output (exit 1 from grep — that's the success state).
@@ -417,8 +417,8 @@ pnpm lint
 - [ ] **Step 4: Commit**
 
 ```bash
-git add skills/observabully/references/missing-telemetry.md
-git commit -m "feat(observabully): add missing-telemetry rubric"
+git add skills/observablip/references/missing-telemetry.md
+git commit -m "feat(observablip): add missing-telemetry rubric"
 ```
 
 ---
@@ -427,7 +427,7 @@ git commit -m "feat(observabully): add missing-telemetry rubric"
 
 **Files:**
 
-- Create: `skills/observabully/references/poor-practices.md`
+- Create: `skills/observablip/references/poor-practices.md`
 
 **Source spec sections:** 4.3 dimension 2; 6 rule 3 (no verbatim secrets/PII).
 
@@ -522,7 +522,7 @@ The implementer must replace each `[full pattern block]` with the full six-eleme
 - [ ] **Step 2: Verify no placeholders remain**
 
 ```bash
-grep -n '\[full pattern block\]\|\[same shape\]\|\[transcribe' skills/observabully/references/poor-practices.md
+grep -n '\[full pattern block\]\|\[same shape\]\|\[transcribe' skills/observablip/references/poor-practices.md
 ```
 
 Expected: no output.
@@ -536,8 +536,8 @@ pnpm lint
 - [ ] **Step 4: Commit**
 
 ```bash
-git add skills/observabully/references/poor-practices.md
-git commit -m "feat(observabully): add poor-practices rubric"
+git add skills/observablip/references/poor-practices.md
+git commit -m "feat(observablip): add poor-practices rubric"
 ```
 
 ---
@@ -546,7 +546,7 @@ git commit -m "feat(observabully): add poor-practices rubric"
 
 **Files:**
 
-- Create: `skills/observabully/references/structure-for-telemetry.md`
+- Create: `skills/observablip/references/structure-for-telemetry.md`
 
 **Source spec sections:** 4.3 dimension 3.
 
@@ -612,7 +612,7 @@ The implementer must replace each `[full pattern block]` with a complete six-ele
 - [ ] **Step 2: Verify no placeholders remain**
 
 ```bash
-grep -n '\[full pattern block\]\|\[same shape\]\|\[transcribe' skills/observabully/references/structure-for-telemetry.md
+grep -n '\[full pattern block\]\|\[same shape\]\|\[transcribe' skills/observablip/references/structure-for-telemetry.md
 ```
 
 Expected: no output.
@@ -626,8 +626,8 @@ pnpm lint
 - [ ] **Step 4: Commit**
 
 ```bash
-git add skills/observabully/references/structure-for-telemetry.md
-git commit -m "feat(observabully): add structure-for-telemetry rubric"
+git add skills/observablip/references/structure-for-telemetry.md
+git commit -m "feat(observablip): add structure-for-telemetry rubric"
 ```
 
 ---
@@ -636,7 +636,7 @@ git commit -m "feat(observabully): add structure-for-telemetry rubric"
 
 **Files:**
 
-- Create: `skills/observabully/references/false-positive-review.md`
+- Create: `skills/observablip/references/false-positive-review.md`
 
 **Source spec sections:** 4.4 (False-positive review pass).
 
@@ -700,7 +700,7 @@ The implementer must populate the four `[correct/wrong example pair]` placeholde
 - [ ] **Step 2: Verify no placeholders remain**
 
 ```bash
-grep -n '\[correct/wrong example pair\]\|\[same shape\]\|\[transcribe\|\[full pattern block\]' skills/observabully/references/false-positive-review.md
+grep -n '\[correct/wrong example pair\]\|\[same shape\]\|\[transcribe\|\[full pattern block\]' skills/observablip/references/false-positive-review.md
 ```
 
 Expected: no output.
@@ -714,38 +714,38 @@ pnpm lint
 - [ ] **Step 4: Commit**
 
 ```bash
-git add skills/observabully/references/false-positive-review.md
-git commit -m "feat(observabully): add false-positive review rubric"
+git add skills/observablip/references/false-positive-review.md
+git commit -m "feat(observablip): add false-positive review rubric"
 ```
 
 ---
 
 ## Phase 3 — Skill entry points
 
-### Task 8: `skills/observabully/README.md`
+### Task 8: `skills/observablip/README.md`
 
 Per-skill, human-facing. Brief — links to `SKILL.md`, install command, two-paragraph what-it-does, non-goals. Agents do not load this; it exists for humans browsing the GitHub repo.
 
 **Files:**
 
-- Create: `skills/observabully/README.md`
+- Create: `skills/observablip/README.md`
 
 - [ ] **Step 1: Write the file**
 
 ````markdown
-# observabully
+# observablip
 
 A read-only Claude Code skill that audits a target codebase for missing telemetry, poor observability practices, and code structure that resists instrumentation. Emits a ranked, bounded list of findings — no patches, no autofix.
 
 ## Install
 
 ```bash
-npx skills add xornivore/skills@observabully --agent claude-code -y
+npx skills add xornivore/skills@observablip --agent claude-code -y
 ```
 
 ## What it does
 
-When invoked, observabully walks the target (a path, glob, or `--diff` rev range), filters out files with no observable surface area, applies a three-dimension rubric (missing telemetry, poor practices, structure-for-telemetry), runs each candidate through a false-positive review pass, and emits up to `--max` findings (default 20) ranked by severity and blast radius. Each finding names the file and line, the o11y dimension, the concrete consequence of leaving the gap, and the *shape* of the fix.
+When invoked, observablip walks the target (a path, glob, or `--diff` rev range), filters out files with no observable surface area, applies a three-dimension rubric (missing telemetry, poor practices, structure-for-telemetry), runs each candidate through a false-positive review pass, and emits up to `--max` findings (default 20) ranked by severity and blast radius. Each finding names the file and line, the o11y dimension, the concrete consequence of leaving the gap, and the *shape* of the fix.
 
 The skill is read-only by design. It never edits files, runs target code, or recommends a specific telemetry vendor unless that vendor is already imported in the codebase.
 
@@ -759,7 +759,7 @@ The skill is read-only by design. It never edits files, runs target code, or rec
 
 ## Entry point
 
-Skill instructions live in [`SKILL.md`](./SKILL.md). The full design is in [`docs/superpowers/specs/2026-04-30-observabully-design.md`](../../docs/superpowers/specs/2026-04-30-observabully-design.md).
+Skill instructions live in [`SKILL.md`](./SKILL.md). The full design is in [`docs/superpowers/specs/2026-04-30-observablip-design.md`](../../docs/superpowers/specs/2026-04-30-observablip-design.md).
 ````
 
 - [ ] **Step 2: Lint**
@@ -773,19 +773,19 @@ Expected: `0 error(s)`.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add skills/observabully/README.md
-git commit -m "docs(observabully): add per-skill README"
+git add skills/observablip/README.md
+git commit -m "docs(observablip): add per-skill README"
 ```
 
 ---
 
-### Task 9: `skills/observabully/SKILL.md`
+### Task 9: `skills/observablip/SKILL.md`
 
 The skill's stage-2 entry point. Lean, decision-focused. Target ~150–200 lines.
 
 **Files:**
 
-- Create: `skills/observabully/SKILL.md`
+- Create: `skills/observablip/SKILL.md`
 
 **Source spec sections:** 1, 2, 3, 4, 6, 8.
 
@@ -795,36 +795,36 @@ Use this exact frontmatter and structure. Substitute the trigger phrases from sp
 
 ````markdown
 ---
-name: observabully
-description: Audits a codebase for missing telemetry, poor observability practices, and code structure that resists instrumentation. Read-only — emits a ranked, bounded finding list with no patches. Triggered by phrases like "observabully this", "observabully `pkg/foo`", "audit observability", "review telemetry", "find missing spans", "audit o11y on this PR", "review my logging", or any request to audit a codebase for observability gaps.
+name: observablip
+description: Audits a codebase for missing telemetry, poor observability practices, and code structure that resists instrumentation. Read-only — emits a ranked, bounded finding list with no patches. Triggered by phrases like "observablip this", "observablip `pkg/foo`", "audit observability", "review telemetry", "find missing spans", "audit o11y on this PR", "review my logging", or any request to audit a codebase for observability gaps.
 license: MIT
 compatibility: Designed for Claude Code (or similar agentskills.io-compatible clients).
 ---
 
-# observabully
+# observablip
 
 Audits a codebase for missing telemetry, poor observability practices, and code structure that resists instrumentation. Read-only — emits a ranked, bounded finding list with no patches.
 
 ## Install
 
 ```bash
-npx skills add xornivore/skills@observabully --agent claude-code -y
+npx skills add xornivore/skills@observablip --agent claude-code -y
 ```
 
 ## When to use
 
 Invoke when the user:
 
-- Asks to audit, review, or "observabully" a path, package, glob, or PR diff.
+- Asks to audit, review, or "observablip" a path, package, glob, or PR diff.
 - Mentions missing spans, missing logs, missing metrics, or "observability" / "telemetry" review.
 - Asks "is this instrumented well enough?" or "what's missing for o11y in `X`?".
 
 Do not invoke for:
 
-- Requests to *write* or *apply* telemetry — observabully is read-only. Hand off to the user once findings are emitted.
+- Requests to *write* or *apply* telemetry — observablip is read-only. Hand off to the user once findings are emitted.
 - Security review, performance review, correctness review, or test coverage review.
 - Vendor selection ("should I use Datadog or Honeycomb?").
-- Audits from runtime data (traces, logs, metrics dumps). observabully reads source files only.
+- Audits from runtime data (traces, logs, metrics dumps). observablip reads source files only.
 
 ## Hard rules
 
@@ -860,7 +860,7 @@ When transcribing hard rules from spec section 6, preserve the audit cues exactl
 - [ ] **Step 2: Verify no placeholders remain**
 
 ```bash
-grep -n '\[transcribe\|\[same shape\]\|\[full pattern block\]\|TBD\|TODO' skills/observabully/SKILL.md
+grep -n '\[transcribe\|\[same shape\]\|\[full pattern block\]\|TBD\|TODO' skills/observablip/SKILL.md
 ```
 
 Expected: no output.
@@ -868,7 +868,7 @@ Expected: no output.
 - [ ] **Step 3: Frontmatter audit — no angle brackets**
 
 ```bash
-awk '/^---$/{c++; next} c==1' skills/observabully/SKILL.md | grep -E '[<>]' && echo "VIOLATION" || echo "OK"
+awk '/^---$/{c++; next} c==1' skills/observablip/SKILL.md | grep -E '[<>]' && echo "VIOLATION" || echo "OK"
 ```
 
 Expected: `OK`.
@@ -876,7 +876,7 @@ Expected: `OK`.
 - [ ] **Step 4: SKILL.md size check**
 
 ```bash
-wc -l skills/observabully/SKILL.md
+wc -l skills/observablip/SKILL.md
 ```
 
 Expected: ≤ 500 lines (target 150–200; warn if over 250).
@@ -892,15 +892,15 @@ Expected: `0 error(s)`.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add skills/observabully/SKILL.md
-git commit -m "feat(observabully): add SKILL.md entry point"
+git add skills/observablip/SKILL.md
+git commit -m "feat(observablip): add SKILL.md entry point"
 ```
 
 ---
 
 ## Phase 4 — Repo integration
 
-### Task 10: Add observabully row to top-level README skills table
+### Task 10: Add observablip row to top-level README skills table
 
 **Files:**
 
@@ -912,9 +912,9 @@ git commit -m "feat(observabully): add SKILL.md entry point"
 sed -n '/^## Skills/,/^## /p' README.md
 ```
 
-The current table has one row (`doxcavate`). Add a second row for `observabully`.
+The current table has one row (`doxcavate`). Add a second row for `observablip`.
 
-- [ ] **Step 2: Insert the observabully row**
+- [ ] **Step 2: Insert the observablip row**
 
 Apply this exact change. The existing table:
 
@@ -930,7 +930,7 @@ becomes:
 | Name | Description |
 | --- | --- |
 | [doxcavate](./skills/doxcavate/SKILL.md) | Produces durable, structured documentation in codebases with sparse docs. Two modes (`survey`, `draft`); review-gated by factcheck and persona passes. |
-| [observabully](./skills/observabully/SKILL.md) | Audits a codebase for missing telemetry, poor o11y practices, and code structure that resists instrumentation. Read-only ranked finding list, FP-reviewed and bounded. |
+| [observablip](./skills/observablip/SKILL.md) | Audits a codebase for missing telemetry, poor o11y practices, and code structure that resists instrumentation. Read-only ranked finding list, FP-reviewed and bounded. |
 ````
 
 - [ ] **Step 3: Lint**
@@ -945,7 +945,7 @@ Expected: `0 error(s)`.
 
 ```bash
 git add README.md
-git commit -m "docs: list observabully in top-level skills table"
+git commit -m "docs: list observablip in top-level skills table"
 ```
 
 ---
@@ -969,7 +969,7 @@ Expected: `0 error(s)`.
 - [ ] **Step 2: `npx skills-ref validate`**
 
 ```bash
-npx skills-ref validate ./skills/observabully
+npx skills-ref validate ./skills/observablip
 ```
 
 Expected: exit 0. If `skills-ref` is not resolvable, install from <https://github.com/agentskills/agentskills/tree/main/skills-ref> per `skills/CLAUDE.md` 6.
@@ -979,7 +979,7 @@ If validation produces warnings or errors, fix the underlying issue in the relev
 - [ ] **Step 3: Frontmatter audit — no angle brackets in SKILL.md**
 
 ```bash
-awk '/^---$/{c++; next} c==1' skills/observabully/SKILL.md | grep -E '[<>]' && echo "VIOLATION" || echo "OK"
+awk '/^---$/{c++; next} c==1' skills/observablip/SKILL.md | grep -E '[<>]' && echo "VIOLATION" || echo "OK"
 ```
 
 Expected: `OK`.
@@ -987,7 +987,7 @@ Expected: `OK`.
 - [ ] **Step 4: File-reference depth audit — no link in SKILL.md goes deeper than 1 level**
 
 ```bash
-grep -nE '\]\(\./[^)]+/[^)]+/[^)]+\)' skills/observabully/SKILL.md
+grep -nE '\]\(\./[^)]+/[^)]+/[^)]+\)' skills/observablip/SKILL.md
 ```
 
 Expected: no output. Any hit means a reference goes ≥ 2 levels deep, which violates `skills/CLAUDE.md` 1.
@@ -995,7 +995,7 @@ Expected: no output. Any hit means a reference goes ≥ 2 levels deep, which vio
 - [ ] **Step 5: Author-attribution audit — hard rule 2**
 
 ```bash
-grep -rE '@[a-zA-Z0-9_-]+|<[^>]+@[^>]+>' skills/observabully/
+grep -rE '@[a-zA-Z0-9_-]+|<[^>]+@[^>]+>' skills/observablip/
 ```
 
 Expected: any hits must be unrelated to author attribution (e.g., `@example.com` inside a regex example). Verify each hit by hand.
@@ -1003,7 +1003,7 @@ Expected: any hits must be unrelated to author attribution (e.g., `@example.com`
 - [ ] **Step 6: Section-sign audit — repo doc convention**
 
 ```bash
-grep -rn '§' skills/observabully/
+grep -rn '§' skills/observablip/
 ```
 
 Expected: no output.
@@ -1011,15 +1011,15 @@ Expected: no output.
 - [ ] **Step 7: Skill folder ↔ name match — agentskills.io spec**
 
 ```bash
-awk '/^name:/{print $2}' skills/observabully/SKILL.md
+awk '/^name:/{print $2}' skills/observablip/SKILL.md
 ```
 
-Expected: `observabully` (matches the directory name byte-for-byte).
+Expected: `observablip` (matches the directory name byte-for-byte).
 
 - [ ] **Step 8: SKILL.md size**
 
 ```bash
-wc -l skills/observabully/SKILL.md
+wc -l skills/observablip/SKILL.md
 ```
 
 Expected: ≤ 500 lines.
@@ -1031,20 +1031,20 @@ If steps 1–8 all passed without changes, skip this step. Otherwise the fixes w
 - [ ] **Step 10: Push and open PR**
 
 ```bash
-git push -u origin skill/observabully
-gh pr create --title "feat(observabully): add o11y-audit skill" --body "$(cat <<'EOF'
+git push -u origin skill/observablip
+gh pr create --title "feat(observablip): add o11y-audit skill" --body "$(cat <<'EOF'
 ## Summary
 
 - New read-only skill that audits a target for missing telemetry, poor o11y practices, and code structure that resists instrumentation.
 - Single mode (`audit`); precheck filter + three-dimension rubric + FP review + ranked, bounded emit.
-- Spec: docs/superpowers/specs/2026-04-30-observabully-design.md
-- Plan: docs/superpowers/plans/2026-04-30-observabully.md
+- Spec: docs/superpowers/specs/2026-04-30-observablip-design.md
+- Plan: docs/superpowers/plans/2026-04-30-observablip.md
 
 ## Test plan
 
 - [ ] `pnpm lint` clean on the PR branch
-- [ ] `npx skills-ref validate ./skills/observabully` exits 0
-- [ ] Hand-run observabully against a small Go and Python sample to spot-check finding quality
+- [ ] `npx skills-ref validate ./skills/observablip` exits 0
+- [ ] Hand-run observablip against a small Go and Python sample to spot-check finding quality
 - [ ] Verify the six hard-rule audit cues (frontmatter, depth, author, section sign, name match, size)
 EOF
 )"
