@@ -1,4 +1,4 @@
-# googly-eyes — design spec
+# 👀 googly-eyes — design spec
 
 **Status:** draft
 **Author:** Ivan Ilichev
@@ -8,10 +8,10 @@
 
 ## 1. Summary
 
-`googly-eyes` reviews pull requests and local diffs against Google's
-canonical [engineering practices code review guide][google-cr], emits a
-ranked, principle-tagged finding list with rich local rendering, and
-optionally posts selected findings as a GitHub PR review.
+`googly-eyes` (👀) reviews pull requests and local diffs against
+Google's canonical [engineering practices code review guide][google-cr],
+emits a ranked, principle-tagged finding list with rich local rendering,
+and optionally posts selected findings as a GitHub PR review.
 
 Pragmatic Programmer principles are cited as supporting reasoning when
 they cleanly apply to a finding's *why*; they never replace the Google
@@ -22,6 +22,28 @@ writes (via `gh api`), and only after the user approves the rendered
 comment set.
 
 [google-cr]: https://google.github.io/eng-practices/review/
+
+### 1.1 Branding
+
+The 👀 (eyes) emoji is the skill's mark, carrying the "googly eyes
+applied to your PR" metaphor. It appears verbatim (the Unicode glyph,
+not the `:eyes:` shortcode) in:
+
+- The skill folder's `README.md` title and short description.
+- The `SKILL.md` `description` frontmatter field — front-loaded as
+  `👀 Reviews PRs and local diffs…` so stage-1 discovery carries the
+  brand.
+- The local output header: `👀 googly-eyes review — <target> @ <SHA>`.
+- The posted PR review summary body: `👀 googly-eyes review — <SHA>`.
+- The top-level repo `README.md` skills row.
+
+Frontmatter safety: `👀` is a single Unicode character, not an angle
+bracket — it does not collide with the no-`<>` rule in
+`skills/CLAUDE.md` §2.
+
+The emoji is brand-only and adds no semantic meaning. It must not
+appear inside finding `why`/`suggestion` fields, comment style filters,
+or anywhere a user might confuse it with a severity signal.
 
 ## 2. Differentiation vs existing `code-review` skill
 
@@ -312,7 +334,7 @@ Every emitted comment is run through a style filter before render:
 ### 8.6 Summary review body
 
 ```text
-googly-eyes review — <commit SHA>
+👀 googly-eyes review — <commit SHA>
 
 Triage: size=<small|medium|large>, scope=<single|mixed>, description=<strong|weak>
 
