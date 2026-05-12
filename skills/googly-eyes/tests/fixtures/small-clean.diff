@@ -1,0 +1,23 @@
+Subject: Cap result page size to 50 to avoid OOM on large queries
+
+Large result pages were causing OOM in the API worker pool. Cap the page
+size at 50 and document the cap in the API response.
+
+Tested with the load harness; p99 worker RSS drops from 1.2 GiB to 380 MiB.
+
+diff --git a/pkg/api/results.go b/pkg/api/results.go
+index 1234abc..5678def 100644
+--- a/pkg/api/results.go
++++ b/pkg/api/results.go
+@@ -10,6 +10,9 @@ type Page struct {
+     Total int   `json:"total"`
+ }
+
++// MaxPageSize is the hard cap. See ADR-014.
++const MaxPageSize = 50
++
+ func (s *Server) List(ctx context.Context, req *ListReq) (*Page, error) {
+-    if req.Size <= 0 {
++    if req.Size <= 0 || req.Size > MaxPageSize {
+         req.Size = 20
+     }

@@ -1,0 +1,11 @@
+Subject: Fix bug
+
+diff --git a/pkg/billing/charge.go b/pkg/billing/charge.go
+index abc1234..def5678 100644
+--- a/pkg/billing/charge.go
++++ b/pkg/billing/charge.go
+@@ -42,7 +42,7 @@ func (s *Service) Charge(ctx context.Context, amt int64) error {
+-    if amt <= 0 {
++    if amt < 0 {
+         return ErrInvalidAmount
+     }
