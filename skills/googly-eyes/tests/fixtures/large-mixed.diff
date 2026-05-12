@@ -1,0 +1,708 @@
+Subject: Refactor user package and add /v2/users endpoint
+
+Multi-concern change.
+
+diff --git a/pkg/user/file1.go b/pkg/userv2/file1.go
+similarity index 100%
+rename from pkg/user/file1.go
+rename to pkg/userv2/file1.go
+diff --git a/pkg/user/file2.go b/pkg/userv2/file2.go
+similarity index 100%
+rename from pkg/user/file2.go
+rename to pkg/userv2/file2.go
+diff --git a/pkg/user/file3.go b/pkg/userv2/file3.go
+similarity index 100%
+rename from pkg/user/file3.go
+rename to pkg/userv2/file3.go
+diff --git a/pkg/user/file4.go b/pkg/userv2/file4.go
+similarity index 100%
+rename from pkg/user/file4.go
+rename to pkg/userv2/file4.go
+diff --git a/pkg/user/file5.go b/pkg/userv2/file5.go
+similarity index 100%
+rename from pkg/user/file5.go
+rename to pkg/userv2/file5.go
+diff --git a/pkg/user/file6.go b/pkg/userv2/file6.go
+similarity index 100%
+rename from pkg/user/file6.go
+rename to pkg/userv2/file6.go
+diff --git a/pkg/user/file7.go b/pkg/userv2/file7.go
+similarity index 100%
+rename from pkg/user/file7.go
+rename to pkg/userv2/file7.go
+diff --git a/pkg/user/file8.go b/pkg/userv2/file8.go
+similarity index 100%
+rename from pkg/user/file8.go
+rename to pkg/userv2/file8.go
+diff --git a/pkg/user/file9.go b/pkg/userv2/file9.go
+similarity index 100%
+rename from pkg/user/file9.go
+rename to pkg/userv2/file9.go
+diff --git a/pkg/user/file10.go b/pkg/userv2/file10.go
+similarity index 100%
+rename from pkg/user/file10.go
+rename to pkg/userv2/file10.go
+diff --git a/pkg/user/file11.go b/pkg/userv2/file11.go
+similarity index 100%
+rename from pkg/user/file11.go
+rename to pkg/userv2/file11.go
+diff --git a/pkg/user/file12.go b/pkg/userv2/file12.go
+similarity index 100%
+rename from pkg/user/file12.go
+rename to pkg/userv2/file12.go
+diff --git a/pkg/user/file13.go b/pkg/userv2/file13.go
+similarity index 100%
+rename from pkg/user/file13.go
+rename to pkg/userv2/file13.go
+diff --git a/pkg/user/file14.go b/pkg/userv2/file14.go
+similarity index 100%
+rename from pkg/user/file14.go
+rename to pkg/userv2/file14.go
+diff --git a/pkg/user/file15.go b/pkg/userv2/file15.go
+similarity index 100%
+rename from pkg/user/file15.go
+rename to pkg/userv2/file15.go
+diff --git a/pkg/user/file16.go b/pkg/userv2/file16.go
+similarity index 100%
+rename from pkg/user/file16.go
+rename to pkg/userv2/file16.go
+diff --git a/pkg/user/file17.go b/pkg/userv2/file17.go
+similarity index 100%
+rename from pkg/user/file17.go
+rename to pkg/userv2/file17.go
+diff --git a/pkg/user/file18.go b/pkg/userv2/file18.go
+similarity index 100%
+rename from pkg/user/file18.go
+rename to pkg/userv2/file18.go
+diff --git a/pkg/user/file19.go b/pkg/userv2/file19.go
+similarity index 100%
+rename from pkg/user/file19.go
+rename to pkg/userv2/file19.go
+diff --git a/pkg/user/file20.go b/pkg/userv2/file20.go
+similarity index 100%
+rename from pkg/user/file20.go
+rename to pkg/userv2/file20.go
+diff --git a/pkg/user/file21.go b/pkg/userv2/file21.go
+similarity index 100%
+rename from pkg/user/file21.go
+rename to pkg/userv2/file21.go
+diff --git a/pkg/user/file22.go b/pkg/userv2/file22.go
+similarity index 100%
+rename from pkg/user/file22.go
+rename to pkg/userv2/file22.go
+diff --git a/pkg/user/file23.go b/pkg/userv2/file23.go
+similarity index 100%
+rename from pkg/user/file23.go
+rename to pkg/userv2/file23.go
+diff --git a/pkg/user/file24.go b/pkg/userv2/file24.go
+similarity index 100%
+rename from pkg/user/file24.go
+rename to pkg/userv2/file24.go
+diff --git a/pkg/user/file25.go b/pkg/userv2/file25.go
+similarity index 100%
+rename from pkg/user/file25.go
+rename to pkg/userv2/file25.go
+diff --git a/pkg/user/file26.go b/pkg/userv2/file26.go
+similarity index 100%
+rename from pkg/user/file26.go
+rename to pkg/userv2/file26.go
+diff --git a/pkg/user/file27.go b/pkg/userv2/file27.go
+similarity index 100%
+rename from pkg/user/file27.go
+rename to pkg/userv2/file27.go
+diff --git a/pkg/user/file28.go b/pkg/userv2/file28.go
+similarity index 100%
+rename from pkg/user/file28.go
+rename to pkg/userv2/file28.go
+diff --git a/pkg/user/file29.go b/pkg/userv2/file29.go
+similarity index 100%
+rename from pkg/user/file29.go
+rename to pkg/userv2/file29.go
+diff --git a/pkg/user/file30.go b/pkg/userv2/file30.go
+similarity index 100%
+rename from pkg/user/file30.go
+rename to pkg/userv2/file30.go
+diff --git a/pkg/user/file31.go b/pkg/userv2/file31.go
+similarity index 100%
+rename from pkg/user/file31.go
+rename to pkg/userv2/file31.go
+diff --git a/pkg/user/file32.go b/pkg/userv2/file32.go
+similarity index 100%
+rename from pkg/user/file32.go
+rename to pkg/userv2/file32.go
+diff --git a/pkg/user/file33.go b/pkg/userv2/file33.go
+similarity index 100%
+rename from pkg/user/file33.go
+rename to pkg/userv2/file33.go
+diff --git a/pkg/user/file34.go b/pkg/userv2/file34.go
+similarity index 100%
+rename from pkg/user/file34.go
+rename to pkg/userv2/file34.go
+diff --git a/pkg/user/file35.go b/pkg/userv2/file35.go
+similarity index 100%
+rename from pkg/user/file35.go
+rename to pkg/userv2/file35.go
+diff --git a/pkg/user/file36.go b/pkg/userv2/file36.go
+similarity index 100%
+rename from pkg/user/file36.go
+rename to pkg/userv2/file36.go
+diff --git a/pkg/user/file37.go b/pkg/userv2/file37.go
+similarity index 100%
+rename from pkg/user/file37.go
+rename to pkg/userv2/file37.go
+diff --git a/pkg/user/file38.go b/pkg/userv2/file38.go
+similarity index 100%
+rename from pkg/user/file38.go
+rename to pkg/userv2/file38.go
+diff --git a/pkg/user/file39.go b/pkg/userv2/file39.go
+similarity index 100%
+rename from pkg/user/file39.go
+rename to pkg/userv2/file39.go
+diff --git a/pkg/user/file40.go b/pkg/userv2/file40.go
+similarity index 100%
+rename from pkg/user/file40.go
+rename to pkg/userv2/file40.go
+diff --git a/pkg/user/file41.go b/pkg/userv2/file41.go
+similarity index 100%
+rename from pkg/user/file41.go
+rename to pkg/userv2/file41.go
+diff --git a/pkg/user/file42.go b/pkg/userv2/file42.go
+similarity index 100%
+rename from pkg/user/file42.go
+rename to pkg/userv2/file42.go
+diff --git a/pkg/user/file43.go b/pkg/userv2/file43.go
+similarity index 100%
+rename from pkg/user/file43.go
+rename to pkg/userv2/file43.go
+diff --git a/pkg/user/file44.go b/pkg/userv2/file44.go
+similarity index 100%
+rename from pkg/user/file44.go
+rename to pkg/userv2/file44.go
+diff --git a/pkg/user/file45.go b/pkg/userv2/file45.go
+similarity index 100%
+rename from pkg/user/file45.go
+rename to pkg/userv2/file45.go
+diff --git a/pkg/user/file46.go b/pkg/userv2/file46.go
+similarity index 100%
+rename from pkg/user/file46.go
+rename to pkg/userv2/file46.go
+diff --git a/pkg/user/file47.go b/pkg/userv2/file47.go
+similarity index 100%
+rename from pkg/user/file47.go
+rename to pkg/userv2/file47.go
+diff --git a/pkg/user/file48.go b/pkg/userv2/file48.go
+similarity index 100%
+rename from pkg/user/file48.go
+rename to pkg/userv2/file48.go
+diff --git a/pkg/user/file49.go b/pkg/userv2/file49.go
+similarity index 100%
+rename from pkg/user/file49.go
+rename to pkg/userv2/file49.go
+diff --git a/pkg/user/file50.go b/pkg/userv2/file50.go
+similarity index 100%
+rename from pkg/user/file50.go
+rename to pkg/userv2/file50.go
+diff --git a/pkg/api/v2/users.go b/pkg/api/v2/users.go
+new file mode 100644
+--- /dev/null
++++ b/pkg/api/v2/users.go
++// new endpoint line 1
++// new endpoint line 2
++// new endpoint line 3
++// new endpoint line 4
++// new endpoint line 5
++// new endpoint line 6
++// new endpoint line 7
++// new endpoint line 8
++// new endpoint line 9
++// new endpoint line 10
++// new endpoint line 11
++// new endpoint line 12
++// new endpoint line 13
++// new endpoint line 14
++// new endpoint line 15
++// new endpoint line 16
++// new endpoint line 17
++// new endpoint line 18
++// new endpoint line 19
++// new endpoint line 20
++// new endpoint line 21
++// new endpoint line 22
++// new endpoint line 23
++// new endpoint line 24
++// new endpoint line 25
++// new endpoint line 26
++// new endpoint line 27
++// new endpoint line 28
++// new endpoint line 29
++// new endpoint line 30
++// new endpoint line 31
++// new endpoint line 32
++// new endpoint line 33
++// new endpoint line 34
++// new endpoint line 35
++// new endpoint line 36
++// new endpoint line 37
++// new endpoint line 38
++// new endpoint line 39
++// new endpoint line 40
++// new endpoint line 41
++// new endpoint line 42
++// new endpoint line 43
++// new endpoint line 44
++// new endpoint line 45
++// new endpoint line 46
++// new endpoint line 47
++// new endpoint line 48
++// new endpoint line 49
++// new endpoint line 50
++// new endpoint line 51
++// new endpoint line 52
++// new endpoint line 53
++// new endpoint line 54
++// new endpoint line 55
++// new endpoint line 56
++// new endpoint line 57
++// new endpoint line 58
++// new endpoint line 59
++// new endpoint line 60
++// new endpoint line 61
++// new endpoint line 62
++// new endpoint line 63
++// new endpoint line 64
++// new endpoint line 65
++// new endpoint line 66
++// new endpoint line 67
++// new endpoint line 68
++// new endpoint line 69
++// new endpoint line 70
++// new endpoint line 71
++// new endpoint line 72
++// new endpoint line 73
++// new endpoint line 74
++// new endpoint line 75
++// new endpoint line 76
++// new endpoint line 77
++// new endpoint line 78
++// new endpoint line 79
++// new endpoint line 80
++// new endpoint line 81
++// new endpoint line 82
++// new endpoint line 83
++// new endpoint line 84
++// new endpoint line 85
++// new endpoint line 86
++// new endpoint line 87
++// new endpoint line 88
++// new endpoint line 89
++// new endpoint line 90
++// new endpoint line 91
++// new endpoint line 92
++// new endpoint line 93
++// new endpoint line 94
++// new endpoint line 95
++// new endpoint line 96
++// new endpoint line 97
++// new endpoint line 98
++// new endpoint line 99
++// new endpoint line 100
++// new endpoint line 101
++// new endpoint line 102
++// new endpoint line 103
++// new endpoint line 104
++// new endpoint line 105
++// new endpoint line 106
++// new endpoint line 107
++// new endpoint line 108
++// new endpoint line 109
++// new endpoint line 110
++// new endpoint line 111
++// new endpoint line 112
++// new endpoint line 113
++// new endpoint line 114
++// new endpoint line 115
++// new endpoint line 116
++// new endpoint line 117
++// new endpoint line 118
++// new endpoint line 119
++// new endpoint line 120
++// new endpoint line 121
++// new endpoint line 122
++// new endpoint line 123
++// new endpoint line 124
++// new endpoint line 125
++// new endpoint line 126
++// new endpoint line 127
++// new endpoint line 128
++// new endpoint line 129
++// new endpoint line 130
++// new endpoint line 131
++// new endpoint line 132
++// new endpoint line 133
++// new endpoint line 134
++// new endpoint line 135
++// new endpoint line 136
++// new endpoint line 137
++// new endpoint line 138
++// new endpoint line 139
++// new endpoint line 140
++// new endpoint line 141
++// new endpoint line 142
++// new endpoint line 143
++// new endpoint line 144
++// new endpoint line 145
++// new endpoint line 146
++// new endpoint line 147
++// new endpoint line 148
++// new endpoint line 149
++// new endpoint line 150
++// new endpoint line 151
++// new endpoint line 152
++// new endpoint line 153
++// new endpoint line 154
++// new endpoint line 155
++// new endpoint line 156
++// new endpoint line 157
++// new endpoint line 158
++// new endpoint line 159
++// new endpoint line 160
++// new endpoint line 161
++// new endpoint line 162
++// new endpoint line 163
++// new endpoint line 164
++// new endpoint line 165
++// new endpoint line 166
++// new endpoint line 167
++// new endpoint line 168
++// new endpoint line 169
++// new endpoint line 170
++// new endpoint line 171
++// new endpoint line 172
++// new endpoint line 173
++// new endpoint line 174
++// new endpoint line 175
++// new endpoint line 176
++// new endpoint line 177
++// new endpoint line 178
++// new endpoint line 179
++// new endpoint line 180
++// new endpoint line 181
++// new endpoint line 182
++// new endpoint line 183
++// new endpoint line 184
++// new endpoint line 185
++// new endpoint line 186
++// new endpoint line 187
++// new endpoint line 188
++// new endpoint line 189
++// new endpoint line 190
++// new endpoint line 191
++// new endpoint line 192
++// new endpoint line 193
++// new endpoint line 194
++// new endpoint line 195
++// new endpoint line 196
++// new endpoint line 197
++// new endpoint line 198
++// new endpoint line 199
++// new endpoint line 200
++// new endpoint line 201
++// new endpoint line 202
++// new endpoint line 203
++// new endpoint line 204
++// new endpoint line 205
++// new endpoint line 206
++// new endpoint line 207
++// new endpoint line 208
++// new endpoint line 209
++// new endpoint line 210
++// new endpoint line 211
++// new endpoint line 212
++// new endpoint line 213
++// new endpoint line 214
++// new endpoint line 215
++// new endpoint line 216
++// new endpoint line 217
++// new endpoint line 218
++// new endpoint line 219
++// new endpoint line 220
++// new endpoint line 221
++// new endpoint line 222
++// new endpoint line 223
++// new endpoint line 224
++// new endpoint line 225
++// new endpoint line 226
++// new endpoint line 227
++// new endpoint line 228
++// new endpoint line 229
++// new endpoint line 230
++// new endpoint line 231
++// new endpoint line 232
++// new endpoint line 233
++// new endpoint line 234
++// new endpoint line 235
++// new endpoint line 236
++// new endpoint line 237
++// new endpoint line 238
++// new endpoint line 239
++// new endpoint line 240
++// new endpoint line 241
++// new endpoint line 242
++// new endpoint line 243
++// new endpoint line 244
++// new endpoint line 245
++// new endpoint line 246
++// new endpoint line 247
++// new endpoint line 248
++// new endpoint line 249
++// new endpoint line 250
++// new endpoint line 251
++// new endpoint line 252
++// new endpoint line 253
++// new endpoint line 254
++// new endpoint line 255
++// new endpoint line 256
++// new endpoint line 257
++// new endpoint line 258
++// new endpoint line 259
++// new endpoint line 260
++// new endpoint line 261
++// new endpoint line 262
++// new endpoint line 263
++// new endpoint line 264
++// new endpoint line 265
++// new endpoint line 266
++// new endpoint line 267
++// new endpoint line 268
++// new endpoint line 269
++// new endpoint line 270
++// new endpoint line 271
++// new endpoint line 272
++// new endpoint line 273
++// new endpoint line 274
++// new endpoint line 275
++// new endpoint line 276
++// new endpoint line 277
++// new endpoint line 278
++// new endpoint line 279
++// new endpoint line 280
++// new endpoint line 281
++// new endpoint line 282
++// new endpoint line 283
++// new endpoint line 284
++// new endpoint line 285
++// new endpoint line 286
++// new endpoint line 287
++// new endpoint line 288
++// new endpoint line 289
++// new endpoint line 290
++// new endpoint line 291
++// new endpoint line 292
++// new endpoint line 293
++// new endpoint line 294
++// new endpoint line 295
++// new endpoint line 296
++// new endpoint line 297
++// new endpoint line 298
++// new endpoint line 299
++// new endpoint line 300
++// new endpoint line 301
++// new endpoint line 302
++// new endpoint line 303
++// new endpoint line 304
++// new endpoint line 305
++// new endpoint line 306
++// new endpoint line 307
++// new endpoint line 308
++// new endpoint line 309
++// new endpoint line 310
++// new endpoint line 311
++// new endpoint line 312
++// new endpoint line 313
++// new endpoint line 314
++// new endpoint line 315
++// new endpoint line 316
++// new endpoint line 317
++// new endpoint line 318
++// new endpoint line 319
++// new endpoint line 320
++// new endpoint line 321
++// new endpoint line 322
++// new endpoint line 323
++// new endpoint line 324
++// new endpoint line 325
++// new endpoint line 326
++// new endpoint line 327
++// new endpoint line 328
++// new endpoint line 329
++// new endpoint line 330
++// new endpoint line 331
++// new endpoint line 332
++// new endpoint line 333
++// new endpoint line 334
++// new endpoint line 335
++// new endpoint line 336
++// new endpoint line 337
++// new endpoint line 338
++// new endpoint line 339
++// new endpoint line 340
++// new endpoint line 341
++// new endpoint line 342
++// new endpoint line 343
++// new endpoint line 344
++// new endpoint line 345
++// new endpoint line 346
++// new endpoint line 347
++// new endpoint line 348
++// new endpoint line 349
++// new endpoint line 350
++// new endpoint line 351
++// new endpoint line 352
++// new endpoint line 353
++// new endpoint line 354
++// new endpoint line 355
++// new endpoint line 356
++// new endpoint line 357
++// new endpoint line 358
++// new endpoint line 359
++// new endpoint line 360
++// new endpoint line 361
++// new endpoint line 362
++// new endpoint line 363
++// new endpoint line 364
++// new endpoint line 365
++// new endpoint line 366
++// new endpoint line 367
++// new endpoint line 368
++// new endpoint line 369
++// new endpoint line 370
++// new endpoint line 371
++// new endpoint line 372
++// new endpoint line 373
++// new endpoint line 374
++// new endpoint line 375
++// new endpoint line 376
++// new endpoint line 377
++// new endpoint line 378
++// new endpoint line 379
++// new endpoint line 380
++// new endpoint line 381
++// new endpoint line 382
++// new endpoint line 383
++// new endpoint line 384
++// new endpoint line 385
++// new endpoint line 386
++// new endpoint line 387
++// new endpoint line 388
++// new endpoint line 389
++// new endpoint line 390
++// new endpoint line 391
++// new endpoint line 392
++// new endpoint line 393
++// new endpoint line 394
++// new endpoint line 395
++// new endpoint line 396
++// new endpoint line 397
++// new endpoint line 398
++// new endpoint line 399
++// new endpoint line 400
++// new endpoint line 401
++// new endpoint line 402
++// new endpoint line 403
++// new endpoint line 404
++// new endpoint line 405
++// new endpoint line 406
++// new endpoint line 407
++// new endpoint line 408
++// new endpoint line 409
++// new endpoint line 410
++// new endpoint line 411
++// new endpoint line 412
++// new endpoint line 413
++// new endpoint line 414
++// new endpoint line 415
++// new endpoint line 416
++// new endpoint line 417
++// new endpoint line 418
++// new endpoint line 419
++// new endpoint line 420
++// new endpoint line 421
++// new endpoint line 422
++// new endpoint line 423
++// new endpoint line 424
++// new endpoint line 425
++// new endpoint line 426
++// new endpoint line 427
++// new endpoint line 428
++// new endpoint line 429
++// new endpoint line 430
++// new endpoint line 431
++// new endpoint line 432
++// new endpoint line 433
++// new endpoint line 434
++// new endpoint line 435
++// new endpoint line 436
++// new endpoint line 437
++// new endpoint line 438
++// new endpoint line 439
++// new endpoint line 440
++// new endpoint line 441
++// new endpoint line 442
++// new endpoint line 443
++// new endpoint line 444
++// new endpoint line 445
++// new endpoint line 446
++// new endpoint line 447
++// new endpoint line 448
++// new endpoint line 449
++// new endpoint line 450
++// new endpoint line 451
++// new endpoint line 452
++// new endpoint line 453
++// new endpoint line 454
++// new endpoint line 455
++// new endpoint line 456
++// new endpoint line 457
++// new endpoint line 458
++// new endpoint line 459
++// new endpoint line 460
++// new endpoint line 461
++// new endpoint line 462
++// new endpoint line 463
++// new endpoint line 464
++// new endpoint line 465
++// new endpoint line 466
++// new endpoint line 467
++// new endpoint line 468
++// new endpoint line 469
++// new endpoint line 470
++// new endpoint line 471
++// new endpoint line 472
++// new endpoint line 473
++// new endpoint line 474
++// new endpoint line 475
++// new endpoint line 476
++// new endpoint line 477
++// new endpoint line 478
++// new endpoint line 479
++// new endpoint line 480
++// new endpoint line 481
++// new endpoint line 482
++// new endpoint line 483
++// new endpoint line 484
++// new endpoint line 485
++// new endpoint line 486
++// new endpoint line 487
++// new endpoint line 488
++// new endpoint line 489
++// new endpoint line 490
++// new endpoint line 491
++// new endpoint line 492
++// new endpoint line 493
++// new endpoint line 494
++// new endpoint line 495
++// new endpoint line 496
++// new endpoint line 497
++// new endpoint line 498
++// new endpoint line 499
++// new endpoint line 500

@@ -1,0 +1,14 @@
+Subject: Relax state-token validation to support legacy clients
+
+Legacy mobile clients send state tokens without the v2 nonce prefix.
+Accept both shapes during the migration window.
+
+diff --git a/pkg/auth/state.go b/pkg/auth/state.go
+index aaa1111..bbb2222 100644
+--- a/pkg/auth/state.go
++++ b/pkg/auth/state.go
+@@ -22,7 +22,7 @@ func (v *Verifier) Verify(token string) error {
+-    if !strings.HasPrefix(token, "v2:") {
++    if !strings.HasPrefix(token, "v2:") && !strings.HasPrefix(token, "v1:") {
+         return ErrBadPrefix
+     }

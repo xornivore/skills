@@ -20,12 +20,7 @@ The `@<skill-name>` must match the skill's registered name, not article shorthan
 | --- | --- |
 | [doxcavate](./skills/doxcavate/SKILL.md) | Produces durable, structured documentation in codebases with sparse docs. Two modes (`survey`, `draft`); review-gated by factcheck and persona passes. |
 | [observablip](./skills/observablip/SKILL.md) | Audits a codebase for missing telemetry, poor o11y practices, and code structure that resists instrumentation. Read-only ranked finding list, FP-reviewed and bounded. |
-
-### In design
-
-| Name | Description |
-| --- | --- |
-| 👀 [googly-eyes](./docs/superpowers/specs/2026-05-12-googly-eyes-design.md) | Reviews PRs and local diffs against Google's eng-practices code review guide. Rich local diff rendering, principle-tagged ranked findings, opt-in posting via `gh`. Differentiates from confidence-scored bug filters by surfacing all 10 principles. |
+| 👀 [googly-eyes](./skills/googly-eyes/SKILL.md) | Reviews PRs and local diffs against Google's eng-practices code review guide (all 10 principles). Rich local diff rendering, principle-tagged ranked findings, opt-in posting via `gh`. |
 
 ## Authoring
 
