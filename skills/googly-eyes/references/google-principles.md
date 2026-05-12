@@ -117,7 +117,7 @@ A `documentation` finding is filed when:
 
 This skill never writes the docs. When the missing doc is substantive, emit an `fyi` finding pointing the user at the `doxcavate` skill.
 
-## 8. Every line
+## 8. Every-line
 
 Quote from `reviewer/looking-for.html`: "In general, look at every line of code that you have been assigned to review."
 
