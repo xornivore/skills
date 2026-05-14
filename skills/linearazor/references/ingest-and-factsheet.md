@@ -42,8 +42,11 @@ stable.
 9. **Compute lookahead-milestone-level fields:**
    `startedIssueCount`, `daysToTarget`,
    `scopeChangedSinceTargetSet`.
-10. **Emit fact sheet** as a single JSON-shaped structure conforming
-    to [`../assets/factsheet-template.json`](../assets/factsheet-template.json).
+10. **Emit fact sheet** as a single YAML document conforming
+    to [`../assets/factsheet-template.yaml`](../assets/factsheet-template.yaml).
+    YAML is the canonical handoff format — quote-light, comment-friendly,
+    and human-reviewable. The fact sheet is documentation as much as it
+    is a data structure; Phase 2 reads it as YAML.
 
 ## Heuristics (calibrated at implementation time)
 
@@ -71,7 +74,7 @@ implementation time.
 
 ## Fact-sheet schema
 
-See [`../assets/factsheet-template.json`](../assets/factsheet-template.json)
+See [`../assets/factsheet-template.yaml`](../assets/factsheet-template.yaml)
 for the skeleton. The schema-versioned envelope (`schemaVersion`,
 `group`, `horizon`, `lookahead`, `thresholds`, `members`, `unresolved`,
 `projects[]`) is stable; per-project field names are pinned at probe

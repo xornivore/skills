@@ -92,7 +92,7 @@ When invoked (any non-setup mode), do:
 3. **Phase 1 ingest.** Query Linear MCP per
    [ingest-and-factsheet.md](./references/ingest-and-factsheet.md).
    Emit the fact sheet (template at
-   [assets/factsheet-template.json](./assets/factsheet-template.json)).
+   [assets/factsheet-template.yaml](./assets/factsheet-template.yaml)).
 4. **Decide dispatch.** If `factSheet.projects.length` is at most the
    configured threshold (default 6), single-pass. Else parallel
    sub-agents per [parallel-dispatch.md](./references/parallel-dispatch.md).
@@ -186,7 +186,7 @@ so the layers can be revised independently.
 | --- | --- |
 | Setup flow (interactive) | [setup-flow.md](./references/setup-flow.md), [assets/config-template.toml](./assets/config-template.toml) |
 | Resolve scope + horizon + lookahead | [horizon-and-scope.md](./references/horizon-and-scope.md) |
-| Phase 1 ingest | [ingest-and-factsheet.md](./references/ingest-and-factsheet.md), [assets/factsheet-template.json](./assets/factsheet-template.json) |
+| Phase 1 ingest | [ingest-and-factsheet.md](./references/ingest-and-factsheet.md), [assets/factsheet-template.yaml](./assets/factsheet-template.yaml) |
 | Decide dispatch | [parallel-dispatch.md](./references/parallel-dispatch.md) |
 | Phase 2 — signal composition | [signal-modes.md](./references/signal-modes.md), [signals.md](./references/signals.md), [tone.md](./references/tone.md), [assets/footer.md](./assets/footer.md) |
 | Phase 2 — presentation | [presentation.md](./references/presentation.md), [palettes.md](./references/palettes.md), [mood-line.md](./references/mood-line.md), [assets/animation.md](./assets/animation.md) |
