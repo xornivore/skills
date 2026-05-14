@@ -45,11 +45,13 @@ projects:
         datesMovedInWindow: []
     shipped:
       - id: "<ISSUE-ID>"
+        url: "https://linear.app/<workspace>/issue/<ISSUE-ID>/<slug>"
         title: "<title>"
         completedAt: "ISO-8601"
         linkedPRs: []
     openIssues:
       - id: "<ISSUE-ID>"
+        url: "https://linear.app/<workspace>/issue/<ISSUE-ID>/<slug>"
         title: "<title>"
         status: "<status>"
         assigneeIdentifier: "<linear-user-id>"
@@ -62,6 +64,7 @@ projects:
         bodyHasAcceptanceCriteria: false
     scopeChangesInWindow:
       - id: "<ISSUE-ID>"
+        url: "https://linear.app/<workspace>/issue/<ISSUE-ID>/<slug>"
         change: "<change-kind>"   # added-to-milestone | removed-from-milestone | labels-changed | project-state-moved
         at: "ISO-8601"
     lookaheadMilestones:
@@ -72,6 +75,7 @@ projects:
         scopeChangedSinceTargetSet: false
     lookaheadIssues:
       - id: "<ISSUE-ID>"
+        url: "https://linear.app/<workspace>/issue/<ISSUE-ID>/<slug>"
         title: "<title>"
         assigneeIdentifier: null
         status: "<status>"

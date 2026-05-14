@@ -14,7 +14,32 @@ At render time, the palette is chosen in this order — first hit wins:
 4. Built-in defaults for the selected palette.
 
 `NO_COLOR=1` is absolute — bypasses all of the above and renders plain
-ASCII. See [presentation.md](./presentation.md) "TTY and NO_COLOR."
+ASCII. See [presentation.md](./presentation.md) "Rendering modes."
+
+## ANSI escape emission
+
+In `ansi` rendering mode (real TTY) every colored token wraps in a
+truecolor SGR escape and a reset:
+
+```text
+\x1b[38;2;R;G;Bm<token>\x1b[0m
+```
+
+`R`, `G`, `B` are the decimal RGB values of the role's hex.
+`\x1b[0m` resets all attributes. The catppuccin-mocha ANSI table below
+spells the literals out; for the other shipped palettes, derive the
+escape from the hex column using the same formula.
+
+Identifiers (`CON-1053`) wrap in `\x1b[1m<id>\x1b[0m` (bold, no
+accent color) per the "What gets colored" rule above — and then wrap
+that whole bold token in an OSC 8 hyperlink so the identifier is
+clickable in supporting terminals. See "Rendering modes" in
+[presentation.md](./presentation.md) for the OSC 8 form.
+
+In `markdown` rendering mode (Claude Code chat, no real TTY), emit
+no ANSI escapes — use markdown formatting and links per
+[presentation.md](./presentation.md). In `plain` mode, no color or
+formatting; bare ASCII.
 
 ## Roles
 
@@ -42,20 +67,20 @@ same roles to its accents — only the hues change.
 
 Truecolor. Source: <https://github.com/catppuccin/catppuccin>.
 
-| Role | Hex |
-| --- | --- |
-| `shipped` | `#a6e3a1` (green) |
-| `questions` | `#b4befe` (lavender) |
-| `changes_scope` | `#fab387` (peach) |
-| `changes_date` | `#cba6f7` (mauve) |
-| `stalls_aging` | `#fab387` (peach) |
-| `stalls_no_pr` | `#fab387` (peach) |
-| `stalls_silent` | `#74c7ec` (sapphire) |
-| `stalls_blocked` | `#9399b2` (overlay2) |
-| `quality` | `#89dceb` (sky) |
-| `retrospective` | `#cba6f7` (mauve) |
-| `lookahead` | `#89dceb` (sky) |
-| `metadata` | `#7f849c` (overlay1) |
+| Role | Hex | ANSI escape |
+| --- | --- | --- |
+| `shipped` | `#a6e3a1` (green) | `\x1b[38;2;166;227;161m` |
+| `questions` | `#b4befe` (lavender) | `\x1b[38;2;180;190;254m` |
+| `changes_scope` | `#fab387` (peach) | `\x1b[38;2;250;179;135m` |
+| `changes_date` | `#cba6f7` (mauve) | `\x1b[38;2;203;166;247m` |
+| `stalls_aging` | `#fab387` (peach) | `\x1b[38;2;250;179;135m` |
+| `stalls_no_pr` | `#fab387` (peach) | `\x1b[38;2;250;179;135m` |
+| `stalls_silent` | `#74c7ec` (sapphire) | `\x1b[38;2;116;199;236m` |
+| `stalls_blocked` | `#9399b2` (overlay2) | `\x1b[38;2;147;153;178m` |
+| `quality` | `#89dceb` (sky) | `\x1b[38;2;137;220;235m` |
+| `retrospective` | `#cba6f7` (mauve) | `\x1b[38;2;203;166;247m` |
+| `lookahead` | `#89dceb` (sky) | `\x1b[38;2;137;220;235m` |
+| `metadata` | `#7f849c` (overlay1) | `\x1b[38;2;127;132;156m` |
 
 ### catppuccin-latte
 

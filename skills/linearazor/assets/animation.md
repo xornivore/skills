@@ -12,6 +12,13 @@ The cast deliberately mixes facing directions and sizes. The earlier
 the canonical art doesn't all conform, and the canonical art is the
 point.
 
+**Left-margin convention.** Each animal carries its own leading
+whitespace so the leftmost glyph sits around column 8 of the source
+block. The renderer's 2-space lane indent stacks on top, putting the
+animal at roughly column 10 — clear of the lane heading and the
+finding bullets that sit at column 2-4. Replacing an animal? Match
+the existing leading-whitespace shape; don't render at column 0.
+
 ## Cast
 
 ### Bee — `shipped`
@@ -31,9 +38,9 @@ Active, momentum, just shipped. Motion lines trail right.
 Sitting, curious, alert.
 
 ```text
- /\_/\
-( o.o )
- > ^ <
+         /\_/\
+        ( o.o )
+         > ^ <
 ```
 
 ### Cow — `stalls_aging`
@@ -41,11 +48,11 @@ Sitting, curious, alert.
 Standing in a field of grass — head down, plodding.
 
 ```text
-\|/          (__)
-     `\------(oo)
-       ||    (__)
-       ||w--||     \|/
-   \|/
+        \|/          (__)
+             `\------(oo)
+               ||    (__)
+               ||w--||     \|/
+           \|/
 ```
 
 ### Snail — `stalls_no_pr`
@@ -53,11 +60,11 @@ Standing in a field of grass — head down, plodding.
 Slow, antennae up, leaves no trail.
 
 ```text
-    .----.   @   @
-   / .-"-.`.  \v/
-   | | '\ \ \_/ )
- ,-\ `-.' /.'  /
-'---`----'----'
+            .----.   @   @
+           / .-"-.`.  \v/
+           | | '\ \ \_/ )
+         ,-\ `-.' /.'  /
+        '---`----'----'
 ```
 
 ### Turtle — `stalls_silent`
@@ -78,11 +85,11 @@ Withdrawn, shell-textured, head still extended but quiet.
 Small fish trailed by a larger one — surrounded, not moving forward.
 
 ```text
-               O  o
-          _\_   o
->('>   \\/  o\ .
-       //\___=
-          ''
+                       O  o
+                  _\_   o
+        >('>   \\/  o\ .
+               //\___=
+                  ''
 ```
 
 ### Penguin — `changes_scope`
@@ -103,12 +110,12 @@ Stands sentinel, eye spotting the change.
 Sinuous, shape-shifting, the milestone date moving.
 
 ```text
-             ____
-            / . .\
-            \  ---<
-             \  /
-   __________/ /
--=:___________/
+                     ____
+                    / . .\
+                    \  ---<
+                     \  /
+           __________/ /
+        -=:___________/
 ```
 
 ### Bat — `quality`
@@ -127,10 +134,10 @@ Wings out, alert, watching for what's missing.
 Looking back, loyal, the run that just ended.
 
 ```text
-  __      _
-o'')}____//
- `_/      )
- (_(_/-(_/
+          __      _
+        o'')}____//
+         `_/      )
+         (_(_/-(_/
 ```
 
 ### Spider — `changes_scope` (sub-flavor: scope drift)
@@ -142,10 +149,10 @@ sustained drift rather than a one-off change. Inherits the
 `changes_scope` palette color.
 
 ```text
- ||  ||
- \\()//
-//(__)\\
-||    ||
+         ||  ||
+         \\()//
+        //(__)\\
+        ||    ||
 ```
 
 ## Setup mascot
@@ -161,10 +168,10 @@ shape one question at a time, and the duck is the universal "let me
 explain this to you" companion.
 
 ```text
-    __
-___( o)>
-\ <_. )
- `---'
+            __
+        ___( o)>
+        \ <_. )
+         `---'
 ```
 
 ## Empty-brief mascot
@@ -180,10 +187,10 @@ if that's good." Better than rendering an empty brief or a forced
 upbeat mood line.
 
 ```text
-       .--.
-      / o o \
-     |   ^   |
-      \ --- /
+               .--.
+              / o o \
+             |   ^   |
+              \ --- /
 ```
 
 ## Lane → animal table
