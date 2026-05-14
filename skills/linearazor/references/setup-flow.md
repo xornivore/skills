@@ -55,13 +55,20 @@ config exactly as entered.
 
 ## Step 4: Ask for project label scope (optional)
 
-Query Linear MCP for labels on projects whose state is `started` or
-whose latest milestone target date is within the next 60 days.
-Present these as a pick list (suggestion). Allow free text. Multiple
-labels allowed.
+Query Linear MCP via `list_project_labels` (the **project-label**
+namespace — not `list_issue_labels`) for labels carried by projects
+whose state is `started` or whose latest milestone target date is
+within the next 60 days. Present these as a pick list (suggestion).
+Allow free text. Multiple labels allowed.
+
+The `labels` array in config always resolves against the
+project-label namespace. See
+[horizon-and-scope.md](./horizon-and-scope.md) "Label resolution" for
+the rationale.
 
 Skip allowed — when no labels are set, the in-scope filter does not
-apply the label clause.
+apply the label clause and the candidate set is every project under
+the team.
 
 ## Step 5: Ask for default horizon
 

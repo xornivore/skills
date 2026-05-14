@@ -7,7 +7,7 @@
 group   = "<group-name>"
 team    = "<linear-team-display-name>"
 members = []
-labels  = []
+labels  = []                     # PROJECT labels (not issue labels) used to scope the digest
 default_horizon = "cycle"        # cycle | week | 2w | 4w | milestone
 
 [thresholds]

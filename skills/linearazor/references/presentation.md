@@ -93,7 +93,7 @@ a real TTY. An explicit `LINEARAZOR_MODE=ansi` overrides it.
 
 | Element | `ansi` | `markdown` | `plain` |
 | --- | --- | --- | --- |
-| Color | truecolor ANSI per [palettes.md](./palettes.md) | none — markdown carries weight via bold | none |
+| Color | truecolor ANSI per [palettes.md](./palettes.md) | **none — colorless by design** (see "Color in Claude Code chat" below) | none |
 | Identifiers | `\x1b[1m<id>\x1b[0m` wrapped in OSC 8 hyperlink (bold, no accent color) | `**[CON-1053](url)**` | bare `CON-1053` |
 | Link for identifier | OSC 8: `\x1b]8;;<url>\x1b\\CON-1053\x1b]8;;\x1b\\` | markdown link `[CON-1053](url)` | none |
 | Unicode flourishes | as-is | as-is (markdown renderers handle them) | ASCII fallback per the table above |
@@ -107,12 +107,43 @@ the cast does not reflow.
 ### Why three modes
 
 `ansi` is right for terminals — truecolor SGR escapes and OSC 8
-hyperlinks render natively. `markdown` is right for Claude Code
-chat and other markdown-rendered surfaces, where ANSI shows as
-literal escape junk and the renderer wants `**bold**` and
-`[text](url)` instead. `plain` is the safe-fallback byte stream for
-pipes, files, and CI logs — readable everywhere, decorative
-nowhere.
+hyperlinks render natively. It is also the substrate the `share`
+mode renders before piping to `freeze` for PNG export (color
+survives the pipeline). `markdown` is right for Claude Code chat
+and other markdown-rendered surfaces, where ANSI shows as literal
+escape junk and the renderer wants `**bold**` and `[text](url)`
+instead. `plain` is the safe-fallback byte stream for pipes,
+files, and CI logs — readable everywhere, decorative nowhere.
+
+### Color in Claude Code chat
+
+`markdown` mode is **colorless by design**. The skill makes no
+attempt to color its output in Claude Code chat. Reasons, in order
+of finality:
+
+1. Claude Code renders assistant text as CommonMark in monospace.
+   CommonMark has no color primitives.
+2. Inline HTML / `<span style="color:...">` is not interpreted in
+   Claude Code chat.
+3. ANSI escape codes (`\x1b[38;2;...m`) appear as literal escape
+   junk in chat output — they are terminal artifacts, not chat
+   ones.
+4. Diff fences (`` ```diff ``) do colorize, but they tie color to
+   `+`/`-` line semantics, which would distort the signal meaning
+   the skill is trying to preserve.
+
+The user-facing implication: in Claude Code chat the brief carries
+its structure through markdown bold, hyperlinks, fenced animation
+blocks, and the prose itself. Color lives in two places —
+`LINEARAZOR_MODE=ansi` for terminal output, and the `share` PNG
+where `freeze` consumes the ANSI substrate. Both routes are
+explicit user choices made outside chat.
+
+**Wrong:** trying to fake color in chat with diff fences, emoji
+swatches, or HTML spans.
+
+**Right:** treat chat as colorless; offer ANSI for terminals and
+PNG share-out for visual artifacts.
 
 ### Audit
 
