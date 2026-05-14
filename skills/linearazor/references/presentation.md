@@ -2,7 +2,7 @@
 
 Loaded at the Phase-2 presentation step, after the signal layer has
 composed the brief. Defines palette routing, animation placement,
-Unicode flourishes, the TTY/NO_COLOR contract, and the `share` mode's
+Unicode flourishes, the rendering-mode contract, and the `share` mode's
 PNG export.
 
 ## Palette routing
@@ -66,33 +66,63 @@ load-bearing:
 | `─`, `├`, `└`, `│` | Section dividers, run header frame | Visual scaffolding | `-`, `+`, `+`, `\|` |
 | `•` | Shipped-list bullet | "Item" | `*` |
 
-ASCII fallback is used when `[ -t 1 ]` is false (not a TTY) OR
-`$NO_COLOR` is set.
+ASCII fallback is used in `plain` mode (see "Rendering modes" below).
+`ansi` and `markdown` modes render the Unicode glyphs as-is.
 
-## TTY and NO_COLOR
+## Rendering modes
 
-Detection at render entry:
+The brief renders in one of three modes. Detect at render entry,
+first hit wins:
 
 ```bash
-if [ -t 1 ] && [ -z "$NO_COLOR" ]; then
-  USE_ANSI=1
+if [ -n "$LINEARAZOR_MODE" ]; then
+  MODE="$LINEARAZOR_MODE"          # explicit override: ansi | markdown | plain
+elif [ -n "$CLAUDECODE" ]; then
+  MODE=markdown                    # Claude Code chat session
+elif [ -t 1 ] && [ -z "$NO_COLOR" ]; then
+  MODE=ansi                        # real TTY, color allowed
 else
-  USE_ANSI=0
+  MODE=plain                       # piped, redirected, or NO_COLOR
 fi
 ```
 
-When `USE_ANSI=0`:
+`NO_COLOR=1` is absolute on the auto path: it forces `plain` even on
+a real TTY. An explicit `LINEARAZOR_MODE=ansi` overrides it.
 
-- ANSI escapes are not emitted (plain ASCII output).
-- Unicode flourishes degrade to ASCII per the table above.
-- Animation cast still renders (ASCII is the medium of the cast
-  anyway).
-- Mood line, exec summary, all signals — content identical.
+### What each mode emits
 
-The principle: piped output is byte-identical to TTY output minus
-ANSI escapes and Unicode flourishes. Audit by piping a `share` PNG
-render's text version against a `>file` redirect of the TTY render
-with ANSI stripped — they must match.
+| Element | `ansi` | `markdown` | `plain` |
+| --- | --- | --- | --- |
+| Color | truecolor ANSI per [palettes.md](./palettes.md) | none — markdown carries weight via bold | none |
+| Identifiers | `\x1b[1m<id>\x1b[0m` wrapped in OSC 8 hyperlink (bold, no accent color) | `**[CON-1053](url)**` | bare `CON-1053` |
+| Link for identifier | OSC 8: `\x1b]8;;<url>\x1b\\CON-1053\x1b]8;;\x1b\\` | markdown link `[CON-1053](url)` | none |
+| Unicode flourishes | as-is | as-is (markdown renderers handle them) | ASCII fallback per the table above |
+| Animation cast | as-is | as-is, wrapped in a fenced ` ```text ` block | as-is |
+| Mood line, exec summary, signal text | byte-identical content across all three modes | | |
+
+In `markdown` mode, wrap each rendered animation block in a fenced
+` ```text ` code block so the chat renderer preserves monospace and
+the cast does not reflow.
+
+### Why three modes
+
+`ansi` is right for terminals — truecolor SGR escapes and OSC 8
+hyperlinks render natively. `markdown` is right for Claude Code
+chat and other markdown-rendered surfaces, where ANSI shows as
+literal escape junk and the renderer wants `**bold**` and
+`[text](url)` instead. `plain` is the safe-fallback byte stream for
+pipes, files, and CI logs — readable everywhere, decorative
+nowhere.
+
+### Audit
+
+- In `markdown` mode, the brief contains zero `\x1b` bytes.
+- In `ansi` mode, every issue identifier is wrapped in `\x1b[1m`
+  (bold) and an OSC 8 hyperlink — no accent color, consistent with
+  the "Palette routing" rule.
+- The `plain` mode output is byte-identical to `ansi`-with-ANSI-stripped
+  output, modulo Unicode flourishes degraded to ASCII per the table
+  above.
 
 ## Share as image
 

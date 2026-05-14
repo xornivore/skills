@@ -30,7 +30,15 @@ stable.
 4. **Fetch per-issue details** (one MCP call per page; batch as
    permitted): status, status history, assignee, last comment
    timestamp, linked PR URLs, blocker / blocking relations, project,
-   milestone, due date, label set, title, body.
+   milestone, due date, label set, title, body, canonical Linear
+   URL. Linear MCP returns the URL alongside the issue (typically
+   `https://linear.app/<workspace>/issue/<ID>/<slug>`); record it
+   verbatim into the `url` field of every per-issue entry in the
+   fact sheet (shipped, openIssues, scopeChangesInWindow,
+   lookaheadIssues). Phase 2 renders identifiers as hyperlinks per
+   the rendering-mode contract in
+   [presentation.md](./presentation.md) — a missing URL falls back
+   to a bare identifier, which is the failure mode to avoid.
 5. **Compute derived fields** per issue (no MCP calls):
    - `daysInStatus`: now minus the timestamp of the latest status
      transition into the current status.
