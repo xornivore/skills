@@ -65,8 +65,9 @@ one-liner-per-project shape.
 An issue is in scope when all apply:
 
 - Belongs to the configured Linear team.
-- Carries at least one of the configured labels (when `labels` is
-  non-empty in config).
+- Belongs to a project carrying at least one of the configured labels
+  (when `labels` is non-empty in config). Configured labels are
+  **project labels**, not issue labels — see "Label resolution" below.
 - Satisfies the composite horizon filter — at least one of:
   - Assigned to a cycle whose window intersects the primary horizon.
   - Attached to a milestone whose target date falls in the primary
@@ -74,6 +75,39 @@ An issue is in scope when all apply:
   - Has a `dueDate` in the primary horizon window.
   - Was In Progress at any point in the primary horizon window
     (catches issues not bound to a cycle, milestone, or due date).
+
+## Label resolution
+
+Linear has two distinct label namespaces:
+
+- **Project labels** — applied to projects (e.g.
+  `eng:containers-blue`). Used to scope a digest to a sub-team or
+  initiative without tagging every issue.
+- **Issue labels** — applied to individual issues (e.g. `bug`,
+  `enhancement`). Used for issue-level classification.
+
+The `labels` array in `~/.config/linearazor/<group>.toml` resolves to
+**project labels**. Phase 1 looks up label IDs via Linear's
+`list_project_labels` (not `list_issue_labels`) and uses them to filter
+projects, then takes the union of those projects' issues as the
+candidate set before applying the horizon filter.
+
+**Why project-labels.** Most teams scope by initiative or sub-team
+membership, which is a property of the project, not of each issue.
+Forcing every issue to carry a redundant tag is friction the team
+won't sustain. Project labels give a stable scope anchor that
+survives churn at the issue level.
+
+**Wrong (old behavior):** filter issues by issue-label
+`eng:containers-blue` — returns empty because issues don't carry it.
+
+**Right:** filter projects by project-label `eng:containers-blue`,
+then include every in-cycle issue under those projects.
+
+**Audit:** Phase-1 ingest must call `list_project_labels` to resolve
+the configured `labels`; calling `list_issue_labels` on the configured
+`labels` array is the violation. Unresolved label names go to
+`factSheet.unresolved` for the setup-health footer.
 
 ## Lookahead set
 

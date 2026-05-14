@@ -12,9 +12,13 @@ stable.
 
 1. **Resolve scope.** Load `~/.config/linearazor/<group>.toml`.
    Resolve member display names to Linear user identifiers; resolve
-   label names to label identifiers. Use Linear MCP read tools.
-   Resolution is fresh every run — no cache. Unresolved names go to
-   `factSheet.unresolved` for the setup-health footer.
+   the configured `labels` against Linear's **project-label**
+   namespace via `list_project_labels` (not `list_issue_labels`) —
+   see [horizon-and-scope.md](./horizon-and-scope.md) "Label
+   resolution" for why. Use Linear MCP read tools. Resolution is
+   fresh every run — no cache. Unresolved member names and unresolved
+   project-label names both go to `factSheet.unresolved` for the
+   setup-health footer.
 
    **Threshold-name translation.** The TOML config uses
    `snake_case` keys (`aging_wip_days`, `silent_days`,
@@ -25,8 +29,18 @@ stable.
    form from the fact sheet — it never sees the TOML keys.
 2. **Resolve horizon and lookahead windows.** See
    [horizon-and-scope.md](./horizon-and-scope.md).
-3. **Query in-scope issues** for the primary horizon. Composite filter
-   from [horizon-and-scope.md](./horizon-and-scope.md) "In-scope set".
+3. **Query in-scope issues** for the primary horizon. Order of
+   operations:
+   1. **Project narrowing.** When `labels` is non-empty, call
+      `list_projects` filtered by each resolved project-label
+      identifier to get the candidate project set. When `labels` is
+      empty, the candidate set is every project under the configured
+      team.
+   2. **Issue narrowing.** Query in-scope issues constrained to the
+      candidate projects + team + composite horizon filter from
+      [horizon-and-scope.md](./horizon-and-scope.md) "In-scope set".
+      Issue labels are not used for scoping (they are recorded in
+      `openIssues[].labels` for downstream signals only).
 4. **Fetch per-issue details** (one MCP call per page; batch as
    permitted): status, status history, assignee, last comment
    timestamp, linked PR URLs, blocker / blocking relations, project,
