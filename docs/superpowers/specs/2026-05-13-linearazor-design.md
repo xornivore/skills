@@ -37,7 +37,7 @@ ask, and held to a blameless tone.
 | Frame | Metrics surfaces | Questions a teammate would ask |
 | Tone | Neutral metrics | Signals, not verdicts; never names the person |
 | Scope | Team or workspace | A working group: team plus optional label scope, plus a roster |
-| Output | Charts, tables | Per-project prose brief, mood line, ASCII bestiary, color-coded signal lanes |
+| Output | Charts, tables | Per-project prose brief, mood line, ASCII animation cast, color-coded signal lanes |
 | Cadence | Always-on | Weekly ritual, with digest and brief shapes for daily and slack-paste |
 | Stateful | Yes (Linear's database) | No — every run is a fresh observation of Linear |
 
@@ -64,6 +64,7 @@ scope arguments.
 | `linearazor brief` | brief | Mood line plus counts only — slack-paste shape |
 | `linearazor reconfigure` | setup | Re-enters the interactive scope flow |
 | `linearazor since 2026-05-01` | full ritual, anchor override | Overrides the horizon anchor for shipped and changes |
+| `linearazor share` | full ritual, rendered as PNG | Renders the brief as a carbon-style PNG for slack-paste — see [8.6 Share as image](#86-share-as-image-png-for-slack-paste) |
 
 Filter composition: `linearazor for Bob Wu on containers-blue` intersects
 the two slices. No special-case prose; filters compose as set
@@ -85,7 +86,36 @@ When the user's phrasing is ambiguous and no default is set, the skill
 prompts once interactively. In non-interactive sessions it falls back
 to `cycle`.
 
-### 3.3 Scope (in-scope issue set)
+### 3.3 Lookahead (tiered auto-horizon)
+
+The primary horizon is the main frame, but pure current-horizon framing
+is kanban myopia — divergence from the plan is only visible after it
+lands in the active cycle. The skill compensates by **always** ingesting
+one tier beyond the primary horizon and rendering a narrower "Looking
+ahead" section with two forward-looking signals only (see
+[6.7 Lookahead](#67-lookahead-shape-up-forward-looking)).
+
+| Primary horizon | Lookahead window |
+| --- | --- |
+| `cycle` | The next cycle after the active one |
+| `week` / `2w` / `4w` | Today's primary window-end plus the same window length |
+| `milestone` | The milestone after the next-in-scope one |
+| `since <date>` | Lookahead suppressed (anchor mode is explicitly backward-facing) |
+
+User overrides:
+
+- `linearazor lookahead off` — suppress the lookahead block for a
+  single invocation.
+- `linearazor lookahead 2` — look two tiers ahead instead of one.
+
+Mode interaction:
+
+- `full ritual` — own section between the per-project blocks and the
+  disclaimer footer.
+- `digest` — collapsed to a one-liner per project.
+- `brief` — suppressed (slack-paste is current-cycle only).
+
+### 3.4 Scope (in-scope issue set)
 
 An issue is in scope when **all** apply:
 
@@ -98,7 +128,12 @@ An issue is in scope when **all** apply:
   - Was In Progress at any point in the horizon window
     (catches issues not bound to a cycle, milestone, or due date).
 
-### 3.4 First-run / no-scope behavior
+The lookahead set (section [3.3](#33-lookahead-tiered-auto-horizon)) is
+computed with the same filter applied to the lookahead window, not the
+primary horizon. Lookahead issues are tracked separately in the fact
+sheet — they never bleed into the primary signal lanes.
+
+### 3.5 First-run / no-scope behavior
 
 When no config exists and the session is interactive, the skill enters
 a conversational setup flow:
@@ -134,20 +169,30 @@ Steps in order, all read-only via Linear MCP:
    Linear MCP. Resolution is fresh every run — no cache. Unresolved
    names are surfaced as a setup-health footer in the brief, never as
    stalls.
-2. Resolve horizon. Compute the date window from the mode arguments or
-   the configured default.
-3. Query in-scope issues. Composite filter from section 3.3.
-4. For each issue, fetch the minimum needed: status, status history,
-   assignee, last comment timestamp, linked PR URLs, blocker /
-   blocking relations, project, milestone, due date, label set, title,
-   body.
-5. Query project state changes within the horizon (milestone date
-   moves, label adds/removes, project state transitions) directly from
-   Linear's history.
-6. Compute shipped (issues completed in the horizon window plus PRs
-   merged in the horizon window linked to in-scope issues).
-7. Emit a compact **fact sheet** (machine-readable structure) — this
-   is the only artifact Phase 2 reads.
+2. Resolve horizon — and lookahead. Compute the primary date window
+   from the mode arguments or the configured default. Compute the
+   lookahead window per section
+   [3.3](#33-lookahead-tiered-auto-horizon) unless suppressed.
+3. Query in-scope issues for the **primary** horizon. Composite filter
+   from section [3.4](#34-scope-in-scope-issue-set).
+4. For each in-scope issue, fetch the minimum needed: status, status
+   history, assignee, last comment timestamp, linked PR URLs, blocker
+   / blocking relations, project, milestone, due date, label set,
+   title, body.
+5. Query project state changes within the primary horizon (milestone
+   date moves, label adds/removes, project state transitions)
+   directly from Linear's history.
+6. Compute shipped (issues completed in the primary horizon plus PRs
+   merged in the primary horizon linked to in-scope issues).
+7. Query the **lookahead** issue set with the same composite filter
+   against the lookahead window. Fetch a narrower projection per
+   issue: title, body, assignee, milestone, labels, status (to
+   exclude already-In-Progress / Done from lookahead noise),
+   acceptance-criteria presence flag.
+8. Emit a compact **fact sheet** (machine-readable structure) with
+   `projects[].lookaheadIssues[]` and `projects[].lookaheadMilestones[]`
+   blocks separate from the primary signal blocks — this is the only
+   artifact Phase 2 reads.
 
 Phase 1 is stateless. It does not read or write any file outside
 `~/.config/linearazor/`. The fact-sheet schema is illustrative below;
@@ -188,6 +233,17 @@ to what the MCP actually returns.
       "scopeChangesInWindow": [
         { "id": "ENG-470", "change": "added-to-milestone",
           "at": "2026-05-12T09:14:02Z" }
+      ],
+      "lookaheadMilestones": [
+        { "name": "June runtime cut", "targetDate": "2026-06-18",
+          "startedIssueCount": 0, "daysToTarget": 35,
+          "scopeChangedSinceTargetSet": false }
+      ],
+      "lookaheadIssues": [
+        { "id": "ENG-502", "title": "Decide on config schema v2",
+          "assigneeIdentifier": null, "status": "Backlog",
+          "milestone": "June runtime cut",
+          "bodyHasAcceptanceCriteria": false, "bodyIsEmpty": true }
       ]
     }
   ]
@@ -230,10 +286,13 @@ aging_wip_days = 7   # In Progress longer than this -> aging
 silent_days    = 7   # No status change AND no comment in this window
 no_pr_days     = 3   # In Progress this long with no linked PR
 
-# Optional render preferences. See section 7.5 for palette options.
+# Optional render preferences. See section 8.1 for palette options.
 [render]
 palette                       = "catppuccin-mocha"
 parallel_project_threshold    = 6
+lookahead_unclarities         = true
+lookahead_appetite            = true
+lookahead_appetite_warn_days  = 14
 
 [render.palette_overrides]
 # shipped = "rosewater"
@@ -253,7 +312,10 @@ Config rules:
 
 Every per-project block leads with **shipped**, then the four signals
 in fixed order: questions, changes, stalls, quality. A retrospective
-section is appended when the horizon crosses a cycle end or milestone.
+section is appended when the primary horizon crosses a cycle end or
+milestone. A lookahead section is appended after the per-project
+blocks (full-ritual mode) when the lookahead window has any
+forward-looking signal to surface.
 
 ### 6.1 Shipped (lead-in)
 
@@ -282,7 +344,8 @@ Phrased as questions, never accusations. Patterns:
 - Cycle ends within the horizon and multiple issues are still In
   Progress → "Which of these are realistic to land this cycle?"
 
-Every line in the questions block ends with `?`. Hard rule (section 8).
+Every line in the questions block ends with `?`. Hard rule
+([9.5](#9-hard-rules)).
 
 ### 6.3 Changes
 
@@ -328,15 +391,68 @@ date, append a forward-looking retrospective section: "What would we
 want to know earlier next time?" — never "what went wrong." No blame
 framing, no per-person commentary.
 
-## 7. Output rendering
+### 6.7 Lookahead (Shape Up forward-looking)
+
+The lookahead section uses the lookahead window (section
+[3.3](#33-lookahead-tiered-auto-horizon)). It carries only two
+signals — chosen to surface plan divergence before it lands in the
+active cycle without generating noise about distant work that is
+legitimately not-yet-scoped.
+
+**Unclarities (lookahead).** Issues scoped to the lookahead window
+that are missing the basics — `bodyHasAcceptanceCriteria == false`
+AND issue is non-trivial, OR `bodyIsEmpty == true`, OR title matches
+the vague-title regex set (section 6.5), OR `assignee == null` with a
+fixed target date. Rendered as questions when a question is the right
+shape ("What does done look like for `ENG-502`?"), as a statement
+otherwise ("ENG-502 has no body, attached to June runtime cut").
+
+**Appetite-shape risk.** A milestone-level signal, not an issue-level
+one. Triggered by either:
+
+- `lookaheadMilestones[].startedIssueCount == 0` AND
+  `daysToTarget <=` (configurable, default 14): the milestone has no
+  work in flight and is close enough that absence is information.
+- Scope grew without the target moving, or the target moved without
+  scope shrinking (`scopeChangedSinceTargetSet && !targetMoved`,
+  or vice versa). This is the Shape Up "appetite wasn't framed" tell
+  — scope and target should move together.
+
+**Out of scope for lookahead.**
+
+- **No stalls.** Issues that have not started cannot be stalled. The
+  stall signals (aging WIP, no PR, silent, blocked-without-blocker)
+  apply only to issues in the primary horizon.
+- **No shipped.** Forward-looking by definition.
+- **No retrospective.** Retrospectives belong to the primary horizon.
+
+Configurable suppression:
+
+- `linearazor lookahead off` — skip the lookahead section entirely
+  for one invocation.
+- `[render].lookahead_unclarities = false` / `..appetite = false` in
+  config — turn off individual lookahead signals persistently.
+
+## 7. Signal layer (what gets said)
+
+The signal layer is the information surface — modes, signal ordering,
+bounds, the disclaimer footer. It is what would survive a fresh
+revision of the presentation layer (section
+[8](#8-presentation-layer-how-it-looks)).
+
+This layer and the presentation layer are intentionally kept separate
+in the spec, in the file layout, and in `SKILL.md` references — the
+signal layer can be revised without disturbing the animation cast or
+the palette, and the presentation layer can be tweaked without
+touching what is said.
 
 ### 7.1 Modes and shapes
 
-| Mode | Mood line | Exec summary | Per-project briefs | Animals | Footer |
-| --- | --- | --- | --- | --- | --- |
-| `brief` | yes | no | no — counts only | no | no |
-| `digest` | optional | one-line counts | shipped + new stalls + new changes only | no | thresholds line |
-| full ritual | yes | yes | shipped → questions → changes → stalls → quality | yes | thresholds + disclaimer |
+| Mode | Mood line | Exec summary | Per-project briefs | Lookahead | Animation | Footer |
+| --- | --- | --- | --- | --- | --- | --- |
+| `brief` | yes | no | no — counts only | suppressed | no | no |
+| `digest` | optional | one-line counts | shipped + new stalls + new changes only | one-liner per project | no | thresholds line |
+| full ritual | yes | yes | shipped → questions → changes → stalls → quality | own section after per-project blocks | yes | thresholds + disclaimer |
 
 ### 7.2 Ordering and bounds
 
@@ -348,40 +464,39 @@ shipped). Project sections cap at 12 per run; overflow appends a
 single line `N more projects in scope; narrow with "linearazor on
 <project>"`.
 
-### 7.3 Mood line
+The lookahead section (when present) follows the per-project blocks
+and precedes the disclaimer footer. Lookahead findings carry no
+ordering within their lane beyond `daysToTarget` ascending (closest
+target date first).
 
-One sentence at the top, in the tool's voice. Animals serve as a unit
-of measure when they appear. Examples shipped in
-`references/mood-line.md` for the model to imitate, with explicit
-constraints: no scoring, no streaks, no leaderboards. The mood line
-counts animals as flavor; the brief never tallies them across runs as
-metrics. Suppressable with `no-mood`.
+### 7.3 Exec summary
 
-### 7.4 ASCII bestiary
+A single line at the top of the full-ritual output, after the mood
+line. Lists the per-signal counts across the primary horizon (no
+lookahead counts, by design — the exec summary is about active work):
 
-Hand-drawn ASCII animals, 4–6 lines tall, 12–20 columns wide. One per
-signal category per per-project section — not one per item. All face
-right (toward the list below). Mood through pose.
+```text
+Across 4 projects: 7 shipped · 3 stalls · 5 questions · 2 changes
+```
 
-Core cast — six animals shipped in `assets/bestiary.md`:
+Suppressed in `brief` and `digest` modes (brief is itself a counts
+shape; digest leads with shipped per project).
 
-| Animal | Lane | Default palette role |
-| --- | --- | --- |
-| Bee | Shipped, momentum | `shipped` (Teal/Green) |
-| Lemur (upside-down) | Questions | `questions` (Lavender) |
-| Cow (in field) | Stalls — aging WIP | `stalls_aging` (Peach) |
-| Snail | Stalls — no PR | `stalls_no_pr` (Peach) |
-| Turtle | Stalls — silent | `stalls_silent` (Sapphire) |
-| Beaver | Praise, active building | `shipped` (Teal) |
+### 7.4 Disclaimer footer
 
-Extended cast — used sparingly: Fox (scope change), Chameleon (date
-move), Mole (blocked), Heron (quality / watching), Owl (retrospective),
-Crab (sideways movement).
+Every full-ritual run ends with one fixed line: the skill only sees
+Linear data; PTO, dependencies, conscious deprioritization may
+explain things. Stored as a literal string in `assets/footer.md`.
+Suppressed in `brief` and `digest`.
 
-No emoji anywhere except the optional razor glyph in the run header.
-Color carries the emotional work.
+## 8. Presentation layer (how it looks)
 
-### 7.5 Palette and color
+The presentation layer is the visual and affective polish — palette,
+the animation cast, the mood line, color contract, Unicode flourishes,
+TTY behavior. It is revisable in isolation: changing a hex code or
+swapping an animal does not touch any signal-layer rule.
+
+### 8.1 Palette and color
 
 Default palette: `catppuccin-mocha` (truecolor). Bundled named
 palettes in `references/palettes.md`: `catppuccin-mocha`,
@@ -413,15 +528,114 @@ assigns the same roles to its accents — only the hues change:
 | `stalls_blocked` | Overlay |
 | `quality` | Sky |
 | `retrospective` | Mauve |
+| `lookahead` | Sky |
 | `metadata` | Overlay0 / Subtext |
 
-### 7.6 TTY and NO_COLOR
+### 8.2 Animation (the cast)
+
+Hand-drawn ASCII animals, 4–6 lines tall, 12–20 columns wide. One per
+signal category per per-project section — not one per item. All face
+right (toward the list below). Mood through pose.
+
+Core cast — six animals shipped in `assets/animation.md`:
+
+| Animal | Lane | Default palette role |
+| --- | --- | --- |
+| Bee | Shipped, momentum | `shipped` (Teal/Green) |
+| Lemur (upside-down) | Questions | `questions` (Lavender) |
+| Cow (in field) | Stalls — aging WIP | `stalls_aging` (Peach) |
+| Snail | Stalls — no PR | `stalls_no_pr` (Peach) |
+| Turtle | Stalls — silent | `stalls_silent` (Sapphire) |
+| Beaver | Praise, active building | `shipped` (Teal) |
+
+Extended cast — used sparingly: Fox (scope change), Chameleon (date
+move), Mole (blocked), Heron (quality / watching, lookahead
+unclarities), Owl (retrospective), Crab (sideways movement).
+
+The cast is purely affective; replacing an animal, changing its pose,
+or adding a new one is a presentation-layer change. The signal it
+labels is unaffected.
+
+### 8.3 Mood line
+
+One sentence at the top, in the tool's voice. Examples shipped in
+`references/mood-line.md` for the model to imitate. Animals serve as
+a unit of measure when they appear in the line.
+
+Constraints (presentation-layer rules, not signals): no scoring, no
+streaks, no leaderboards. The mood line counts animals as flavor; the
+brief never tallies them across runs as metrics. Suppressable with
+`no-mood`.
+
+### 8.4 Unicode flourishes
+
+One Unicode flourish max per section — never decorative, always
+load-bearing:
+
+- `◇` — leads a stall or lookahead-unclarity line (the diamond reads
+  as "noticed thing").
+- `→` — leads a question line (the arrow reads as "where does this
+  point").
+- `─` `├` `└` `│` — section dividers and the run header frame.
+
+ASCII fallback (when not a TTY or `NO_COLOR=1`): `◇` → `*`, `→` → `>`.
+
+### 8.5 TTY and NO_COLOR
 
 Detection: `[ -t 1 ] && [ -z "$NO_COLOR" ]`. Piped or non-TTY output
 falls back to plain ASCII with the same content. ANSI escapes are
 composed inline — no renderer dependency.
 
-### 7.7 Layout sketch
+### 8.6 Share as image (PNG for slack-paste)
+
+The `brief` mode is the lean text shape for slack-paste, but
+monospace ANSI in a Slack code block loses the color contract — and
+the animation cast becomes block-noise without truecolor backing. The
+`share` mode produces a carbon-style PNG (or SVG) of the rendered
+brief, preserving palette and animation, sized for Slack and similar
+chat surfaces.
+
+Implementation: shell out to
+[`charmbracelet/freeze`](https://github.com/charmbracelet/freeze) —
+it consumes ANSI input directly (no re-themeing pass), runs locally
+without a headless browser, and ships PNG and SVG output. The skill
+generates the brief into a temp file and pipes it through `freeze`
+with a Catppuccin-aligned config.
+
+Behavior:
+
+- `linearazor share` — renders the full ritual brief to a PNG at
+  `${TMPDIR:-/tmp}/linearazor-<group>-<date>.png` and prints the
+  path. User drags into Slack.
+- `linearazor share digest` / `linearazor share brief` — renders
+  the digest or brief mode instead. Brief mode is the most
+  slack-appropriate default.
+- `linearazor share --svg` — emits SVG instead (sharper, scales
+  better, but Slack does not always preview SVGs inline).
+
+Opt-in dependency:
+
+- The skill checks for `freeze` in `$PATH` at invocation time.
+- If absent, it prints a one-line install hint
+  (`brew install charmbracelet/tap/freeze` or `go install
+  github.com/charmbracelet/freeze@latest`) and falls back to writing
+  a plain markdown file at the same path. **Never** silently
+  installs a binary; **never** errors out — the fallback always
+  produces a shareable artifact.
+
+Presentation-layer rule: the PNG must visually match the terminal
+render byte-for-byte at the signal layer (same prose, same lines,
+same flourishes). Only the *medium* changes. **Audit:** the
+plain-text dump from `freeze --output text` over a `share` invocation
+must be byte-identical to the same brief rendered to a TTY-fallback
+file via redirection.
+
+Out of scope for v1: posting to Slack directly via a webhook. The
+share artifact is a file the user pastes; auto-posting opens a write
+surface (slack token, channel selection) that belongs in a later
+revision.
+
+### 8.7 Layout sketch (combined signal + presentation)
 
 Illustrative — actual prose and animal art are produced at render
 time from the templates in `assets/` and the model's prose.
@@ -458,83 +672,117 @@ time from the templates in `assets/` and the model's prose.
     ENG-470 added to scope this week
 
 ─────────────────────────────────────────────────────────────────────────
+ Looking ahead — next cycle
+─────────────────────────────────────────────────────────────────────────
+   <heron animal in Sky>
+ ◇  ENG-502  No body, no acceptance criteria  (June runtime cut)
+ →  What does done look like for ENG-505?
+
+   <chameleon animal in Mauve>
+    "June runtime cut" — 0 started, 35d to target
+
+─────────────────────────────────────────────────────────────────────────
  Thresholds: aging 7d, silent 7d, no-PR 3d.
  The skill only sees Linear data; PTO, dependencies, conscious
  deprioritization may explain things.
 ```
 
-## 8. Hard rules
+## 9. Hard rules
 
 Imperative directives in `SKILL.md` per `skills/CLAUDE.md` voice rules
-("must" / "never", not "should"):
+("must" / "never", not "should"). Each rule is tagged `[Signal]` or
+`[Presentation]` so the two layers can be revised independently.
 
-1. **Read-only.** Phase 1 issues only Linear MCP read queries. The
-   skill never edits files in the user's working directory, never
-   edits Linear, never executes shell commands against the user's
-   repos. **Audit:** in any run, no Linear MCP write tool, no `Edit`
-   or `Write` to anything outside `~/.config/linearazor/`, no `Bash`
-   outside read-only commands.
-2. **Never invoke unscoped.** If no config exists and the session is
-   non-interactive, exit with the one-line "no scope configured" message.
-   In an interactive session, drop into the setup flow. Never dump the
-   workspace. **Audit:** every run path through `SKILL.md` reads
-   `~/.config/linearazor/<group>.toml`, runs the setup flow, or exits
-   — no fourth branch.
-3. **Never name the person.** Findings name behaviors and identifiers,
-   never authors. Forbidden patterns by example in
+1. **[Signal] Read-only.** Phase 1 issues only Linear MCP read
+   queries. The skill never edits files in the user's working
+   directory, never edits Linear, never executes shell commands
+   against the user's repos. **Audit:** in any run, no Linear MCP
+   write tool, no `Edit` or `Write` to anything outside
+   `~/.config/linearazor/`, no `Bash` outside read-only commands.
+2. **[Signal] Never invoke unscoped.** If no config exists and the
+   session is non-interactive, exit with the one-line "no scope
+   configured" message. In an interactive session, drop into the
+   setup flow. Never dump the workspace. **Audit:** every run path
+   through `SKILL.md` reads `~/.config/linearazor/<group>.toml`,
+   runs the setup flow, or exits — no fourth branch.
+3. **[Signal] Never name the person.** Findings name behaviors and
+   identifiers, never authors. Forbidden patterns by example in
    `references/tone.md`: `Bob hasn't…`, `Carol is behind…`,
    `@bob.wu`. Replace with subject-on-issue prose. **Audit:** emitted
    prose grepped for the configured member display names returns
    nothing outside the setup-health footer.
-4. **Signals, not verdicts.** No red/yellow/green markers, no
-   `CRITICAL` / `AT RISK` / `BEHIND SCHEDULE`, no severity prefixes.
-   **Audit:** grep for `CRITICAL|AT RISK|BEHIND|❌|⚠️` over the
-   output returns nothing.
-5. **Questions are questions.** Every line in the questions block ends
-   with `?`. **Audit:** non-comment lines in the questions block match
-   `\?\s*$`.
-6. **No emoji except the optional razor glyph in the header.** Color
-   carries the emotional work. **Audit:** strip ANSI, strip the run
-   header — the remaining bytes contain no characters in the Emoji
-   property range.
-7. **Acknowledge missing context once.** Full-ritual runs end with one
-   line: the skill only sees Linear data; PTO, dependencies,
-   conscious deprioritization may explain things. Suppressed in
-   `brief` mode. **Audit:** full-ritual output contains the literal
-   disclaimer string from `assets/footer.md`.
-8. **Celebrate first.** Each per-project block leads with shipped. If
-   nothing shipped, the block opens with "No completions in window"
-   — never with stalls.
-9. **No scoring, no streaks, no leaderboards.** The mood line counts
-   animals as flavor; the brief never tallies them across runs as
-   metrics. **Audit:** no persisted counter of animals, shipped, or
-   stalls exists — there is no state file in which to persist them.
-10. **Never re-query Linear from Phase 2.** If Phase 2 needs a fact,
-    it is missing from the fact sheet — a Phase-1 gap to fix in code.
-    **Audit:** Phase-2 prompts in `references/` contain no
+4. **[Signal] Signals, not verdicts.** No red/yellow/green markers,
+   no `CRITICAL` / `AT RISK` / `BEHIND SCHEDULE`, no severity
+   prefixes. **Audit:** grep for `CRITICAL|AT RISK|BEHIND|❌|⚠️` over
+   the output returns nothing.
+5. **[Signal] Questions are questions.** Every line in the questions
+   block ends with `?`. Same rule for lookahead-unclarities rendered
+   as questions. **Audit:** non-comment lines in the questions block
+   match `\?\s*$`.
+6. **[Presentation] No emoji except the optional razor glyph in the
+   header.** Color carries the emotional work. **Audit:** strip
+   ANSI, strip the run header — the remaining bytes contain no
+   characters in the Emoji property range.
+7. **[Signal] Acknowledge missing context once.** Full-ritual runs
+   end with one line: the skill only sees Linear data; PTO,
+   dependencies, conscious deprioritization may explain things.
+   Suppressed in `brief` mode. **Audit:** full-ritual output
+   contains the literal disclaimer string from `assets/footer.md`.
+8. **[Signal] Celebrate first.** Each per-project block leads with
+   shipped. If nothing shipped, the block opens with "No completions
+   in window" — never with stalls.
+9. **[Signal] No scoring, no streaks, no leaderboards.** The mood
+   line counts animals as flavor; the brief never tallies them
+   across runs as metrics. **Audit:** no persisted counter of
+   animals, shipped, or stalls exists — there is no state file in
+   which to persist them.
+10. **[Signal] Never re-query Linear from Phase 2.** If Phase 2 needs
+    a fact, it is missing from the fact sheet — a Phase-1 gap to fix
+    in code. **Audit:** Phase-2 prompts in `references/` contain no
     instructions to call Linear MCP.
+11. **[Signal] Lookahead never carries stall, shipped, or
+    retrospective signals.** Issues in the lookahead window are
+    surfaced only as unclarities or appetite-shape risks (section
+    [6.7](#67-lookahead-shape-up-forward-looking)). **Audit:** the
+    rendered "Looking ahead" section contains no shipped lines, no
+    `daysInStatus` references, and no retrospective language.
+12. **[Presentation] Layer separation.** Presentation-layer changes
+    (swapping an animal, changing a hex code, renaming a palette)
+    must not alter any signal-layer rule or rendering bound.
+    **Audit:** a diff that touches only files under section
+    [10's](#10-file-layout) "Presentation layer" group must leave
+    `references/signals.md`, `references/signal-modes.md`, and
+    `references/tone.md` untouched.
 
-## 9. File layout
+## 10. File layout
+
+References and assets are grouped by layer so a presentation-layer
+revision can be reviewed as a single concern.
 
 ```text
 skills/linearazor/
 ├── SKILL.md                          # entry point; routing + hard rules + reference index
 ├── README.md                         # human-facing; install command + link to SKILL.md
 ├── references/
+│   │   # — Signal layer —
 │   ├── setup-flow.md                 # interactive scope detection, member fuzzy match, persist
-│   ├── horizon-and-scope.md          # composite horizon mapping, scope filter, since semantics
+│   ├── horizon-and-scope.md          # composite horizon, lookahead window, scope filter
 │   ├── ingest-and-factsheet.md       # Phase 1: MCP queries, fact-sheet schema (illustrative until probe)
-│   ├── signals.md                    # questions / changes / stalls / quality detection rules
-│   ├── render-modes.md               # full ritual / digest / brief shapes
-│   ├── palettes.md                   # bundled palettes, role names, hex tables, NO_COLOR
-│   ├── mood-line.md                  # voice exemplars and constraints
+│   ├── signals.md                    # questions / changes / stalls / quality / lookahead detection rules
+│   ├── signal-modes.md               # full ritual / digest / brief shapes; what signals each carries
 │   ├── tone.md                       # signals-not-verdicts; questions phrasing; forbidden patterns
-│   └── parallel-dispatch.md          # the more-than-6-projects escape: sub-agent prompts
+│   ├── parallel-dispatch.md          # the more-than-6-projects escape: sub-agent prompts
+│   │   # — Presentation layer —
+│   ├── presentation.md               # how the signal layer is dressed: palette routing, animation placement, flourishes
+│   ├── palettes.md                   # bundled palettes, role names, hex tables, NO_COLOR
+│   └── mood-line.md                  # voice exemplars and constraints
 ├── assets/
-│   ├── bestiary.md                   # ASCII animals, colored in their role
+│   │   # — Signal layer —
 │   ├── config-template.toml          # scaffold written by reconfigure
 │   ├── factsheet-template.json       # Phase 1 to Phase 2 handoff skeleton
-│   └── footer.md                     # the "skill only sees Linear data" disclaimer string
+│   ├── footer.md                     # the "skill only sees Linear data" disclaimer string
+│   │   # — Presentation layer —
+│   └── animation.md                  # ASCII animals (the cast), colored in their role
 └── tests/
     └── fixtures/                     # mock Linear MCP responses for manual smoke runs
 ```
@@ -545,27 +793,29 @@ Loading order (stage 2 to stage 3):
 | --- | --- |
 | Detect mode plus parse phrasing | none |
 | First-run setup branch | `setup-flow.md`, `assets/config-template.toml` |
-| Resolve scope plus horizon | `horizon-and-scope.md` |
+| Resolve scope plus horizon plus lookahead | `horizon-and-scope.md` |
 | Phase 1 ingest | `ingest-and-factsheet.md`, `assets/factsheet-template.json` |
 | Decide single-pass vs parallel | `parallel-dispatch.md` |
 | Sub-agent dispatch (parallel branch) | each sub-agent loads `signals.md` plus `tone.md` |
-| Phase 2 render | `render-modes.md`, `palettes.md`, `mood-line.md`, `tone.md`, `assets/bestiary.md`, `assets/footer.md` |
+| Phase 2 — signal composition | `signal-modes.md`, `signals.md`, `tone.md`, `assets/footer.md` |
+| Phase 2 — presentation | `presentation.md`, `palettes.md`, `mood-line.md`, `assets/animation.md` |
 
 All file references are exactly one level deep from `SKILL.md`.
 `SKILL.md` target length is at most 250 lines, well under the 500-line
 cap in `skills/CLAUDE.md`.
 
-## 10. Out of scope (v1)
+## 11. Out of scope (v1)
 
 - **Write-back to Linear.** No project updates, no comments, no issue
   edits. v1.1 may add an opt-in, never silent surface.
-- **Per-individual judgments.** Hard rule 3. The skill produces
-  team-level prose; "how is Bob doing" is not a question it answers.
+- **Per-individual judgments.** Hard rule 3 in section
+  [9](#9-hard-rules). The skill produces team-level prose; "how is Bob
+  doing" is not a question it answers.
 - **Velocity, sprint, story points, burndown.** Different framework.
   Cycle time and PR-link as raw observation yes; aggregated velocity
   metrics no.
-- **Scoring and gamification.** Hard rule 9. No streaks, no
-  leaderboards, no points.
+- **Scoring and gamification.** Hard rule 9 in section
+  [9](#9-hard-rules). No streaks, no leaderboards, no points.
 - **Non-Linear data sources.** No Jira, no GitHub-only mode, no Slack
   scraping. Linear MCP is the spine.
 - **Cross-team aggregation.** One scope per invocation. Composite
@@ -577,7 +827,7 @@ cap in `skills/CLAUDE.md`.
 - **First-class GitHub integration.** PR-link inspection uses whatever
   Linear already exposes. No `gh` calls.
 
-## 11. Validation and testing
+## 12. Validation and testing
 
 Validation gate, same as the rest of the repo:
 
@@ -598,9 +848,12 @@ Testing strategy, three layers:
    - Cycle-end retrospective: horizon crosses a cycle end.
    - Over-6-projects: triggers parallel dispatch.
 2. **Tone audits.** A small script greps the rendered output against
-   the audit cues from section 8 (member names not present outside
-   footer, no `CRITICAL` / `AT RISK`, every question line ends with
-   `?`, no emoji outside header).
+   the audit cues from section [9](#9-hard-rules) (member names not
+   present outside footer, no `CRITICAL` / `AT RISK`, every question
+   line ends with `?`, no emoji outside header). Audit runs split by
+   layer: signal-layer audits gate merge; presentation-layer audits
+   (emoji check, ASCII fallback for flourishes) gate the
+   presentation-layer reference set independently.
 3. **Skill validator.** `npx skills-ref validate` covers spec
    mechanics (frontmatter, layout, install command, no `<>` in
    frontmatter).
@@ -609,7 +862,7 @@ No automated end-to-end test against a real Linear workspace —
 too brittle, too much surface. Fixture-based smoke tests plus the
 tone audit are the practical bar.
 
-## 12. Open at implementation time
+## 13. Open at implementation time
 
 These are known unknowns that the implementation plan (next step
 after this spec) must address before any code:
