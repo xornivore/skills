@@ -8,6 +8,14 @@ The flow is conversational — one question at a time, with skip
 allowed for optional steps. Never proceeds with an unscoped run; if
 the user refuses to scope, exit with a one-line explanation.
 
+## Welcome mascot
+
+Render the duck from
+[`../assets/animation.md`](../assets/animation.md) "Setup mascot" at
+the top of the setup output, in the `shipped` palette role (a friendly
+green). The duck appears only here and in the first ritual run after a
+fresh `reconfigure` — never in normal brief output.
+
 ## Step 1: Detect workspace shape
 
 Query Linear MCP for the list of teams. Two cases:

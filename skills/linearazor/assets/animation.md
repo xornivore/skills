@@ -144,6 +144,25 @@ Eight-legged, sideways and multidirectional, the scope creeping out.
 ||    ||
 ```
 
+## Setup mascot
+
+The duck appears only in the setup flow ([`../references/setup-flow.md`](../references/setup-flow.md))
+and in the first ritual run after a fresh `reconfigure`. It is not
+tied to a signal lane and never appears in normal brief output —
+those have the mood line plus per-project animals already.
+
+The rubber-duck-debugging association is intentional: the setup flow
+is conversational, asks the user to articulate their workspace
+shape one question at a time, and the duck is the universal "let me
+explain this to you" companion.
+
+```text
+    __
+___( o)>
+\ <_. )
+ `---'
+```
+
 ## Lane → animal table
 
 | Role | Animal |
