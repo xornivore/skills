@@ -1621,178 +1621,205 @@ git commit -m "feat(linearazor): mood line reference (voice exemplars, constrain
 
 **Source spec sections:** 8.2 (animation cast).
 
-This is the cast file. Twelve animals: six core, six extended. Each
-4–6 lines tall, 12–20 columns wide, all face right.
+This is the cast file. Eleven lane-mapped animals (bee, cat, cow,
+snail, turtle, fish, penguin, snake, bat, dog, spider) plus two
+special-case mascots (duck for setup/welcome, puzzled face for the
+empty-brief case). Sourced from established ASCII art rather than
+freehand; the original spec's "all face right, 4–6 lines, 12–20
+columns" rule is relaxed to accept the canonical art as-is.
 
 - [ ] **Step 1: Write the file**
 
 ````markdown
 # Animation cast
 
-Twelve hand-drawn ASCII animals. One per signal category per per-project
-section — not one per item.
+Eleven ASCII animals, one per signal lane. Sourced from established
+ASCII art rather than freehand.
 
-All animals face right (toward the finding list below). Mood through
-pose, not features. Color via the palette role in the heading —
-see [palettes.md](../references/palettes.md).
+One animal per signal category per per-project section, never one per
+item. Color via the palette role in the heading — see
+[../references/palettes.md](../references/palettes.md).
 
-## Core cast
+The cast deliberately mixes facing directions and sizes. The earlier
+"all face right, 4-6 lines, 12-20 columns" rule was an aspiration;
+the canonical art doesn't all conform, and the canonical art is the
+point.
+
+## Cast
 
 ### Bee — `shipped`
 
-Active, momentum, just shipped.
+Active, momentum, just shipped. Motion lines trail right.
 
 ```text
-   \   /
-    \,/
-   __o___
-  /     /
- /_____/   --> done
+              _   _
+             ( | / )
+           \\ \|/,'_
+           (")(_)()))=-
+              <\\
 ```
 
-### Lemur — `questions`
+### Cat — `questions`
 
-Upside down, asking a good question.
+Sitting, curious, alert.
 
 ```text
-        __
-       /  \
-       \../
-       (oo)
-     ___||___
-    /        \
+ /\_/\
+( o.o )
+ > ^ <
 ```
 
-### Cow (in field) — `stalls_aging`
+### Cow — `stalls_aging`
 
-Lying down. Has been here a while.
+Standing in a field of grass — head down, plodding.
 
 ```text
-        ___
-       (o,o)
-     __/    \____
-    (  cow      )___
-     \____   ___/
-          ||
+\|/          (__)
+     `\------(oo)
+       ||    (__)
+       ||w--||     \|/
+   \|/
 ```
 
 ### Snail — `stalls_no_pr`
 
-Moving, but no PR trail behind it.
+Slow, antennae up, leaves no trail.
 
 ```text
-
-    .---,
-   ( o   `-.
-  ()  __    `-.
-   `-(__)------'
+    .----.   @   @
+   / .-"-.`.  \v/
+   | | '\ \ \_/ )
+ ,-\ `-.' /.'  /
+'---`----'----'
 ```
 
 ### Turtle — `stalls_silent`
 
-Withdrawn, no signal.
+Withdrawn, shell-textured, head still extended but quiet.
 
 ```text
-       __
-    __/  \__
-   /_O    O_\
-  /   ____   \
-   `--`  `--`
+                    __
+         .,-;-;-,. /'_\
+       _/_/_/_|_\_\) /
+     '-<_><_><_><_>=/\
+       `/_/====/_/-'\_\
+        ""     ""    ""
 ```
 
-### Beaver — `shipped` (praise / active building)
+### Fish — `stalls_blocked`
 
-Used at the per-project block when the project shipped strongly.
+Small fish trailed by a larger one — surrounded, not moving forward.
 
 ```text
-      _____
-     /     \___
-    ( beaver  /
-     \____/--`
-       ||  ||
+               O  o
+          _\_   o
+>('>   \\/  o\ .
+       //\___=
+          ''
 ```
 
-## Extended cast (used sparingly)
+### Penguin — `changes_scope`
 
-### Fox — `changes_scope`
-
-Scope spotted, slipping in or out.
-
-```text
-       /\___/\
-      ( o   o )
-       >  v  <
-       /     \--
-      (  fox   )---
-       \_____/
-```
-
-### Chameleon — `changes_date`
-
-Milestone date moved (color shift).
+Stands sentinel, eye spotting the change.
 
 ```text
          __
-        / .)
-   ____( ( )
-  /  __ \_  \__
- (__/      ===
+      -=(o '.
+         '.-.\
+         /|  \\
+         '|  ||
+          _\_):,_
 ```
 
-### Mole — `stalls_blocked`
+### Snake — `changes_date`
 
-Underground, blocked, hidden cause.
+Sinuous, shape-shifting, the milestone date moving.
 
 ```text
-      ____
-   __/o  o\__
-  /   __    \
- ( ===    mole)
-  `\_/-`---`
+             ____
+            / . .\
+            \  ---<
+             \  /
+   __________/ /
+-=:___________/
 ```
 
-### Heron — `quality` and lookahead unclarities
+### Bat — `quality`
 
-Watching, patience, waiting for clarity.
+Wings out, alert, watching for what's missing.
 
 ```text
-   >.
-   / \
-  /  /
- /  /
-  ||
- _||___
+        _   ,_,   _
+       / `'=) (='` \
+      /.-.-.\ /.-.-.\
+      `      "      `
 ```
 
-### Owl — `retrospective`
+### Dog — `retrospective`
 
-Looking back to look forward.
+Looking back, loyal, the run that just ended.
 
 ```text
-     ___
-    (o.o)
-    (===)
-   /     \
-   `-||-`
-    || ||
+  __      _
+o'')}____//
+ `_/      )
+ (_(_/-(_/
 ```
 
-### Crab — sideways movement, scope drift
+### Spider — `scope drift`
+
+Eight-legged, sideways and multidirectional, the scope creeping out.
 
 ```text
-
-    __||__
-   /  o o \
-  ( =/  \= )
-   `--vv--`
+ ||  ||
+ \\()//
+//(__)\\
+||    ||
 ```
 
-## Mood through pose
+## Setup mascot
 
-The cow lies down to read "aging." The lemur hangs upside down to read
-"curious / contrarian." The turtle's eyes are closed (`O` versus `o`)
-to read "silent." Pose carries the lane meaning — color and animal
-identity reinforce, but pose leads.
+The duck appears only in the setup flow ([`../references/setup-flow.md`](../references/setup-flow.md))
+and in the first ritual run after a fresh `reconfigure`. It is not
+tied to a signal lane and never appears in normal brief output.
+
+```text
+    __
+___( o)>
+\ <_. )
+ `---'
+```
+
+## Empty-brief mascot
+
+The puzzled face appears only when the ritual runs but every signal
+lane comes up empty across every in-scope project — nothing shipped,
+no questions, no changes, no stalls, no quality findings. Replaces
+the mood line in that case; the per-project blocks are suppressed
+since they would all be `No completions in window`.
+
+```text
+       .--.
+      / o o \
+     |   ^   |
+      \ --- /
+```
+
+## Lane → animal table
+
+| Role | Animal |
+| --- | --- |
+| `shipped` | Bee |
+| `questions` | Cat |
+| `stalls_aging` | Cow |
+| `stalls_no_pr` | Snail |
+| `stalls_silent` | Turtle |
+| `stalls_blocked` | Fish |
+| `changes_scope` | Penguin |
+| `changes_date` | Snake |
+| `quality` | Bat |
+| `retrospective` | Dog |
+| `scope drift` | Spider |
 
 ## Replacement
 
@@ -1802,11 +1829,18 @@ file needs updating. Hard rule 12 binds.
 
 ## Audit
 
-- All animals 4–6 lines tall, 12–20 columns wide.
-- All face right.
+- Each lane has exactly one animal in the cast.
 - One animal per signal category per per-project section (never one
   per item).
 - No emoji anywhere in this file.
+
+## Provenance (TODO)
+
+Known artists to credit when the attribution pass happens: Joan G.
+Stark (`jgs`) — turtle, bat; Shanaka Dias (`snd`) — penguin; Hayley
+Wakenshaw (`hjw`) — duck; Stef00 — bee. The cat, cow, snail, fish,
+snake, dog, spider, and puzzled-face pieces come from uncredited
+canonical forms in the ASCII commons.
 ````
 
 - [ ] **Step 2: Verify lint and commit**
