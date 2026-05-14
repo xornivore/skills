@@ -104,12 +104,12 @@ Small fish trailed by a larger one — surrounded, not moving forward.
 Stands sentinel, eye spotting the change.
 
 ```text
-   __
--=(o '.
-   '.-.\
-   /|  \\
-   '|  ||
-    _\_):,_
+      __
+    .` o)=-
+   /.-.`
+  //  |\
+  ||  |`
+_,:(_/_
 ```
 
 ### Snake — `changes_date`
@@ -141,10 +141,10 @@ Wings out, alert, watching for what's missing.
 Looking back, loyal, the run that just ended.
 
 ```text
-  __      _
-o'')}____//
- `_/      )
- (_(_/-(_/
+_      __
+\\____{(``o
+(      \_'
+ \_)-\_)_)
 ```
 
 ### Spider — `changes_scope` (sub-flavor: scope drift)
