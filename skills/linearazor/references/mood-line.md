@@ -7,33 +7,74 @@ Animals serve as a unit of measure when they appear in the line.
 ## Voice
 
 Specific, observational, light. Names what is in the brief without
-verdicts.
+verdicts. **Verbs do the work** — a catalog-style "X and Y and Z are
+here" reads like a sort-shaper. A single animal *doing* something
+reads like a teammate noticing.
 
-Exemplars (the model should imitate this register):
+### Primary form (single-focus highlight)
+
+`<adjective> <animal> <verb> [object/context].`
+
+Pick the one signal that most defines the run, name it with an
+adjective + animal + verb, and let the rest of the brief carry the
+detail. The adjective qualifies the mood; the verb names the
+action. One-animal lines should be the default in most runs.
+
+Exemplars:
 
 ```text
-Three cows in the field this week, one bee, and a cat with a good question.
+A patient bat watches the June runtime cut for acceptance criteria.
 ```
 
 ```text
-Two bees this cycle — the field is quiet, but the snail on ENG-446
-is worth a look.
+An impatient bee circles ENG-481 — the backplane shipped Tuesday.
 ```
 
 ```text
-A dog this morning — looking back at the May runtime cut so the June
-one doesn't end the same way.
+A stubborn cow lingers on the scheduler refactor.
 ```
 
 ```text
-A snake and three penguins — the runtime project is changing shape
-faster than it's moving.
+A drifting penguin nudges the May cut out to May 21.
+```
+
+### Secondary form (when a connection is the point)
+
+`<animal1> <verb> <animal2>.`
+
+Reserve for runs where the *interaction* between two signals is the
+headline. Most runs don't need this; when they do, pick exactly two
+animals and a verb that names how they relate. The verb is the
+point — vary it. Useful verbs: `watches`, `shadows`, `crosses paths
+with`, `outruns`, `chases`, `waits for`, `finds`, `meets`, `avoids`.
+
+Exemplars:
+
+```text
+A dog watches a snake — last cycle's lessons land just as June's
+target slides.
 ```
 
 ```text
-A bat and two questions — the next cycle has acceptance criteria
-to nail down.
+A bee outruns a cow — runtime shipped Tuesday, but the scheduler
+still hasn't moved.
 ```
+
+```text
+A patient bat shadows a snake — quality questions ride alongside
+the date moving.
+```
+
+### Anti-patterns (avoid these)
+
+```text
+WRONG: Three cows, one bee, and a cat are here.
+WRONG: Two snakes, a bat, and a few penguins this week.
+```
+
+These are sort-shapers — they list the cast instead of noticing
+anything. If the brief is genuinely about three lanes at once, pick
+the most striking and let the per-project blocks carry the rest.
 
 ## Constraints (presentation-layer rules, not signals)
 
@@ -42,10 +83,11 @@ patterns:
 
 | Wrong | Right |
 | --- | --- |
-| "Best week yet — 8 bees!" | "Three bees and a cow this week." |
-| "Stall count up 30% from last cycle." | "Three cows in the field — worth a chat about ENG-423 and ENG-446." |
+| "Best week yet — 8 bees!" | "An impatient bee circles ENG-481." |
+| "Stall count up 30% from last cycle." | "A stubborn cow lingers on the scheduler refactor." |
 | "Bob: 4 bees · Carol: 3 bees" | (No per-person framing in the mood line.) |
 | "Animals as emoji decorations" | (No emoji. Color and prose carry the cast.) |
+| "Three cows, one bee, and a cat are here." | "A patient bat watches the June cut for AC." |
 
 The brief never tallies animals across runs as metrics. There is no
 state file in which to persist counters — the rule is structurally
