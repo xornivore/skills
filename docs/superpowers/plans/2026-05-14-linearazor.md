@@ -40,15 +40,15 @@ skills/linearazor/
 │   └── mood-line.md                  # presentation layer
 ├── assets/
 │   ├── config-template.toml          # signal layer
-│   ├── factsheet-template.json       # signal layer
+│   ├── factsheet-template.yaml       # signal layer
 │   ├── footer.md                     # signal layer
 │   └── animation.md                  # presentation layer
 └── tests/
     └── fixtures/
-        ├── healthy.mcp.json
-        ├── aging.mcp.json
-        ├── cycle-end-retro.mcp.json
-        └── many-projects.mcp.json
+        ├── healthy.mcp.yaml
+        ├── aging.mcp.yaml
+        ├── cycle-end-retro.mcp.yaml
+        └── many-projects.mcp.yaml
 ```
 
 Plus one modification:
@@ -78,7 +78,7 @@ Hard rule 12 from the spec is mechanically auditable: a change touching only pre
 
 - Create: `skills/linearazor/` (plus `references/`, `assets/`, `tests/fixtures/` subdirs)
 - Create: `skills/linearazor/assets/config-template.toml`
-- Create: `skills/linearazor/assets/factsheet-template.json`
+- Create: `skills/linearazor/assets/factsheet-template.yaml`
 - Create: `skills/linearazor/assets/footer.md`
 
 **Source spec sections:** 5 (Configuration), 4.1 (Phase 1 fact sheet), 8.4 ([Signal layer] disclaimer footer).
@@ -148,59 +148,91 @@ lookahead_appetite_warn_days  = 14
 
 Note: the `<group-name>` / `<linear-team-display-name>` placeholders in the template body are documented as literal placeholders the `reconfigure` flow substitutes. They are not in any YAML frontmatter (this is a TOML asset, not a `SKILL.md`), so the no-angle-brackets rule does not apply.
 
-- [ ] **Step 5: Write `assets/factsheet-template.json`**
+- [ ] **Step 5: Write `assets/factsheet-template.yaml`**
 
-The Phase-1 → Phase-2 handoff skeleton. Marked illustrative until the Linear MCP probe (spec section 13).
+The Phase-1 → Phase-2 handoff skeleton. yaml format: quote-light strings, inline comments allowed, human-reviewable. Marked illustrative until the Linear MCP probe (spec section 13).
 
-````jsonc
-{
-  "schemaVersion": 1,
-  "group": "<group-name>",
-  "horizon": { "kind": "cycle", "from": "YYYY-MM-DD", "to": "YYYY-MM-DD" },
-  "lookahead": { "kind": "cycle", "from": "YYYY-MM-DD", "to": "YYYY-MM-DD", "suppressed": false },
-  "thresholds": { "agingWipDays": 7, "silentDays": 7, "noPrDays": 3 },
-  "members": [
-    { "displayName": "<name>", "identifier": "<linear-user-id>" }
-  ],
-  "unresolved": [],
-  "projects": [
-    {
-      "name": "<project-name>",
-      "state": "started",
-      "milestones": [
-        { "name": "<milestone-name>", "targetDate": "YYYY-MM-DD",
-          "datesMovedInWindow": [] }
-      ],
-      "shipped": [
-        { "id": "<ISSUE-ID>", "title": "<title>",
-          "completedAt": "ISO-8601", "linkedPRs": [] }
-      ],
-      "openIssues": [
-        { "id": "<ISSUE-ID>", "title": "<title>", "status": "<status>",
-          "assigneeIdentifier": "<linear-user-id>",
-          "daysInStatus": 0, "lastCommentDaysAgo": 0,
-          "linkedPRs": [], "blockedBy": [], "milestone": null,
-          "labels": [],
-          "bodyHasAcceptanceCriteria": false }
-      ],
-      "scopeChangesInWindow": [
-        { "id": "<ISSUE-ID>", "change": "<change-kind>",
-          "at": "ISO-8601" }
-      ],
-      "lookaheadMilestones": [
-        { "name": "<milestone-name>", "targetDate": "YYYY-MM-DD",
-          "startedIssueCount": 0, "daysToTarget": 0,
-          "scopeChangedSinceTargetSet": false }
-      ],
-      "lookaheadIssues": [
-        { "id": "<ISSUE-ID>", "title": "<title>",
-          "assigneeIdentifier": null, "status": "<status>",
-          "milestone": null,
-          "bodyHasAcceptanceCriteria": false, "bodyIsEmpty": true }
-      ]
-    }
-  ]
-}
+````yaml
+# linearazor fact-sheet template
+#
+# Phase-1 to Phase-2 handoff. Illustrative shape; pin to the actual
+# Linear MCP wire format at implementation time (spec section 13).
+#
+# Placeholder values in angle brackets ("<group-name>", "<ISSUE-ID>",
+# "YYYY-MM-DD") document the substitution points. Phase 1 replaces
+# them before Phase 2 reads the document. Keep them quoted so yaml
+# parses them as strings rather than attempting date / number coercion.
+
+schemaVersion: 1
+group: "<group-name>"
+
+horizon:
+  kind: cycle              # cycle | week | 2w | 4w | milestone | since
+  from: "YYYY-MM-DD"
+  to: "YYYY-MM-DD"
+
+lookahead:
+  kind: cycle
+  from: "YYYY-MM-DD"
+  to: "YYYY-MM-DD"
+  suppressed: false        # true when the user passed "lookahead off"
+                           # or the primary horizon is "since <date>"
+
+thresholds:
+  agingWipDays: 7
+  silentDays: 7
+  noPrDays: 3
+
+members:
+  - displayName: "<name>"
+    identifier: "<linear-user-id>"
+
+unresolved: []             # member names that failed to resolve against
+                           # Linear users; surfaced in the setup-health
+                           # footer, never as stalls
+
+projects:
+  - name: "<project-name>"
+    state: started         # started | paused | completed | canceled
+    milestones:
+      - name: "<milestone-name>"
+        targetDate: "YYYY-MM-DD"
+        datesMovedInWindow: []
+    shipped:
+      - id: "<ISSUE-ID>"
+        title: "<title>"
+        completedAt: "ISO-8601"
+        linkedPRs: []
+    openIssues:
+      - id: "<ISSUE-ID>"
+        title: "<title>"
+        status: "<status>"
+        assigneeIdentifier: "<linear-user-id>"
+        daysInStatus: 0
+        lastCommentDaysAgo: 0
+        linkedPRs: []
+        blockedBy: []
+        milestone: null
+        labels: []
+        bodyHasAcceptanceCriteria: false
+    scopeChangesInWindow:
+      - id: "<ISSUE-ID>"
+        change: "<change-kind>"   # added-to-milestone | removed-from-milestone | labels-changed | project-state-moved
+        at: "ISO-8601"
+    lookaheadMilestones:
+      - name: "<milestone-name>"
+        targetDate: "YYYY-MM-DD"
+        startedIssueCount: 0
+        daysToTarget: 0
+        scopeChangedSinceTargetSet: false
+    lookaheadIssues:
+      - id: "<ISSUE-ID>"
+        title: "<title>"
+        assigneeIdentifier: null
+        status: "<status>"
+        milestone: null
+        bodyHasAcceptanceCriteria: false
+        bodyIsEmpty: true
 ````
 
 - [ ] **Step 6: Write `assets/footer.md`**
@@ -992,7 +1024,7 @@ stable.
    `startedIssueCount`, `daysToTarget`,
    `scopeChangedSinceTargetSet`.
 10. **Emit fact sheet** as a single JSON-shaped structure conforming
-    to [`../assets/factsheet-template.json`](../assets/factsheet-template.json).
+    to [`../assets/factsheet-template.yaml`](../assets/factsheet-template.yaml).
 
 ## Heuristics (calibrated at implementation time)
 
@@ -1020,7 +1052,7 @@ implementation time.
 
 ## Fact-sheet schema
 
-See [`../assets/factsheet-template.json`](../assets/factsheet-template.json)
+See [`../assets/factsheet-template.yaml`](../assets/factsheet-template.yaml)
 for the skeleton. The schema-versioned envelope (`schemaVersion`,
 `group`, `horizon`, `lookahead`, `thresholds`, `members`, `unresolved`,
 `projects[]`) is stable; per-project field names are pinned at probe
@@ -1887,7 +1919,7 @@ When invoked (any non-setup mode), do:
 3. **Phase 1 ingest.** Query Linear MCP per
    [ingest-and-factsheet.md](./references/ingest-and-factsheet.md).
    Emit the fact sheet (template at
-   [assets/factsheet-template.json](./assets/factsheet-template.json)).
+   [assets/factsheet-template.yaml](./assets/factsheet-template.yaml)).
 4. **Decide dispatch.** If `factSheet.projects.length` is at most the
    configured threshold (default 6), single-pass. Else parallel
    sub-agents per [parallel-dispatch.md](./references/parallel-dispatch.md).
@@ -1981,7 +2013,7 @@ so the layers can be revised independently.
 | --- | --- |
 | Setup flow (interactive) | [setup-flow.md](./references/setup-flow.md), [assets/config-template.toml](./assets/config-template.toml) |
 | Resolve scope + horizon + lookahead | [horizon-and-scope.md](./references/horizon-and-scope.md) |
-| Phase 1 ingest | [ingest-and-factsheet.md](./references/ingest-and-factsheet.md), [assets/factsheet-template.json](./assets/factsheet-template.json) |
+| Phase 1 ingest | [ingest-and-factsheet.md](./references/ingest-and-factsheet.md), [assets/factsheet-template.yaml](./assets/factsheet-template.yaml) |
 | Decide dispatch | [parallel-dispatch.md](./references/parallel-dispatch.md) |
 | Phase 2 — signal composition | [signal-modes.md](./references/signal-modes.md), [signals.md](./references/signals.md), [tone.md](./references/tone.md), [assets/footer.md](./assets/footer.md) |
 | Phase 2 — presentation | [presentation.md](./references/presentation.md), [palettes.md](./references/palettes.md), [mood-line.md](./references/mood-line.md), [assets/animation.md](./assets/animation.md) |
@@ -2150,184 +2182,267 @@ git commit -m "docs: add linearazor to top-level skills table"
 
 **Files:**
 
-- Create: `skills/linearazor/tests/fixtures/healthy.mcp.json`
-- Create: `skills/linearazor/tests/fixtures/aging.mcp.json`
-- Create: `skills/linearazor/tests/fixtures/cycle-end-retro.mcp.json`
-- Create: `skills/linearazor/tests/fixtures/many-projects.mcp.json`
+- Create: `skills/linearazor/tests/fixtures/healthy.mcp.yaml`
+- Create: `skills/linearazor/tests/fixtures/aging.mcp.yaml`
+- Create: `skills/linearazor/tests/fixtures/cycle-end-retro.mcp.yaml`
+- Create: `skills/linearazor/tests/fixtures/many-projects.mcp.yaml`
 
 Mock Linear MCP responses for manual smoke runs. Until the Linear MCP
 shape is pinned at implementation time, the fixtures use the
 illustrative schema from
-[`../assets/factsheet-template.json`](../assets/factsheet-template.json) —
+[`../assets/factsheet-template.yaml`](../assets/factsheet-template.yaml) —
 keep them lean. Revisit and adjust after the probe in
 [ingest-and-factsheet.md](./references/ingest-and-factsheet.md).
 
-- [ ] **Step 1: Write `healthy.mcp.json`**
+- [ ] **Step 1: Write `healthy.mcp.yaml`**
 
 A healthy workspace — most issues moving, several shipped, no stalls.
 
-````json
-{
-  "factSheet": {
-    "schemaVersion": 1,
-    "group": "infra",
-    "horizon": { "kind": "cycle", "from": "2026-05-06", "to": "2026-05-16" },
-    "lookahead": { "kind": "cycle", "from": "2026-05-17", "to": "2026-05-30", "suppressed": false },
-    "thresholds": { "agingWipDays": 7, "silentDays": 7, "noPrDays": 3 },
-    "members": [
-      { "displayName": "Bob Wu", "identifier": "bob.wu@example.com" },
-      { "displayName": "Carol Ko", "identifier": "carol.ko@example.com" }
-    ],
-    "unresolved": [],
-    "projects": [
-      {
-        "name": "infra / runtime",
-        "state": "started",
-        "milestones": [
-          { "name": "May runtime cut", "targetDate": "2026-05-16", "datesMovedInWindow": [] }
-        ],
-        "shipped": [
-          { "id": "ENG-481", "title": "Backplane handshake hardening", "completedAt": "2026-05-09T14:02:11Z", "linkedPRs": ["https://github.com/example/runtime/pull/812"] },
-          { "id": "ENG-487", "title": "Drop debug logger in prod build", "completedAt": "2026-05-11T09:30:00Z", "linkedPRs": ["https://github.com/example/runtime/pull/819"] }
-        ],
-        "openIssues": [
-          { "id": "ENG-492", "title": "Bootstrap token rotation", "status": "In Progress", "assigneeIdentifier": "bob.wu@example.com", "daysInStatus": 2, "lastCommentDaysAgo": 1, "linkedPRs": ["https://github.com/example/runtime/pull/825"], "blockedBy": [], "milestone": "May runtime cut", "labels": ["eng:infra"], "bodyHasAcceptanceCriteria": true }
-        ],
-        "scopeChangesInWindow": [],
-        "lookaheadMilestones": [
-          { "name": "June runtime cut", "targetDate": "2026-06-18", "startedIssueCount": 3, "daysToTarget": 35, "scopeChangedSinceTargetSet": false }
-        ],
-        "lookaheadIssues": []
-      }
-    ]
-  }
-}
+````yaml
+# Healthy workspace fixture — most issues moving, several shipped, no stalls.
+
+factSheet:
+  schemaVersion: 1
+  group: infra
+  horizon:
+    kind: cycle
+    from: "2026-05-06"
+    to: "2026-05-16"
+  lookahead:
+    kind: cycle
+    from: "2026-05-17"
+    to: "2026-05-30"
+    suppressed: false
+  thresholds:
+    agingWipDays: 7
+    silentDays: 7
+    noPrDays: 3
+  members:
+    - displayName: Bob Wu
+      identifier: bob.wu@example.com
+    - displayName: Carol Ko
+      identifier: carol.ko@example.com
+  unresolved: []
+  projects:
+    - name: infra / runtime
+      state: started
+      milestones:
+        - name: May runtime cut
+          targetDate: "2026-05-16"
+          datesMovedInWindow: []
+      shipped:
+        - id: ENG-481
+          title: Backplane handshake hardening
+          completedAt: "2026-05-09T14:02:11Z"
+          linkedPRs:
+            - https://github.com/example/runtime/pull/812
+        - id: ENG-487
+          title: Drop debug logger in prod build
+          completedAt: "2026-05-11T09:30:00Z"
+          linkedPRs:
+            - https://github.com/example/runtime/pull/819
+      openIssues:
+        - id: ENG-492
+          title: Bootstrap token rotation
+          status: In Progress
+          assigneeIdentifier: bob.wu@example.com
+          daysInStatus: 2
+          lastCommentDaysAgo: 1
+          linkedPRs:
+            - https://github.com/example/runtime/pull/825
+          blockedBy: []
+          milestone: May runtime cut
+          labels:
+            - eng:infra
+          bodyHasAcceptanceCriteria: true
+      scopeChangesInWindow: []
+      lookaheadMilestones:
+        - name: June runtime cut
+          targetDate: "2026-06-18"
+          startedIssueCount: 3
+          daysToTarget: 35
+          scopeChangedSinceTargetSet: false
+      lookaheadIssues: []
 ````
 
-- [ ] **Step 2: Write `aging.mcp.json`**
+- [ ] **Step 2: Write `aging.mcp.yaml`**
 
 Several stalls across categories — one project with aging WIP, one
 silent issue, one no-PR-linked, one blocked-without-blocker.
 
-````json
-{
-  "factSheet": {
-    "schemaVersion": 1,
-    "group": "infra",
-    "horizon": { "kind": "cycle", "from": "2026-05-06", "to": "2026-05-16" },
-    "lookahead": { "kind": "cycle", "from": "2026-05-17", "to": "2026-05-30", "suppressed": false },
-    "thresholds": { "agingWipDays": 7, "silentDays": 7, "noPrDays": 3 },
-    "members": [
-      { "displayName": "Bob Wu", "identifier": "bob.wu@example.com" },
-      { "displayName": "Carol Ko", "identifier": "carol.ko@example.com" }
-    ],
-    "unresolved": [],
-    "projects": [
-      {
-        "name": "infra / runtime",
-        "state": "started",
-        "milestones": [
-          { "name": "May runtime cut", "targetDate": "2026-05-21", "datesMovedInWindow": ["2026-05-14 -> 2026-05-21"] }
-        ],
-        "shipped": [],
-        "openIssues": [
-          { "id": "ENG-423", "title": "Refactor scheduler", "status": "In Progress", "assigneeIdentifier": "carol.ko@example.com", "daysInStatus": 11, "lastCommentDaysAgo": 6, "linkedPRs": [], "blockedBy": [], "milestone": null, "labels": ["eng:infra"], "bodyHasAcceptanceCriteria": false },
-          { "id": "ENG-446", "title": "Audit retry policy", "status": "In Progress", "assigneeIdentifier": "bob.wu@example.com", "daysInStatus": 9, "lastCommentDaysAgo": 2, "linkedPRs": [], "blockedBy": [], "milestone": null, "labels": ["eng:infra"], "bodyHasAcceptanceCriteria": true },
-          { "id": "ENG-440", "title": "Vendor handshake", "status": "Blocked", "assigneeIdentifier": "carol.ko@example.com", "daysInStatus": 5, "lastCommentDaysAgo": 4, "linkedPRs": [], "blockedBy": [], "milestone": null, "labels": ["eng:infra"], "bodyHasAcceptanceCriteria": true }
-        ],
-        "scopeChangesInWindow": [
-          { "id": "ENG-470", "change": "added-to-milestone", "at": "2026-05-12T09:14:02Z" }
-        ],
-        "lookaheadMilestones": [
-          { "name": "June runtime cut", "targetDate": "2026-06-18", "startedIssueCount": 0, "daysToTarget": 35, "scopeChangedSinceTargetSet": false }
-        ],
-        "lookaheadIssues": [
-          { "id": "ENG-502", "title": "Decide on config schema v2", "assigneeIdentifier": null, "status": "Backlog", "milestone": "June runtime cut", "bodyHasAcceptanceCriteria": false, "bodyIsEmpty": true }
-        ]
-      }
-    ]
-  }
-}
+````yaml
+# Aging workspace fixture — multiple stalls across categories.
+
+factSheet:
+  schemaVersion: 1
+  group: infra
+  horizon:
+    kind: cycle
+    from: "2026-05-06"
+    to: "2026-05-16"
+  lookahead:
+    kind: cycle
+    from: "2026-05-17"
+    to: "2026-05-30"
+    suppressed: false
+  thresholds:
+    agingWipDays: 7
+    silentDays: 7
+    noPrDays: 3
+  members:
+    - displayName: Bob Wu
+      identifier: bob.wu@example.com
+    - displayName: Carol Ko
+      identifier: carol.ko@example.com
+  unresolved: []
+  projects:
+    - name: infra / runtime
+      state: started
+      milestones:
+        - name: May runtime cut
+          targetDate: "2026-05-21"
+          datesMovedInWindow:
+            - "2026-05-14 -> 2026-05-21"
+      shipped: []
+      openIssues:
+        - id: ENG-423
+          title: Refactor scheduler
+          status: In Progress
+          assigneeIdentifier: carol.ko@example.com
+          daysInStatus: 11             # exceeds agingWipDays (7) -> aging WIP
+          lastCommentDaysAgo: 6
+          linkedPRs: []
+          blockedBy: []
+          milestone: null
+          labels:
+            - eng:infra
+          bodyHasAcceptanceCriteria: false
+        - id: ENG-446
+          title: Audit retry policy
+          status: In Progress
+          assigneeIdentifier: bob.wu@example.com
+          daysInStatus: 9              # exceeds noPrDays (3), linkedPRs empty -> no-PR stall
+          lastCommentDaysAgo: 2
+          linkedPRs: []
+          blockedBy: []
+          milestone: null
+          labels:
+            - eng:infra
+          bodyHasAcceptanceCriteria: true
+        - id: ENG-440
+          title: Vendor handshake
+          status: Blocked
+          assigneeIdentifier: carol.ko@example.com
+          daysInStatus: 5
+          lastCommentDaysAgo: 4
+          linkedPRs: []
+          blockedBy: []               # Blocked status without blockedBy -> blocked-without-blocker stall
+          milestone: null
+          labels:
+            - eng:infra
+          bodyHasAcceptanceCriteria: true
+      scopeChangesInWindow:
+        - id: ENG-470
+          change: added-to-milestone
+          at: "2026-05-12T09:14:02Z"
+      lookaheadMilestones:
+        - name: June runtime cut
+          targetDate: "2026-06-18"
+          startedIssueCount: 0        # 0 started, daysToTarget 35 (>14) -> not appetite-risk yet
+          daysToTarget: 35
+          scopeChangedSinceTargetSet: false
+      lookaheadIssues:
+        - id: ENG-502
+          title: Decide on config schema v2
+          assigneeIdentifier: null
+          status: Backlog
+          milestone: June runtime cut
+          bodyHasAcceptanceCriteria: false
+          bodyIsEmpty: true            # empty body + attached to milestone -> unclarity
 ````
 
-- [ ] **Step 3: Write `cycle-end-retro.mcp.json`**
+- [ ] **Step 3: Write `cycle-end-retro.mcp.yaml`**
 
 Horizon crosses a cycle end (active cycle ends today). Triggers
 retrospective section.
 
-````json
-{
-  "factSheet": {
-    "schemaVersion": 1,
-    "group": "infra",
-    "horizon": { "kind": "cycle", "from": "2026-04-29", "to": "2026-05-09", "endsToday": true },
-    "lookahead": { "kind": "cycle", "from": "2026-05-10", "to": "2026-05-23", "suppressed": false },
-    "thresholds": { "agingWipDays": 7, "silentDays": 7, "noPrDays": 3 },
-    "members": [
-      { "displayName": "Bob Wu", "identifier": "bob.wu@example.com" }
-    ],
-    "unresolved": [],
-    "projects": [
-      {
-        "name": "infra / runtime",
-        "state": "started",
-        "milestones": [
-          { "name": "May runtime cut", "targetDate": "2026-05-21", "datesMovedInWindow": ["2026-05-14 -> 2026-05-21", "2026-05-07 -> 2026-05-14"] }
-        ],
-        "shipped": [
-          { "id": "ENG-481", "title": "Backplane handshake", "completedAt": "2026-05-09T11:00:00Z", "linkedPRs": ["https://github.com/example/runtime/pull/812"] }
-        ],
-        "openIssues": [
-          { "id": "ENG-423", "title": "Refactor scheduler", "status": "In Progress", "assigneeIdentifier": "bob.wu@example.com", "daysInStatus": 8, "lastCommentDaysAgo": 2, "linkedPRs": ["https://github.com/example/runtime/pull/820"], "blockedBy": [], "milestone": "May runtime cut", "labels": ["eng:infra"], "bodyHasAcceptanceCriteria": true }
-        ],
-        "scopeChangesInWindow": [],
-        "lookaheadMilestones": [],
-        "lookaheadIssues": []
-      }
-    ]
-  }
-}
+````yaml
+# Cycle-end fixture — horizon crosses a cycle end; triggers retrospective.
+
+factSheet:
+  schemaVersion: 1
+  group: infra
+  horizon:
+    kind: cycle
+    from: "2026-04-29"
+    to: "2026-05-09"
+    endsToday: true
+  lookahead:
+    kind: cycle
+    from: "2026-05-10"
+    to: "2026-05-23"
+    suppressed: false
+  thresholds:
+    agingWipDays: 7
+    silentDays: 7
+    noPrDays: 3
+  members:
+    - displayName: Bob Wu
+      identifier: bob.wu@example.com
+  unresolved: []
+  projects:
+    - name: infra / runtime
+      state: started
+      milestones:
+        - name: May runtime cut
+          targetDate: "2026-05-21"
+          datesMovedInWindow:
+            - "2026-05-14 -> 2026-05-21"
+            - "2026-05-07 -> 2026-05-14"
+      shipped:
+        - id: ENG-481
+          title: Backplane handshake
+          completedAt: "2026-05-09T11:00:00Z"
+          linkedPRs:
+            - https://github.com/example/runtime/pull/812
+      openIssues:
+        - id: ENG-423
+          title: Refactor scheduler
+          status: In Progress
+          assigneeIdentifier: bob.wu@example.com
+          daysInStatus: 8
+          lastCommentDaysAgo: 2
+          linkedPRs:
+            - https://github.com/example/runtime/pull/820
+          blockedBy: []
+          milestone: May runtime cut
+          labels:
+            - eng:infra
+          bodyHasAcceptanceCriteria: true
+      scopeChangesInWindow: []
+      lookaheadMilestones: []
+      lookaheadIssues: []
 ````
 
-- [ ] **Step 4: Write `many-projects.mcp.json`**
+- [ ] **Step 4: Write `many-projects.mcp.yaml`**
 
-More than 6 projects in scope — triggers parallel dispatch.
+More than 6 projects in scope — triggers parallel dispatch. Use 7
+project entries with minimal content: one shipped issue per project,
+no stalls, no lookahead, no scope changes. Project names `infra /
+svc-1` through `infra / svc-7`, issue IDs ENG-101 through ENG-107.
+See the actual file at `skills/linearazor/tests/fixtures/many-projects.mcp.yaml`
+for the full content — too long to inline here.
 
-Generate this fixture with a small shell snippet to keep the plan
-concise:
-
-```bash
-cat > skills/linearazor/tests/fixtures/many-projects.mcp.json <<'EOF'
-{
-  "factSheet": {
-    "schemaVersion": 1,
-    "group": "infra",
-    "horizon": { "kind": "cycle", "from": "2026-05-06", "to": "2026-05-16" },
-    "lookahead": { "kind": "cycle", "from": "2026-05-17", "to": "2026-05-30", "suppressed": false },
-    "thresholds": { "agingWipDays": 7, "silentDays": 7, "noPrDays": 3 },
-    "members": [
-      { "displayName": "Bob Wu", "identifier": "bob.wu@example.com" }
-    ],
-    "unresolved": [],
-    "projects": []
-  }
-}
-EOF
-```
-
-Then append 7 minimal project entries via Edit so the resulting JSON
-has 7 elements in `projects` — each with one shipped issue, no stalls,
-no lookahead. This is enough to trigger the parallel-dispatch branch.
-
-- [ ] **Step 5: Verify JSON is valid**
+- [ ] **Step 5: Verify yaml is valid**
 
 ```bash
-for f in skills/linearazor/tests/fixtures/*.mcp.json; do
-  jq empty "$f" || echo "INVALID: $f"
+for f in skills/linearazor/tests/fixtures/*.mcp.yaml; do
+  yq eval '. | length' "$f" >/dev/null 2>&1 && echo "VALID: $f" || echo "INVALID: $f"
 done
 ```
 
-Expected: no `INVALID` lines.
+Expected: 4 `VALID` lines, no `INVALID`. Install `yq` with
+`brew install yq` if not present.
 
 - [ ] **Step 6: Lint and commit**
 
@@ -2431,9 +2546,9 @@ gh pr create --title "feat(linearazor): implement skill per spec" --body "$(cat 
 - [x] `pnpm lint` clean
 - [x] `npx skills-ref validate ./skills/linearazor` exits 0
 - [x] Hard-rule audit script (Task 17 Step 3) passes
-- [ ] Manual smoke runs against `tests/fixtures/healthy.mcp.json`,
-  `aging.mcp.json`, `cycle-end-retro.mcp.json`,
-  `many-projects.mcp.json`
+- [ ] Manual smoke runs against `tests/fixtures/healthy.mcp.yaml`,
+  `aging.mcp.yaml`, `cycle-end-retro.mcp.yaml`,
+  `many-projects.mcp.yaml`
 - [ ] Live run against the author's Linear workspace, with Linear MCP
   installed, to probe the real MCP shape and adjust
   `references/ingest-and-factsheet.md` per spec section 13 "Open at
@@ -2451,7 +2566,7 @@ Run after Task 17 commits, before opening the PR:
 - [ ] Every spec section maps to a task or is explicitly out of v1
       scope (spec section 11).
 - [ ] No placeholders or `TODO` strings in skill files. Placeholders
-      in `.toml` and `.json` templates marked with angle-bracket
+      in `.toml` and `.yaml` templates marked with angle-bracket
       conventions in body text (not in frontmatter) are allowed.
 - [ ] Method, file, and reference names referenced in later tasks
       match what was created in earlier tasks. Grep for orphan
