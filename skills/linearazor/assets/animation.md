@@ -163,6 +163,25 @@ ___( o)>
  `---'
 ```
 
+## Empty-brief mascot
+
+The puzzled face appears only when the ritual runs but every signal
+lane comes up empty across every in-scope project — nothing shipped,
+no questions, no changes, no stalls, no quality findings. Replaces
+the mood line in that case; the per-project blocks are suppressed
+since they would all be `No completions in window`.
+
+Honest about the edge case: "I looked, nothing surfaced — you tell me
+if that's good." Better than rendering an empty brief or a forced
+upbeat mood line.
+
+```text
+       .--.
+      / o o \
+     |   ^   |
+      \ --- /
+```
+
 ## Lane → animal table
 
 | Role | Animal |

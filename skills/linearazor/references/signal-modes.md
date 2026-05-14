@@ -73,6 +73,21 @@ target first).
 - Lookahead unclarities cap at 8 per project. Overflow appends
   `N more lookahead unclarities — consider triaging the next milestone`.
 
+## Empty-brief case
+
+When every signal lane is empty across every in-scope project —
+nothing shipped, no questions, no changes, no stalls, no quality
+findings — suppress the per-project blocks (they would all be
+`No completions in window`) and replace the mood line with the
+empty-brief mascot from
+[`../assets/animation.md`](../assets/animation.md) "Empty-brief
+mascot", rendered in the `metadata` palette role. Keep the exec
+summary line (it will read `Across N projects: 0 shipped · 0
+stalls · 0 questions · 0 changes`) and the disclaimer footer.
+
+This is an honest edge case — better than a forced upbeat mood line
+when the horizon turned up nothing.
+
 ## Exec summary
 
 A single line at the top of the full-ritual output, after the mood
