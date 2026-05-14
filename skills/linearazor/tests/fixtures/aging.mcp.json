@@ -1,0 +1,38 @@
+{
+  "factSheet": {
+    "schemaVersion": 1,
+    "group": "infra",
+    "horizon": { "kind": "cycle", "from": "2026-05-06", "to": "2026-05-16" },
+    "lookahead": { "kind": "cycle", "from": "2026-05-17", "to": "2026-05-30", "suppressed": false },
+    "thresholds": { "agingWipDays": 7, "silentDays": 7, "noPrDays": 3 },
+    "members": [
+      { "displayName": "Bob Wu", "identifier": "bob.wu@example.com" },
+      { "displayName": "Carol Ko", "identifier": "carol.ko@example.com" }
+    ],
+    "unresolved": [],
+    "projects": [
+      {
+        "name": "infra / runtime",
+        "state": "started",
+        "milestones": [
+          { "name": "May runtime cut", "targetDate": "2026-05-21", "datesMovedInWindow": ["2026-05-14 -> 2026-05-21"] }
+        ],
+        "shipped": [],
+        "openIssues": [
+          { "id": "ENG-423", "title": "Refactor scheduler", "status": "In Progress", "assigneeIdentifier": "carol.ko@example.com", "daysInStatus": 11, "lastCommentDaysAgo": 6, "linkedPRs": [], "blockedBy": [], "milestone": null, "labels": ["eng:infra"], "bodyHasAcceptanceCriteria": false },
+          { "id": "ENG-446", "title": "Audit retry policy", "status": "In Progress", "assigneeIdentifier": "bob.wu@example.com", "daysInStatus": 9, "lastCommentDaysAgo": 2, "linkedPRs": [], "blockedBy": [], "milestone": null, "labels": ["eng:infra"], "bodyHasAcceptanceCriteria": true },
+          { "id": "ENG-440", "title": "Vendor handshake", "status": "Blocked", "assigneeIdentifier": "carol.ko@example.com", "daysInStatus": 5, "lastCommentDaysAgo": 4, "linkedPRs": [], "blockedBy": [], "milestone": null, "labels": ["eng:infra"], "bodyHasAcceptanceCriteria": true }
+        ],
+        "scopeChangesInWindow": [
+          { "id": "ENG-470", "change": "added-to-milestone", "at": "2026-05-12T09:14:02Z" }
+        ],
+        "lookaheadMilestones": [
+          { "name": "June runtime cut", "targetDate": "2026-06-18", "startedIssueCount": 0, "daysToTarget": 35, "scopeChangedSinceTargetSet": false }
+        ],
+        "lookaheadIssues": [
+          { "id": "ENG-502", "title": "Decide on config schema v2", "assigneeIdentifier": null, "status": "Backlog", "milestone": "June runtime cut", "bodyHasAcceptanceCriteria": false, "bodyIsEmpty": true }
+        ]
+      }
+    ]
+  }
+}

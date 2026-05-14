@@ -1,0 +1,35 @@
+{
+  "factSheet": {
+    "schemaVersion": 1,
+    "group": "infra",
+    "horizon": { "kind": "cycle", "from": "2026-05-06", "to": "2026-05-16" },
+    "lookahead": { "kind": "cycle", "from": "2026-05-17", "to": "2026-05-30", "suppressed": false },
+    "thresholds": { "agingWipDays": 7, "silentDays": 7, "noPrDays": 3 },
+    "members": [
+      { "displayName": "Bob Wu", "identifier": "bob.wu@example.com" },
+      { "displayName": "Carol Ko", "identifier": "carol.ko@example.com" }
+    ],
+    "unresolved": [],
+    "projects": [
+      {
+        "name": "infra / runtime",
+        "state": "started",
+        "milestones": [
+          { "name": "May runtime cut", "targetDate": "2026-05-16", "datesMovedInWindow": [] }
+        ],
+        "shipped": [
+          { "id": "ENG-481", "title": "Backplane handshake hardening", "completedAt": "2026-05-09T14:02:11Z", "linkedPRs": ["https://github.com/example/runtime/pull/812"] },
+          { "id": "ENG-487", "title": "Drop debug logger in prod build", "completedAt": "2026-05-11T09:30:00Z", "linkedPRs": ["https://github.com/example/runtime/pull/819"] }
+        ],
+        "openIssues": [
+          { "id": "ENG-492", "title": "Bootstrap token rotation", "status": "In Progress", "assigneeIdentifier": "bob.wu@example.com", "daysInStatus": 2, "lastCommentDaysAgo": 1, "linkedPRs": ["https://github.com/example/runtime/pull/825"], "blockedBy": [], "milestone": "May runtime cut", "labels": ["eng:infra"], "bodyHasAcceptanceCriteria": true }
+        ],
+        "scopeChangesInWindow": [],
+        "lookaheadMilestones": [
+          { "name": "June runtime cut", "targetDate": "2026-06-18", "startedIssueCount": 3, "daysToTarget": 35, "scopeChangedSinceTargetSet": false }
+        ],
+        "lookaheadIssues": []
+      }
+    ]
+  }
+}
