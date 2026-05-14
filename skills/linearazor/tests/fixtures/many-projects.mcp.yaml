@@ -29,6 +29,7 @@ factSheet:
         - id: ENG-101
           title: svc-1 work shipped
           completedAt: "2026-05-09T10:00:00Z"
+          assigneeIdentifier: bob.wu@example.com   # exercises the `for <member>` filter
           linkedPRs: []
       openIssues: []
       scopeChangesInWindow: []
@@ -41,6 +42,7 @@ factSheet:
         - id: ENG-102
           title: svc-2 work shipped
           completedAt: "2026-05-09T10:00:00Z"
+          assigneeIdentifier: bob.wu@example.com   # exercises the `for <member>` filter
           linkedPRs: []
       openIssues: []
       scopeChangesInWindow: []

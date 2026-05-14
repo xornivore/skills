@@ -156,7 +156,10 @@ so the layers can be revised independently.
 7. **[Signal] Acknowledge missing context once.** Full-ritual runs
    end with one line: the literal disclaimer from
    [assets/footer.md](./assets/footer.md). Suppressed in `brief`
-   mode. Audit: full-ritual output contains the literal string.
+   mode. **Audit:** extract the text inside the fenced `text` block
+   in `assets/footer.md` and assert byte-equality with the disclaimer
+   line in the rendered output. Mechanically checkable when a smoke
+   harness exists; until then, reviewer-verified.
 
 8. **[Signal] Celebrate first.** Each per-project block leads with
    shipped. If nothing shipped, the block opens with

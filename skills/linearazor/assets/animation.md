@@ -221,3 +221,13 @@ repo. Until that pass lands, the safe redistribution stance is: this
 file is a presentation-layer asset of the `linearazor` skill,
 authored from cultural-commons ASCII art, shipped under the repo's
 MIT license alongside the rest of the skill code.
+
+Known artists to credit when the attribution pass happens:
+
+- **Joan G. Stark** (`jgs`) — turtle, bat
+- **Shanaka Dias** (`snd`) — penguin
+- **Hayley Wakenshaw** (`hjw`) — duck
+- **Stef00** — bee
+- The cat, cow, snail, fish, snake, dog, spider, and puzzled-face
+  pieces come from uncredited canonical forms in the ASCII commons
+  and are treated as effectively public-domain.

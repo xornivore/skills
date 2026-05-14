@@ -34,6 +34,32 @@ explicitly backward-facing).
 `lookahead 2` looks two tiers ahead instead of one — concatenate the
 two windows for the lookahead set.
 
+## Lookahead suppression and mode interaction
+
+The lookahead block is suppressed under any of these conditions:
+
+| Condition | Trigger |
+| --- | --- |
+| Explicit suppression | User invoked `linearazor lookahead off` |
+| Implicit suppression | Primary horizon is `since <date>` (anchor mode is backward-facing) |
+| Per-mode suppression | `brief` mode (slack-paste is current-cycle only) |
+| Empty-set suppression | The lookahead window resolves to no in-scope issues and no in-scope milestones |
+
+Mode-by-mode rendering of the lookahead block:
+
+| Mode | Lookahead behavior |
+| --- | --- |
+| `brief` | Always suppressed |
+| `digest` | Collapsed to a one-liner per project |
+| full ritual | Own section after per-project blocks |
+| `share` | Inherits full ritual; renders into the PNG |
+
+Composition rule: when both an explicit-suppression flag and a mode
+suppression apply, suppression wins. `linearazor share lookahead off`
+renders the share PNG without the lookahead block. `linearazor digest
+lookahead 2` widens the lookahead window before applying digest's
+one-liner-per-project shape.
+
 ## In-scope set (primary horizon)
 
 An issue is in scope when all apply:

@@ -12,26 +12,26 @@ verdicts.
 Exemplars (the model should imitate this register):
 
 ```text
-Three cows in the field this week, one bee, and a lemur with a good question.
+Three cows in the field this week, one bee, and a cat with a good question.
 ```
 
 ```text
-Two bees and a beaver this cycle — the field is quiet, but the snail
-on ENG-446 is worth a look.
+Two bees this cycle — the field is quiet, but the snail on ENG-446
+is worth a look.
 ```
 
 ```text
-An owl this morning — looking back at the May runtime cut so the June
+A dog this morning — looking back at the May runtime cut so the June
 one doesn't end the same way.
 ```
 
 ```text
-A chameleon and three foxes — the runtime project is changing shape
+A snake and three penguins — the runtime project is changing shape
 faster than it's moving.
 ```
 
 ```text
-A heron and two questions — the next cycle has acceptance criteria
+A bat and two questions — the next cycle has acceptance criteria
 to nail down.
 ```
 
@@ -42,7 +42,7 @@ patterns:
 
 | Wrong | Right |
 | --- | --- |
-| "Best week yet — 8 bees!" | "Three bees and a beaver this week." |
+| "Best week yet — 8 bees!" | "Three bees and a cow this week." |
 | "Stall count up 30% from last cycle." | "Three cows in the field — worth a chat about ENG-423 and ENG-446." |
 | "Bob: 4 bees · Carol: 3 bees" | (No per-person framing in the mood line.) |
 | "Animals as emoji decorations" | (No emoji. Color and prose carry the cast.) |
