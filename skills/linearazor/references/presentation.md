@@ -31,21 +31,21 @@ than three colored tokens on a line is a presentation-layer bug.
 ## Animation placement
 
 The animation cast lives in [`../assets/animation.md`](../assets/animation.md).
-One animal per signal category per brief — not one per project, not
+One creature per signal category per brief — not one per project, not
 one per item.
 
 For each lane that has at least one finding across the in-scope
-project set, render the animal once at the top of the lane, before
-the lane title and the finding lines. All animals face right toward
+project set, render the creature once at the top of the lane, before
+the lane title and the finding lines. All creatures face right toward
 the finding list below.
 
-If a lane is empty across every project, no animal renders for that
+If a lane is empty across every project, no creature renders for that
 lane — the whole lane is omitted (see
 [signals.md](./signals.md) "Lane order").
 
 ### ASCII art padding (universal)
 
-Every ASCII art block — animal art, the setup duck, the empty-brief
+Every ASCII art block — creature art, the setup duck, the empty-brief
 mascot, the optional razor glyph in the run header — is bracketed by
 exactly one blank line above and one blank line below. No exceptions,
 no second blank for "breathing room," no zero-line tight-coupling
@@ -57,7 +57,7 @@ zero, is a violation.
 
 ### Sub-flavor overrides
 
-A lane may swap its default animal for a sub-flavor variant when a
+A lane may swap its default creature for a sub-flavor variant when a
 stronger condition matches. The sub-flavor inherits the same palette
 role as the lane it overrides.
 
@@ -65,7 +65,7 @@ role as the lane it overrides.
 | --- | --- | --- | --- |
 | `changes_scope` | Penguin | Spider — when the total scope-changes count across all in-scope projects in the primary horizon is at least 3 ("scope drift") | `changes_scope` |
 
-When a sub-flavor renders, the default animal is suppressed for that
+When a sub-flavor renders, the default creature is suppressed for that
 lane — never both.
 
 ## Unicode flourishes

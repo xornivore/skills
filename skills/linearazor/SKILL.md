@@ -21,7 +21,7 @@ compatibility: |
 Reads a scoped Linear workspace via Linear MCP and produces a brief
 organized into cross-project lanes — shipped, questions, scope and
 date changes, stalls, clarity gaps — with a cross-cutting exec summary
-at the top. Each lane carries one ASCII animal; projects appear as
+at the top. Each lane carries one ASCII creature; projects appear as
 sub-headers inside each lane in a consistent global order. Read-only;
 never edits files or Linear.
 
@@ -172,8 +172,8 @@ so the layers can be revised independently.
    is the first lane, no `shipped` lane exists in the output.
 
 9. **[Signal] No scoring, no streaks, no leaderboards.** The mood
-   line counts animals as flavor; the brief never tallies them across
-   runs as metrics. Audit: no persisted counter of animals, shipped,
+   line counts creatures as flavor; the brief never tallies them across
+   runs as metrics. Audit: no persisted counter of creatures, shipped,
    or stalls exists.
 
 10. **[Signal] Never re-query Linear from Phase 2.** If Phase 2 needs

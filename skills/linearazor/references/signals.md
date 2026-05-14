@@ -29,7 +29,7 @@ the same global order in every lane: by Linear `status.type`
 within each tier. A project with zero items in a given lane is
 omitted from that lane.
 
-Each lane carries exactly one ASCII animal at the top of the lane.
+Each lane carries exactly one ASCII creature at the top of the lane.
 Hard rule 8 (celebrate first) binds: when `shipped` has content it
 leads the brief; when `shipped` is empty it is omitted and the next
 non-empty lane leads — never opening with `stalls` while `shipped`

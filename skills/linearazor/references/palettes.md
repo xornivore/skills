@@ -48,16 +48,16 @@ same roles to its accents — only the hues change.
 
 | Role | What it colors |
 | --- | --- |
-| `shipped` | Shipped lead-in, momentum, bee animal |
-| `questions` | Questions lane, cat animal, `→` flourish |
-| `changes_scope` | Scope-change lines, penguin animal |
-| `changes_date` | Date-move lines, snake animal |
-| `stalls_aging` | Aging-WIP stall lines, cow animal |
-| `stalls_no_pr` | No-PR-linked stall lines, snail animal |
-| `stalls_silent` | Silent stall lines, turtle animal |
-| `stalls_blocked` | Blocked-without-blocker stall lines, fish animal |
-| `quality` | Quality lines, bat animal |
-| `retrospective` | Retrospective block, dog animal |
+| `shipped` | Shipped lead-in, momentum, bee creature |
+| `questions` | Questions lane, cat creature, `→` flourish |
+| `changes_scope` | Scope-change lines, penguin creature |
+| `changes_date` | Date-move lines, snake creature |
+| `stalls_aging` | Aging-WIP stall lines, cow creature |
+| `stalls_no_pr` | No-PR-linked stall lines, snail creature |
+| `stalls_silent` | Silent stall lines, turtle creature |
+| `stalls_blocked` | Blocked-without-blocker stall lines, fish creature |
+| `quality` | Quality lines, bat creature |
+| `retrospective` | Retrospective block, dog creature |
 | `lookahead` | Lookahead block headings and milestone lines |
 | `metadata` | Dim context — file paths, timestamps, footer text |
 

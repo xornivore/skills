@@ -1,13 +1,13 @@
 # Animation cast
 
-Eleven ASCII animals, one per signal lane. Sourced from established
+Eleven ASCII creatures, one per signal lane. Sourced from established
 ASCII art rather than freehand.
 
-One animal per signal category per brief, never one per project and
+One creature per signal category per brief, never one per project and
 never one per item. Color via the palette role in the heading — see
 [../references/palettes.md](../references/palettes.md).
 
-Every animal block is bracketed by exactly one blank line above and
+Every creature block is bracketed by exactly one blank line above and
 one blank line below in the rendered output — see
 [`../references/presentation.md`](../references/presentation.md)
 "ASCII art padding (universal)". Same rule applies to the setup duck
@@ -18,12 +18,13 @@ The cast deliberately mixes facing directions and sizes. The earlier
 the canonical art doesn't all conform, and the canonical art is the
 point.
 
-**Left-margin convention.** Each animal carries its own leading
-whitespace so the leftmost glyph sits around column 8 of the source
-block. The renderer's 2-space lane indent stacks on top, putting the
-animal at roughly column 10 — clear of the lane heading and the
-finding bullets that sit at column 2-4. Replacing an animal? Match
-the existing leading-whitespace shape; don't render at column 0.
+**Left-margin convention.** Every creature renders flush left at
+column 0 of the source block. The renderer adds no extra leading
+indent — the creature sits directly above the lane title and project
+sub-headers below it, none of which carry the old per-project two-space
+lane indent that this convention used to compensate for. Replacing a
+creature? Strip any leading whitespace shared by all rows before
+committing it; the leftmost glyph of any row must sit at column 0.
 
 ## Cast
 
@@ -32,11 +33,11 @@ the existing leading-whitespace shape; don't render at column 0.
 Active, momentum, just shipped. Motion lines trail right.
 
 ```text
-              _   _
-             ( | / )
-           \\ \|/,'_
-           (")(_)()))=-
-              <\\
+   _   _
+  ( | / )
+\\ \|/,'_
+(")(_)()))=-
+   <\\
 ```
 
 ### Cat — `questions`
@@ -44,9 +45,9 @@ Active, momentum, just shipped. Motion lines trail right.
 Sitting, curious, alert.
 
 ```text
-         /\_/\
-        ( o.o )
-         > ^ <
+ /\_/\
+( o.o )
+ > ^ <
 ```
 
 ### Cow — `stalls_aging`
@@ -54,11 +55,11 @@ Sitting, curious, alert.
 Standing in a field of grass — head down, plodding.
 
 ```text
-        \|/          (__)
-             `\------(oo)
-               ||    (__)
-               ||w--||     \|/
-           \|/
+\|/          (__)
+     `\------(oo)
+       ||    (__)
+       ||w--||     \|/
+   \|/
 ```
 
 ### Snail — `stalls_no_pr`
@@ -66,11 +67,11 @@ Standing in a field of grass — head down, plodding.
 Slow, antennae up, leaves no trail.
 
 ```text
-            .----.   @   @
-           / .-"-.`.  \v/
-           | | '\ \ \_/ )
-         ,-\ `-.' /.'  /
-        '---`----'----'
+    .----.   @   @
+   / .-"-.`.  \v/
+   | | '\ \ \_/ )
+ ,-\ `-.' /.'  /
+'---`----'----'
 ```
 
 ### Turtle — `stalls_silent`
@@ -78,12 +79,12 @@ Slow, antennae up, leaves no trail.
 Withdrawn, shell-textured, head still extended but quiet.
 
 ```text
-                    __
-         .,-;-;-,. /'_\
-       _/_/_/_|_\_\) /
-     '-<_><_><_><_>=/\
-       `/_/====/_/-'\_\
-        ""     ""    ""
+               __
+    .,-;-;-,. /'_\
+  _/_/_/_|_\_\) /
+'-<_><_><_><_>=/\
+  `/_/====/_/-'\_\
+   ""     ""    ""
 ```
 
 ### Fish — `stalls_blocked`
@@ -91,11 +92,11 @@ Withdrawn, shell-textured, head still extended but quiet.
 Small fish trailed by a larger one — surrounded, not moving forward.
 
 ```text
-                       O  o
-                  _\_   o
-        >('>   \\/  o\ .
-               //\___=
-                  ''
+               O  o
+          _\_   o
+>('>   \\/  o\ .
+       //\___=
+          ''
 ```
 
 ### Penguin — `changes_scope`
@@ -103,12 +104,12 @@ Small fish trailed by a larger one — surrounded, not moving forward.
 Stands sentinel, eye spotting the change.
 
 ```text
-         __
-      -=(o '.
-         '.-.\
-         /|  \\
-         '|  ||
-          _\_):,_
+   __
+-=(o '.
+   '.-.\
+   /|  \\
+   '|  ||
+    _\_):,_
 ```
 
 ### Snake — `changes_date`
@@ -116,12 +117,12 @@ Stands sentinel, eye spotting the change.
 Sinuous, shape-shifting, the milestone date moving.
 
 ```text
-                     ____
-                    / . .\
-                    \  ---<
-                     \  /
-           __________/ /
-        -=:___________/
+             ____
+            / . .\
+            \  ---<
+             \  /
+   __________/ /
+-=:___________/
 ```
 
 ### Bat — `quality`
@@ -129,10 +130,10 @@ Sinuous, shape-shifting, the milestone date moving.
 Wings out, alert, watching for what's missing.
 
 ```text
-        _   ,_,   _
-       / `'=) (='` \
-      /.-.-.\ /.-.-.\
-      `      "      `
+  _   ,_,   _
+ / `'=) (='` \
+/.-.-.\ /.-.-.\
+`      "      `
 ```
 
 ### Dog — `retrospective`
@@ -140,10 +141,10 @@ Wings out, alert, watching for what's missing.
 Looking back, loyal, the run that just ended.
 
 ```text
-          __      _
-        o'')}____//
-         `_/      )
-         (_(_/-(_/
+  __      _
+o'')}____//
+ `_/      )
+ (_(_/-(_/
 ```
 
 ### Spider — `changes_scope` (sub-flavor: scope drift)
@@ -155,10 +156,10 @@ horizon is at least 3, signalling sustained drift rather than a
 one-off change. Inherits the `changes_scope` palette color.
 
 ```text
-         ||  ||
-         \\()//
-        //(__)\\
-        ||    ||
+ ||  ||
+ \\()//
+//(__)\\
+||    ||
 ```
 
 ## Setup mascot
@@ -166,7 +167,7 @@ one-off change. Inherits the `changes_scope` palette color.
 The duck appears only in the setup flow ([`../references/setup-flow.md`](../references/setup-flow.md))
 and in the first ritual run after a fresh `reconfigure`. It is not
 tied to a signal lane and never appears in normal brief output —
-those have the mood line plus one animal per non-empty lane already.
+those have the mood line plus one creature per non-empty lane already.
 
 The rubber-duck-debugging association is intentional: the setup flow
 is conversational, asks the user to articulate their workspace
@@ -174,10 +175,10 @@ shape one question at a time, and the duck is the universal "let me
 explain this to you" companion.
 
 ```text
-            __
-        ___( o)>
-        \ <_. )
-         `---'
+    __
+___( o)>
+\ <_. )
+ `---'
 ```
 
 ## Empty-brief mascot
@@ -193,15 +194,15 @@ if that's good." Better than rendering an empty brief or a forced
 upbeat mood line.
 
 ```text
-               .--.
-              / o o \
-             |   ^   |
-              \ --- /
+  .--.
+ / o o \
+|   ^   |
+ \ --- /
 ```
 
-## Lane → animal table
+## Lane → creature table
 
-| Role | Animal |
+| Role | Creature |
 | --- | --- |
 | `shipped` | Bee |
 | `questions` | Cat |
@@ -217,14 +218,14 @@ upbeat mood line.
 
 ## Replacement
 
-The cast is purely affective. Replacing an animal, changing its pose,
+The cast is purely affective. Replacing a creature, changing its pose,
 or adding a new one is a presentation-layer change — no signal-layer
 file needs updating. Hard rule 12 binds.
 
 ## Audit
 
-- Each lane has exactly one animal in the cast.
-- One animal per signal category per brief (never one per project,
+- Each lane has exactly one creature in the cast.
+- One creature per signal category per brief (never one per project,
   never one per item).
 - Every ASCII art block in the rendered output is bracketed by
   exactly one blank line above and one blank line below.

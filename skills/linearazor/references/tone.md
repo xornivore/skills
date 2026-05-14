@@ -48,7 +48,7 @@ Forbidden tokens:
 | --- | --- |
 | "ENG-423 AT RISK — 11 days in progress." | "ENG-423  In Progress 11 days  (default threshold: 7)" |
 | "Milestone \"May runtime cut\" is BEHIND SCHEDULE." | `Milestone "May runtime cut" moved from May 14 -> May 21` |
-| "Stall." | The factual stall line, with the cow animal rendered above it by the presentation layer. |
+| "Stall." | The factual stall line, with the cow creature rendered above it by the presentation layer. |
 
 **Audit:** grep over the output for `CRITICAL|AT RISK|BEHIND|FAILING`. Any match is a violation.
 
@@ -79,7 +79,7 @@ with `stalls` while `shipped` has content.
 
 ## No scoring, no streaks, no leaderboards
 
-Hard rule 9 binds: the mood line counts animals as flavor; the brief
+Hard rule 9 binds: the mood line counts creatures as flavor; the brief
 never tallies them across runs as metrics. There is no state file in
 which to persist counters — the rule is structurally enforced.
 
