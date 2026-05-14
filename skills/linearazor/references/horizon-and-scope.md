@@ -80,9 +80,8 @@ An issue is in scope when all apply:
 
 Linear has two distinct label namespaces:
 
-- **Project labels** — applied to projects (e.g.
-  `eng:containers-blue`). Used to scope a digest to a sub-team or
-  initiative without tagging every issue.
+- **Project labels** — applied to projects. Used to scope a digest
+  to a sub-team or initiative without tagging every issue.
 - **Issue labels** — applied to individual issues (e.g. `bug`,
   `enhancement`). Used for issue-level classification.
 
@@ -98,11 +97,13 @@ Forcing every issue to carry a redundant tag is friction the team
 won't sustain. Project labels give a stable scope anchor that
 survives churn at the issue level.
 
-**Wrong (old behavior):** filter issues by issue-label
-`eng:containers-blue` — returns empty because issues don't carry it.
+**Wrong:** resolve the configured label as an issue label and filter
+issues directly — returns empty when the label is applied at the
+project level only.
 
-**Right:** filter projects by project-label `eng:containers-blue`,
-then include every in-cycle issue under those projects.
+**Right:** resolve the configured label as a project label, narrow
+projects with it, then include every in-cycle issue under those
+projects.
 
 **Audit:** Phase-1 ingest must call `list_project_labels` to resolve
 the configured `labels`; calling `list_issue_labels` on the configured
