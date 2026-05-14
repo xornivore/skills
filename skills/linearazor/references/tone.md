@@ -67,12 +67,15 @@ signal source is "no acceptance criteria" with a question framing).
 
 ## Celebrate first
 
-Hard rule 8 binds: each per-project block opens with shipped or the
-literal `No completions in window` — never with stalls.
+Hard rule 8 binds: the brief leads with the `shipped` lane when it
+has content; lanes render in fixed order; an empty `shipped` lane is
+omitted entirely and the next non-empty lane leads — never opening
+with `stalls` while `shipped` has content.
 
 | Wrong | Right |
 | --- | --- |
-| Block opens with `Stalls:` ahead of `Shipped:`. | Block opens with `Shipped:` (or `No completions in window`), then questions, changes, stalls, quality. |
+| Brief opens with the `Stalls` lane while the `Shipped` lane also exists with items. | Brief opens with `Shipped`, then questions, changes, stalls, quality, retrospective. |
+| Rendering an empty `Shipped` section with `No completions in window` as a placeholder. | Omitting the `Shipped` lane entirely; the next non-empty lane leads. |
 
 ## No scoring, no streaks, no leaderboards
 

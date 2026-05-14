@@ -3,9 +3,15 @@
 Eleven ASCII animals, one per signal lane. Sourced from established
 ASCII art rather than freehand.
 
-One animal per signal category per per-project section, never one per
-item. Color via the palette role in the heading — see
+One animal per signal category per brief, never one per project and
+never one per item. Color via the palette role in the heading — see
 [../references/palettes.md](../references/palettes.md).
+
+Every animal block is bracketed by exactly one blank line above and
+one blank line below in the rendered output — see
+[`../references/presentation.md`](../references/presentation.md)
+"ASCII art padding (universal)". Same rule applies to the setup duck
+and the empty-brief mascot.
 
 The cast deliberately mixes facing directions and sizes. The earlier
 "all face right, 4-6 lines, 12-20 columns" rule was an aspiration;
@@ -144,9 +150,9 @@ Looking back, loyal, the run that just ended.
 
 Eight-legged, sideways and multidirectional. A sub-flavor of the
 `changes_scope` signal — rendered in place of the penguin when the
-per-project scope-changes count for the run exceeds two, signalling
-sustained drift rather than a one-off change. Inherits the
-`changes_scope` palette color.
+total scope-changes count across all in-scope projects in the primary
+horizon is at least 3, signalling sustained drift rather than a
+one-off change. Inherits the `changes_scope` palette color.
 
 ```text
          ||  ||
@@ -160,7 +166,7 @@ sustained drift rather than a one-off change. Inherits the
 The duck appears only in the setup flow ([`../references/setup-flow.md`](../references/setup-flow.md))
 and in the first ritual run after a fresh `reconfigure`. It is not
 tied to a signal lane and never appears in normal brief output —
-those have the mood line plus per-project animals already.
+those have the mood line plus one animal per non-empty lane already.
 
 The rubber-duck-debugging association is intentional: the setup flow
 is conversational, asks the user to articulate their workspace
@@ -179,8 +185,8 @@ explain this to you" companion.
 The puzzled face appears only when the ritual runs but every signal
 lane comes up empty across every in-scope project — nothing shipped,
 no questions, no changes, no stalls, no quality findings. Replaces
-the mood line in that case; the per-project blocks are suppressed
-since they would all be `No completions in window`.
+the mood line in that case; the whole lane stack is suppressed since
+every lane would be empty.
 
 Honest about the edge case: "I looked, nothing surfaced — you tell me
 if that's good." Better than rendering an empty brief or a forced
@@ -218,8 +224,10 @@ file needs updating. Hard rule 12 binds.
 ## Audit
 
 - Each lane has exactly one animal in the cast.
-- One animal per signal category per per-project section (never one
-  per item).
+- One animal per signal category per brief (never one per project,
+  never one per item).
+- Every ASCII art block in the rendered output is bracketed by
+  exactly one blank line above and one blank line below.
 - No emoji anywhere in this file.
 
 ## Provenance (TODO)

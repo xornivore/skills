@@ -4,13 +4,36 @@ Loaded at the Phase-2 signal-composition step and by parallel sub-agents
 (when dispatched). Defines how each of the six signal lanes is computed
 from the fact sheet emitted by Phase 1.
 
-## Per-project block order
+## Lane order
 
-Every per-project block leads with `shipped`, then `questions`,
-`changes`, `stalls`, `quality`. A `retrospective` block appears when
-the primary horizon crosses a cycle end or milestone target date. The
-`lookahead` section is its own top-level block after the per-project
-blocks (full-ritual mode) — never bundled into a per-project block.
+The brief renders as a stack of top-level lanes in this fixed order:
+
+1. shipped
+2. questions
+3. changes
+4. stalls
+5. quality
+6. retrospective (only when the primary horizon crosses a cycle end
+   or any in-scope milestone target date falls in the primary window)
+
+Empty lanes are omitted entirely. When every lane is empty across
+every in-scope project, the lane stack is replaced by the empty-brief
+mascot (see [signal-modes.md](./signal-modes.md) "Empty-brief case").
+
+`lookahead` stays its own top-level block after the lane stack —
+never bundled into a lane. Hard rule 11 binds.
+
+Inside each lane, items are grouped by project. Projects appear in
+the same global order in every lane: by Linear `status.type`
+(`started` first, then `backlog`, then `completed`), then alphabetical
+within each tier. A project with zero items in a given lane is
+omitted from that lane.
+
+Each lane carries exactly one ASCII animal at the top of the lane.
+Hard rule 8 (celebrate first) binds: when `shipped` has content it
+leads the brief; when `shipped` is empty it is omitted and the next
+non-empty lane leads — never opening with `stalls` while `shipped`
+has content.
 
 ## 1. Shipped (lead-in)
 
@@ -21,12 +44,17 @@ Union of:
 - Merged PRs linked to in-scope issues, with merge date inside the
   primary horizon window.
 
-Rendered as a one-line ticker per project (`• ENG-481  <title>`).
-Facts only — no verdicts.
+Rendered as bullet items grouped under each project's sub-header
+(`• ENG-481  <title>`). Facts only — no verdicts.
 
-When zero shipped, render literal `No completions in window`. Hard
-rule 8 (celebrate first): the block opens with shipped or with the
-literal "No completions in window" — never with stalls.
+When a project's `shipped` for the cycle spans a single milestone,
+annotate the project sub-header inline:
+`<Project name>   (milestone: "<milestone>")`. When items under a
+project span multiple milestones, omit the annotation — the Linear
+hyperlink on each ID carries the milestone in its destination.
+
+When zero issues shipped across every project, the `shipped` lane is
+omitted entirely (the lane is empty, no literal placeholder).
 
 ## 2. Questions
 
@@ -44,8 +72,11 @@ Detection patterns:
   date moves:
   "Is the appetite for <milestone> still well-framed?"
 - The primary horizon crosses a cycle end AND there are 2+ issues
-  with status `In Progress`:
-  "Which of these are realistic to land this cycle?"
+  with status `In Progress` across all in-scope projects:
+  "Three issues are still started with N days left — which land, which
+  slide? (ID1, ID2, …)". This is a cross-project question; render it
+  under the project sub-header `(cross-project)` inside the questions
+  lane, not promoted to a separate top-level block.
 
 ## 3. Changes
 

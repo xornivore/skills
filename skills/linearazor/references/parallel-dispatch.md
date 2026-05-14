@@ -7,12 +7,12 @@ when to dispatch parallel sub-agents and how to compose their outputs.
 
 - `factSheet.projects.length ≤ render.parallel_project_threshold`
   (default 6): single-pass. One model call reads the full fact sheet
-  and produces all per-project briefs plus the exec summary plus the
+  and produces the full lane stack plus the exec summary plus the
   mood line.
 - Above the threshold: parallel sub-agents — one per project — draft
-  the per-project briefs. The main agent then composes the exec
-  summary, the lookahead block (if present), the mood line, and the
-  footer.
+  each project's findings, grouped by signal lane. The main agent
+  re-pivots into lanes, composes the exec summary, the lookahead
+  block (if present), the mood line, and the footer.
 
 The threshold is configurable in `[render]` (`parallel_project_threshold`).
 Default 6.
@@ -28,11 +28,13 @@ Each sub-agent receives:
 - The animation cast for its lanes
   ([../assets/animation.md](../assets/animation.md)).
 
-The sub-agent produces a single per-project block following the
-ordering in [signal-modes.md](./signal-modes.md). It does **not**
-produce the exec summary, the lookahead block, the mood line, or the
-footer — those are composed by the main agent over all sub-agent
-outputs.
+The sub-agent produces a structured findings set for its project:
+per-lane lists of bullet items (`shipped`, `questions`, `changes`,
+`stalls`, `quality`, `retrospective`). It does **not** render the
+final lane stack, the exec summary, the lookahead block, the mood
+line, or the footer — those are composed by the main agent over all
+sub-agent outputs. The sub-agent's output is data; the main agent's
+job is presentation.
 
 ## Hard separation
 
@@ -45,26 +47,31 @@ call `mcp__linear__*` tools.
 
 ## Composition
 
-The main agent reads all per-project drafts and:
+The main agent reads all per-project findings sets and:
 
-1. Filters per-project blocks by the project-section cap
+1. Filters the project set by the project cap
    ([signal-modes.md](./signal-modes.md) "Bounds").
-2. Composes the exec summary from primary-horizon signal counts only.
-3. Composes the lookahead block from
+2. Re-pivots into lanes: for each lane in fixed order
+   (`shipped → questions → changes → stalls → quality → retrospective`),
+   gather every project's contribution to that lane, drop the lane if
+   empty, and render projects in the global order from
+   [signal-modes.md](./signal-modes.md) "Lane ordering and item
+   ordering."
+3. Composes the exec summary from primary-horizon signal counts only.
+4. Composes the lookahead block from
    `factSheet.projects[*].lookaheadIssues` and `lookaheadMilestones`
    per the lookahead rules in [signals.md](./signals.md).
-4. Composes the mood line per [mood-line.md](./mood-line.md).
-5. Appends the disclaimer footer from
+5. Composes the mood line per [mood-line.md](./mood-line.md).
+6. Appends the disclaimer footer from
    [`../assets/footer.md`](../assets/footer.md) (full-ritual / share
    only).
 
-## Cross-project ordering
+## Project ordering inside lanes
 
-Project sections appear in this order:
+The global project order, applied identically in every lane:
 
-- Projects with shipped activity first (more shipped → earlier).
-- Then projects with stalls (more stalls → earlier).
-- Then projects with no signals (rare; only when in-scope by
-  membership).
+1. Linear `status.type` — `started` first, then `backlog`, then
+   `completed`.
+2. Within each tier, alphabetical by project name (case-insensitive).
 
-Tiebreaker: project name alphabetical.
+Projects with zero items in a given lane are omitted from that lane.

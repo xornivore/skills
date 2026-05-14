@@ -51,7 +51,7 @@ Mode-by-mode rendering of the lookahead block:
 | --- | --- |
 | `brief` | Always suppressed |
 | `digest` | Collapsed to a one-liner per project |
-| full ritual | Own section after per-project blocks |
+| full ritual | Own section after the lane stack |
 | `share` | Inherits full ritual; renders into the PNG |
 
 Composition rule: when both an explicit-suppression flag and a mode

@@ -1,6 +1,10 @@
 # linearazor — design spec
 
-**Status:** draft
+**Status:** superseded in part — the per-project block layout in this
+spec is superseded by the lane-grouped layout in
+[`2026-05-14-linearazor-lane-grouped-layout-design.md`](./2026-05-14-linearazor-lane-grouped-layout-design.md).
+The Phase-1 ingest, fact-sheet schema, signal-detection rules, tone
+rules, palette, and animation cast remain authoritative.
 **Author:** xornivore
 **Date:** 2026-05-13
 **Skill folder (planned):** `skills/linearazor/`

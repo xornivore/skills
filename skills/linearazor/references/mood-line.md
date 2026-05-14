@@ -74,7 +74,7 @@ WRONG: Two snakes, a bat, and a few penguins this week.
 
 These are sort-shapers — they list the cast instead of noticing
 anything. If the brief is genuinely about three lanes at once, pick
-the most striking and let the per-project blocks carry the rest.
+the most striking and let the lane stack carry the rest.
 
 ## Constraints (presentation-layer rules, not signals)
 
@@ -106,11 +106,11 @@ enforced.
 
 ## Composition input
 
-The mood line is generated last in the Phase-2 pipeline, after all
-per-project blocks and the lookahead block are composed. The model
-sees the full draft brief and selects animal references that actually
+The mood line is generated last in the Phase-2 pipeline, after the
+full lane stack and the lookahead block are composed. The model sees
+the full draft brief and selects animal references that actually
 appear in the rendered output — never invents a unit not present.
 
 **Audit:** every animal name appearing in the mood line must appear
-in at least one per-project block or the lookahead block of the same
-run.
+in at least one lane of the lane stack or in the lookahead block of
+the same run.
