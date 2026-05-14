@@ -1217,16 +1217,16 @@ same roles to its accents — only the hues change.
 
 | Role | What it colors |
 | --- | --- |
-| `shipped` | Shipped lead-in, momentum, beaver/bee animal |
-| `questions` | Questions lane, lemur animal, `→` flourish |
-| `changes_scope` | Scope-change lines, fox animal |
-| `changes_date` | Date-move lines, chameleon animal |
+| `shipped` | Shipped lead-in, momentum, bee animal |
+| `questions` | Questions lane, cat animal, `→` flourish |
+| `changes_scope` | Scope-change lines, penguin animal |
+| `changes_date` | Date-move lines, snake animal |
 | `stalls_aging` | Aging-WIP stall lines, cow animal |
 | `stalls_no_pr` | No-PR-linked stall lines, snail animal |
 | `stalls_silent` | Silent stall lines, turtle animal |
-| `stalls_blocked` | Blocked-without-blocker stall lines, mole animal |
-| `quality` | Quality lines, heron animal |
-| `retrospective` | Retrospective block, owl animal |
+| `stalls_blocked` | Blocked-without-blocker stall lines, fish animal |
+| `quality` | Quality lines, bat animal |
+| `retrospective` | Retrospective block, dog animal |
 | `lookahead` | Lookahead block headings and milestone lines |
 | `metadata` | Dim context — file paths, timestamps, footer text |
 
@@ -1541,26 +1541,26 @@ verdicts.
 Exemplars (the model should imitate this register):
 
 ```text
-Three cows in the field this week, one bee, and a lemur with a good question.
+Three cows in the field this week, one bee, and a cat with a good question.
 ```
 
 ```text
-Two bees and a beaver this cycle — the field is quiet, but the snail
-on ENG-446 is worth a look.
+Two bees this cycle — the field is quiet, but the snail on ENG-446
+is worth a look.
 ```
 
 ```text
-An owl this morning — looking back at the May runtime cut so the June
+A dog this morning — looking back at the May runtime cut so the June
 one doesn't end the same way.
 ```
 
 ```text
-A chameleon and three foxes — the runtime project is changing shape
+A snake and three penguins — the runtime project is changing shape
 faster than it's moving.
 ```
 
 ```text
-A heron and two questions — the next cycle has acceptance criteria
+A bat and two questions — the next cycle has acceptance criteria
 to nail down.
 ```
 
@@ -1571,7 +1571,7 @@ patterns:
 
 | Wrong | Right |
 | --- | --- |
-| "Best week yet — 8 bees!" | "Three bees and a beaver this week." |
+| "Best week yet — 8 bees!" | "Three bees and a cow this week." |
 | "Stall count up 30% from last cycle." | "Three cows in the field — worth a chat about ENG-423 and ENG-446." |
 | "Bob: 4 bees · Carol: 3 bees" | (No per-person framing in the mood line.) |
 | "🐝🐝🐝🐝" | (No emoji. Color and prose carry the cast.) |
@@ -2426,12 +2426,123 @@ factSheet:
 
 - [ ] **Step 4: Write `many-projects.mcp.yaml`**
 
-More than 6 projects in scope — triggers parallel dispatch. Use 7
-project entries with minimal content: one shipped issue per project,
-no stalls, no lookahead, no scope changes. Project names `infra /
-svc-1` through `infra / svc-7`, issue IDs ENG-101 through ENG-107.
-See the actual file at `skills/linearazor/tests/fixtures/many-projects.mcp.yaml`
-for the full content — too long to inline here.
+More than 6 projects in scope — triggers parallel dispatch. 7 project
+entries with minimal content. Two of the shipped entries set
+`assigneeIdentifier` to exercise the `for <member>` filter in the
+same fixture.
+
+````yaml
+# Many-projects fixture — 7 projects, triggers parallel-dispatch branch
+# (default threshold is 6). Each project has minimal content.
+
+factSheet:
+  schemaVersion: 1
+  group: infra
+  horizon:
+    kind: cycle
+    from: "2026-05-06"
+    to: "2026-05-16"
+  lookahead:
+    kind: cycle
+    from: "2026-05-17"
+    to: "2026-05-30"
+    suppressed: false
+  thresholds:
+    agingWipDays: 7
+    silentDays: 7
+    noPrDays: 3
+  members:
+    - displayName: Bob Wu
+      identifier: bob.wu@example.com
+  unresolved: []
+  projects:
+    - name: infra / svc-1
+      state: started
+      milestones: []
+      shipped:
+        - id: ENG-101
+          title: svc-1 work shipped
+          completedAt: "2026-05-09T10:00:00Z"
+          assigneeIdentifier: bob.wu@example.com   # exercises the `for <member>` filter
+          linkedPRs: []
+      openIssues: []
+      scopeChangesInWindow: []
+      lookaheadMilestones: []
+      lookaheadIssues: []
+    - name: infra / svc-2
+      state: started
+      milestones: []
+      shipped:
+        - id: ENG-102
+          title: svc-2 work shipped
+          completedAt: "2026-05-09T10:00:00Z"
+          assigneeIdentifier: bob.wu@example.com   # exercises the `for <member>` filter
+          linkedPRs: []
+      openIssues: []
+      scopeChangesInWindow: []
+      lookaheadMilestones: []
+      lookaheadIssues: []
+    - name: infra / svc-3
+      state: started
+      milestones: []
+      shipped:
+        - id: ENG-103
+          title: svc-3 work shipped
+          completedAt: "2026-05-09T10:00:00Z"
+          linkedPRs: []
+      openIssues: []
+      scopeChangesInWindow: []
+      lookaheadMilestones: []
+      lookaheadIssues: []
+    - name: infra / svc-4
+      state: started
+      milestones: []
+      shipped:
+        - id: ENG-104
+          title: svc-4 work shipped
+          completedAt: "2026-05-09T10:00:00Z"
+          linkedPRs: []
+      openIssues: []
+      scopeChangesInWindow: []
+      lookaheadMilestones: []
+      lookaheadIssues: []
+    - name: infra / svc-5
+      state: started
+      milestones: []
+      shipped:
+        - id: ENG-105
+          title: svc-5 work shipped
+          completedAt: "2026-05-09T10:00:00Z"
+          linkedPRs: []
+      openIssues: []
+      scopeChangesInWindow: []
+      lookaheadMilestones: []
+      lookaheadIssues: []
+    - name: infra / svc-6
+      state: started
+      milestones: []
+      shipped:
+        - id: ENG-106
+          title: svc-6 work shipped
+          completedAt: "2026-05-09T10:00:00Z"
+          linkedPRs: []
+      openIssues: []
+      scopeChangesInWindow: []
+      lookaheadMilestones: []
+      lookaheadIssues: []
+    - name: infra / svc-7
+      state: started
+      milestones: []
+      shipped:
+        - id: ENG-107
+          title: svc-7 work shipped
+          completedAt: "2026-05-09T10:00:00Z"
+          linkedPRs: []
+      openIssues: []
+      scopeChangesInWindow: []
+      lookaheadMilestones: []
+      lookaheadIssues: []
+````
 
 - [ ] **Step 5: Verify yaml is valid**
 
