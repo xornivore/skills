@@ -533,28 +533,44 @@ assigns the same roles to its accents — only the hues change:
 
 ### 8.2 Animation (the cast)
 
-Hand-drawn ASCII animals, 4–6 lines tall, 12–20 columns wide. One per
-signal category per per-project section — not one per item. All face
-right (toward the list below). Mood through pose.
+ASCII animals sourced from established public-commons art rather than
+freehand. One animal per signal category per per-project section —
+never one per item. The earlier spec language called for "all face
+right, 4-6 lines, 12-20 columns" as a hard constraint; the
+implementation relaxed this in favor of canonical pieces that don't
+all conform. The canonical art is the point.
 
-Core cast — six animals shipped in `assets/animation.md`:
+Eleven lane-mapped animals shipped in `assets/animation.md`:
 
 | Animal | Lane | Default palette role |
 | --- | --- | --- |
-| Bee | Shipped, momentum | `shipped` (Teal/Green) |
-| Lemur (upside-down) | Questions | `questions` (Lavender) |
-| Cow (in field) | Stalls — aging WIP | `stalls_aging` (Peach) |
-| Snail | Stalls — no PR | `stalls_no_pr` (Peach) |
-| Turtle | Stalls — silent | `stalls_silent` (Sapphire) |
-| Beaver | Praise, active building | `shipped` (Teal) |
+| Bee | `shipped` | `shipped` (Teal/Green) |
+| Cat | `questions` | `questions` (Lavender) |
+| Cow | `stalls_aging` | `stalls_aging` (Peach) |
+| Snail | `stalls_no_pr` | `stalls_no_pr` (Peach) |
+| Turtle | `stalls_silent` | `stalls_silent` (Sapphire) |
+| Fish | `stalls_blocked` | `stalls_blocked` (Overlay) |
+| Penguin | `changes_scope` | `changes_scope` (Peach) |
+| Snake | `changes_date` | `changes_date` (Mauve) |
+| Bat | `quality` | `quality` (Sky) |
+| Dog | `retrospective` | `retrospective` (Mauve) |
+| Spider | `scope drift` | (renders in `changes_scope` color) |
 
-Extended cast — used sparingly: Fox (scope change), Chameleon (date
-move), Mole (blocked), Heron (quality / watching, lookahead
-unclarities), Owl (retrospective), Crab (sideways movement).
+Plus two special-case mascots not tied to a signal lane:
+
+- **Duck** — setup / welcome mascot. Appears at the top of the
+  `reconfigure` output and the first ritual run after fresh setup.
+  Rubber-duck-debugging association: the conversational setup is
+  the user articulating their workspace shape.
+- **Puzzled face** — empty-brief mascot. Renders when the ritual runs
+  and every signal lane comes up empty across every in-scope
+  project. Replaces the mood line; per-project blocks are suppressed.
+  Honest about the edge case rather than rendering forced upbeat
+  output.
 
 The cast is purely affective; replacing an animal, changing its pose,
 or adding a new one is a presentation-layer change. The signal it
-labels is unaffected.
+labels is unaffected. Hard rule 12 binds.
 
 ### 8.3 Mood line
 
@@ -645,7 +661,7 @@ time from the templates in `assets/` and the model's prose.
  linearazor — infra · cycle ending Fri May 16
 ─────────────────────────────────────────────────────────────────────────
 
-   Three cows in the field this week, one bee, and a lemur with a
+   Three cows in the field this week, one bee, and a cat with a
    good question.
 
  Across 4 projects: 7 shipped · 3 stalls · 5 questions · 2 changes
@@ -653,32 +669,32 @@ time from the templates in `assets/` and the model's prose.
 ─────────────────────────────────────────────────────────────────────────
  infra / runtime
 ─────────────────────────────────────────────────────────────────────────
-   <bee animal in Teal>
+   [bee animal in Teal]
  Shipped:
    • ENG-481  Backplane handshake hardening
    • ENG-487  Drop debug logger in prod build
 
-   <lemur animal in Lavender>
+   [cat animal in Lavender]
  →  What's the next concrete step on ENG-423, and is anything
     blocking it?
  →  Is ENG-440 still actually blocked? Its blocker closed Tuesday.
 
-   <cow animal in Peach>
+   [cow animal in Peach]
  ◇  ENG-423  In Progress 11 days  (default threshold: 7)
  ◇  ENG-446  In Progress 9 days, no PR linked
 
-   <fox animal in Mauve>
+   [penguin animal in Peach]
     Milestone "May runtime cut" moved from May 14 → May 21
     ENG-470 added to scope this week
 
 ─────────────────────────────────────────────────────────────────────────
  Looking ahead — next cycle
 ─────────────────────────────────────────────────────────────────────────
-   <heron animal in Sky>
+   [bat animal in Sky]
  ◇  ENG-502  No body, no acceptance criteria  (June runtime cut)
  →  What does done look like for ENG-505?
 
-   <chameleon animal in Mauve>
+   [snake animal in Mauve]
     "June runtime cut" — 0 started, 35d to target
 
 ─────────────────────────────────────────────────────────────────────────

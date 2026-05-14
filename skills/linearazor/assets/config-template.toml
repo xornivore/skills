@@ -1,0 +1,26 @@
+# version = 1
+# linearazor scope: <group-name>
+#
+# This file is hand-editable. The skill rewrites it only from the
+# `reconfigure` flow, and only after confirmation.
+
+group   = "<group-name>"
+team    = "<linear-team-display-name>"
+members = []
+labels  = []
+default_horizon = "cycle"        # cycle | week | 2w | 4w | milestone
+
+[thresholds]
+aging_wip_days = 7               # In Progress longer than this -> aging
+silent_days    = 7               # No status change AND no comment in this window
+no_pr_days     = 3               # In Progress this long with no linked PR
+
+[render]
+palette                       = "catppuccin-mocha"
+parallel_project_threshold    = 6
+lookahead_unclarities         = true
+lookahead_appetite            = true
+lookahead_appetite_warn_days  = 14
+
+[render.palette_overrides]
+# shipped = "rosewater"

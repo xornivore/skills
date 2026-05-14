@@ -1,0 +1,80 @@
+# linearazor fact-sheet template
+#
+# Phase-1 to Phase-2 handoff. Illustrative shape; pin to the actual
+# Linear MCP wire format at implementation time (spec section 13).
+#
+# Placeholder values in angle brackets ("<group-name>", "<ISSUE-ID>",
+# "YYYY-MM-DD") document the substitution points. Phase 1 replaces
+# them before Phase 2 reads the document. Keep them quoted so YAML
+# parses them as strings rather than attempting date / number coercion.
+
+schemaVersion: 1
+group: "<group-name>"
+
+horizon:
+  kind: cycle              # cycle | week | 2w | 4w | milestone | since
+  from: "YYYY-MM-DD"
+  to: "YYYY-MM-DD"
+
+lookahead:
+  kind: cycle
+  from: "YYYY-MM-DD"
+  to: "YYYY-MM-DD"
+  suppressed: false        # true when the user passed "lookahead off"
+                           # or the primary horizon is "since <date>"
+
+thresholds:
+  agingWipDays: 7
+  silentDays: 7
+  noPrDays: 3
+
+members:
+  - displayName: "<name>"
+    identifier: "<linear-user-id>"
+
+unresolved: []             # member names that failed to resolve against
+                           # Linear users; surfaced in the setup-health
+                           # footer, never as stalls
+
+projects:
+  - name: "<project-name>"
+    state: started         # started | paused | completed | canceled
+    milestones:
+      - name: "<milestone-name>"
+        targetDate: "YYYY-MM-DD"
+        datesMovedInWindow: []
+    shipped:
+      - id: "<ISSUE-ID>"
+        title: "<title>"
+        completedAt: "ISO-8601"
+        linkedPRs: []
+    openIssues:
+      - id: "<ISSUE-ID>"
+        title: "<title>"
+        status: "<status>"
+        assigneeIdentifier: "<linear-user-id>"
+        daysInStatus: 0
+        lastCommentDaysAgo: 0
+        linkedPRs: []
+        blockedBy: []
+        milestone: null
+        labels: []
+        bodyHasAcceptanceCriteria: false
+    scopeChangesInWindow:
+      - id: "<ISSUE-ID>"
+        change: "<change-kind>"   # added-to-milestone | removed-from-milestone | labels-changed | project-state-moved
+        at: "ISO-8601"
+    lookaheadMilestones:
+      - name: "<milestone-name>"
+        targetDate: "YYYY-MM-DD"
+        startedIssueCount: 0
+        daysToTarget: 0
+        scopeChangedSinceTargetSet: false
+    lookaheadIssues:
+      - id: "<ISSUE-ID>"
+        title: "<title>"
+        assigneeIdentifier: null
+        status: "<status>"
+        milestone: null
+        bodyHasAcceptanceCriteria: false
+        bodyIsEmpty: true
