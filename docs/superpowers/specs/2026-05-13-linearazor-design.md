@@ -1,7 +1,7 @@
 # linearazor — design spec
 
 **Status:** draft
-**Author:** Ivan Ilichev
+**Author:** xornivore
 **Date:** 2026-05-13
 **Skill folder (planned):** `skills/linearazor/`
 **Branch:** `feat/linearazor`
