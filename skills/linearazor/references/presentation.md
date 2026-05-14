@@ -41,6 +41,19 @@ animals face right toward the finding list below.
 
 If a signal lane is empty, no animal renders for that lane.
 
+### Sub-flavor overrides
+
+A per-project signal block may swap its default animal for a
+sub-flavor variant when a stronger condition matches. The sub-flavor
+inherits the same palette role as the lane it overrides.
+
+| Lane | Default | Sub-flavor (when) | Color |
+| --- | --- | --- | --- |
+| `changes_scope` | Penguin | Spider — when the per-project scope-changes count is at least 3 ("scope drift") | `changes_scope` |
+
+When a sub-flavor renders, the default animal is suppressed for that
+block — never both.
+
 ## Unicode flourishes
 
 One Unicode flourish max per line — never decorative, always

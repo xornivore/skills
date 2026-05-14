@@ -133,9 +133,13 @@ o'')}____//
  (_(_/-(_/
 ```
 
-### Spider — `scope drift`
+### Spider — `changes_scope` (sub-flavor: scope drift)
 
-Eight-legged, sideways and multidirectional, the scope creeping out.
+Eight-legged, sideways and multidirectional. A sub-flavor of the
+`changes_scope` signal — rendered in place of the penguin when the
+per-project scope-changes count for the run exceeds two, signalling
+sustained drift rather than a one-off change. Inherits the
+`changes_scope` palette color.
 
 ```text
  ||  ||
@@ -196,7 +200,7 @@ upbeat mood line.
 | `changes_date` | Snake |
 | `quality` | Bat |
 | `retrospective` | Dog |
-| `scope drift` | Spider |
+| `changes_scope` (≥ 3 changes / "scope drift") | Spider (overrides Penguin) |
 
 ## Replacement
 

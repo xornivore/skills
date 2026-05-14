@@ -15,6 +15,14 @@ stable.
    label names to label identifiers. Use Linear MCP read tools.
    Resolution is fresh every run — no cache. Unresolved names go to
    `factSheet.unresolved` for the setup-health footer.
+
+   **Threshold-name translation.** The TOML config uses
+   `snake_case` keys (`aging_wip_days`, `silent_days`,
+   `no_pr_days`) per TOML convention. Phase 1 translates these to
+   the fact sheet's `camelCase` keys
+   (`agingWipDays`, `silentDays`, `noPrDays`) per YAML / wire-format
+   convention before emitting. Phase 2 always reads the camelCase
+   form from the fact sheet — it never sees the TOML keys.
 2. **Resolve horizon and lookahead windows.** See
    [horizon-and-scope.md](./horizon-and-scope.md).
 3. **Query in-scope issues** for the primary horizon. Composite filter

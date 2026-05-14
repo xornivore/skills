@@ -539,6 +539,21 @@ target first).
 - Lookahead unclarities cap at 8 per project. Overflow appends
   `N more lookahead unclarities — consider triaging the next milestone`.
 
+## Empty-brief case
+
+When every signal lane is empty across every in-scope project —
+nothing shipped, no questions, no changes, no stalls, no quality
+findings — suppress the per-project blocks (they would all be
+`No completions in window`) and replace the mood line with the
+empty-brief mascot from
+[`../assets/animation.md`](../assets/animation.md) "Empty-brief
+mascot", rendered in the `metadata` palette role. Keep the exec
+summary line (it will read `Across N projects: 0 shipped · 0
+stalls · 0 questions · 0 changes`) and the disclaimer footer.
+
+This is an honest edge case — better than a forced upbeat mood line
+when the horizon turned up nothing.
+
 ## Exec summary
 
 A single line at the top of the full-ritual output, after the mood
@@ -884,6 +899,14 @@ The flow is conversational — one question at a time, with skip
 allowed for optional steps. Never proceeds with an unscoped run; if
 the user refuses to scope, exit with a one-line explanation.
 
+## Welcome mascot
+
+Render the duck from
+[`../assets/animation.md`](../assets/animation.md) "Setup mascot" at
+the top of the setup output, in the `shipped` palette role (a friendly
+green). The duck appears only here and in the first ritual run after a
+fresh `reconfigure` — never in normal brief output.
+
 ## Step 1: Detect workspace shape
 
 Query Linear MCP for the list of teams. Two cases:
@@ -996,6 +1019,14 @@ stable.
    label names to label identifiers. Use Linear MCP read tools.
    Resolution is fresh every run — no cache. Unresolved names go to
    `factSheet.unresolved` for the setup-health footer.
+
+   **Threshold-name translation.** The TOML config uses
+   `snake_case` keys (`aging_wip_days`, `silent_days`,
+   `no_pr_days`) per TOML convention. Phase 1 translates these to
+   the fact sheet's `camelCase` keys
+   (`agingWipDays`, `silentDays`, `noPrDays`) per YAML / wire-format
+   convention before emitting. Phase 2 always reads the camelCase
+   form from the fact sheet — it never sees the TOML keys.
 2. **Resolve horizon and lookahead windows.** See
    [horizon-and-scope.md](./horizon-and-scope.md).
 3. **Query in-scope issues** for the primary horizon. Composite filter
@@ -1396,6 +1427,19 @@ animals face right toward the finding list below.
 
 If a signal lane is empty, no animal renders for that lane.
 
+### Sub-flavor overrides
+
+A per-project signal block may swap its default animal for a
+sub-flavor variant when a stronger condition matches. The sub-flavor
+inherits the same palette role as the lane it overrides.
+
+| Lane | Default | Sub-flavor (when) | Color |
+| --- | --- | --- | --- |
+| `changes_scope` | Penguin | Spider — when the per-project scope-changes count is at least 3 ("scope drift") | `changes_scope` |
+
+When a sub-flavor renders, the default animal is suppressed for that
+block — never both.
+
 ## Unicode flourishes
 
 One Unicode flourish max per line — never decorative, always
@@ -1766,9 +1810,13 @@ o'')}____//
  (_(_/-(_/
 ```
 
-### Spider — `scope drift`
+### Spider — `changes_scope` (sub-flavor: scope drift)
 
-Eight-legged, sideways and multidirectional, the scope creeping out.
+Eight-legged, sideways and multidirectional. A sub-flavor of the
+`changes_scope` signal — rendered in place of the penguin when the
+per-project scope-changes count for the run exceeds two, signalling
+sustained drift rather than a one-off change. Inherits the
+`changes_scope` palette color.
 
 ```text
  ||  ||
@@ -1819,7 +1867,7 @@ since they would all be `No completions in window`.
 | `changes_date` | Snake |
 | `quality` | Bat |
 | `retrospective` | Dog |
-| `scope drift` | Spider |
+| `changes_scope` (≥ 3 changes / "scope drift") | Spider (overrides Penguin) |
 
 ## Replacement
 
