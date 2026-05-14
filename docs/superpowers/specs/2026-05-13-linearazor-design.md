@@ -22,7 +22,7 @@ record; if a fact matters and is not in Linear, the brief surfaces it as
 a question rather than tracking it in a side-car file.
 
 The skill is invoked conversationally by Claude Code via natural-language
-phrasing (`linearazor`, `linearazor digest for containers-blue`,
+phrasing (`linearazor`, `linearazor digest for infra`,
 `linearazor for Bob Wu`). It presents modes, not CLI flags — the
 `SKILL.md` body teaches the model to parse phrasing into modes.
 
@@ -57,7 +57,7 @@ scope arguments.
 | Phrasing | Mode | Notes |
 | --- | --- | --- |
 | `linearazor` | full ritual | Uses the default saved scope, default horizon |
-| `linearazor for containers-blue` | full ritual | Explicit saved scope by group name |
+| `linearazor for infra` | full ritual | Explicit saved scope by group name |
 | `linearazor for Bob Wu` | full ritual, member-filtered | Narrows the issue set to one member |
 | `linearazor on <project>` | full ritual, project-filtered | Narrows to a single Linear project |
 | `linearazor digest` | digest | Slim daily-cadence shape |
@@ -66,7 +66,7 @@ scope arguments.
 | `linearazor since 2026-05-01` | full ritual, anchor override | Overrides the horizon anchor for shipped and changes |
 | `linearazor share` | full ritual, rendered as PNG | Renders the brief as a carbon-style PNG for slack-paste — see [8.6 Share as image](#86-share-as-image-png-for-slack-paste) |
 
-Filter composition: `linearazor for Bob Wu on containers-blue` intersects
+Filter composition: `linearazor for Bob Wu on infra` intersects
 the two slices. No special-case prose; filters compose as set
 intersection.
 
@@ -202,7 +202,7 @@ to what the MCP actually returns.
 ```jsonc
 {
   "schemaVersion": 1,
-  "group": "containers-blue",
+  "group": "infra",
   "horizon": { "kind": "cycle", "from": "2026-05-06", "to": "2026-05-16" },
   "thresholds": { "agingWipDays": 7, "silentDays": 7, "noPrDays": 3 },
   "members": [
@@ -212,7 +212,7 @@ to what the MCP actually returns.
   "unresolved": [],
   "projects": [
     {
-      "name": "containers-blue / runtime",
+      "name": "infra / runtime",
       "state": "started",
       "milestones": [
         { "name": "May runtime cut", "targetDate": "2026-05-21",
@@ -227,7 +227,7 @@ to what the MCP actually returns.
           "assigneeIdentifier": "carol.ko@example.com",
           "daysInStatus": 11, "lastCommentDaysAgo": 6,
           "linkedPRs": [], "blockedBy": [], "milestone": null,
-          "labels": ["eng:containers-blue"],
+          "labels": ["eng:infra"],
           "bodyHasAcceptanceCriteria": false }
       ],
       "scopeChangesInWindow": [
@@ -273,10 +273,10 @@ No state directory. Linear holds the state.
 
 ```toml
 # version = 1
-group   = "containers-blue"
-team    = "Containers"            # Linear team display name
+group   = "infra"
+team    = "Infra"                 # Linear team display name
 members = ["Bob Wu", "Carol Ko"]  # display names; resolved fresh every run
-labels  = ["eng:containers-blue"] # optional; OR'd together; omit for all team work
+labels  = ["eng:infra"] # optional; OR'd together; omit for all team work
 default_horizon = "cycle"         # cycle | week | 2w | 4w | milestone
 
 # Sane defaults ship in SKILL.md; override only if the team's rhythm
@@ -642,7 +642,7 @@ time from the templates in `assets/` and the model's prose.
 
 ```text
 ─────────────────────────────────────────────────────────────────────────
- linearazor — containers-blue · cycle ending Fri May 16
+ linearazor — infra · cycle ending Fri May 16
 ─────────────────────────────────────────────────────────────────────────
 
    Three cows in the field this week, one bee, and a lemur with a
@@ -651,7 +651,7 @@ time from the templates in `assets/` and the model's prose.
  Across 4 projects: 7 shipped · 3 stalls · 5 questions · 2 changes
 
 ─────────────────────────────────────────────────────────────────────────
- containers-blue / runtime
+ infra / runtime
 ─────────────────────────────────────────────────────────────────────────
    <bee animal in Teal>
  Shipped:
