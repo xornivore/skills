@@ -1,8 +1,19 @@
 ---
 name: linearazor
-description: Reads a scoped Linear workspace via Linear MCP and produces per-project briefs framed as questions a thoughtful teammate would ask, with four signals (questions, scope/date changes, stalls, clarity gaps), a shipped lead-in, a tiered lookahead, a mood line, and a hand-drawn ASCII animation cast. Invoke when the user says "linearazor", "linearazor for [group]", "linearazor digest", "linearazor brief", "linearazor share", "linearazor for [member]", "linearazor on [project]", "linearazor reconfigure", "weekly Linear brief", or "what shipped in Linear this week". Read-only.
+description: |
+  Reads a scoped Linear workspace via Linear MCP and produces per-project
+  briefs framed as questions a thoughtful teammate would ask, with four
+  signals (questions, scope/date changes, stalls, clarity gaps), a shipped
+  lead-in, a tiered lookahead, a mood line, and a hand-drawn ASCII animation
+  cast. Invoke when the user says "linearazor", "linearazor for [group]",
+  "linearazor digest", "linearazor brief", "linearazor share",
+  "linearazor for [member]", "linearazor on [project]",
+  "linearazor reconfigure", "weekly Linear brief", or "what shipped in Linear
+  this week". Read-only.
 license: MIT
-compatibility: Requires Linear MCP installed and authenticated. Optional: charmbracelet/freeze for share-as-image mode.
+compatibility: |
+  Requires Linear MCP installed and authenticated. Optional:
+  charmbracelet/freeze for share-as-image mode.
 ---
 
 # linearazor
