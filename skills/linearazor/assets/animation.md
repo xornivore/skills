@@ -55,11 +55,10 @@ Sitting, curious, alert.
 Standing in a field of grass — head down, plodding.
 
 ```text
-\|/          (__)
-     `\------(oo)
-       ||    (__)
-       ||w--||     \|/
-   \|/
+        (__)
+`\------(oo)
+  ||    (__)
+  ||w--||     \|/
 ```
 
 ### Snail — `stalls_no_pr`
