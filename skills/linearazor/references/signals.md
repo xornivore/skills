@@ -178,5 +178,5 @@ Per `lookaheadMilestones[]`:
 
 ## Disclaimer footer
 
-Renders verbatim from `assets/footer.md`. Always present in full-ritual
-mode (hard rule 7).
+Renders verbatim from `assets/footer.md` in full-ritual terminal mode.
+Suppressed in `brief`, `digest`, and `share`. Hard rule 7 binds.

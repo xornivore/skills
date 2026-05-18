@@ -202,7 +202,7 @@ Falling back to markdown export at <path>.md
 
 ### Freeze invocation
 
-The pipeline (illustrative — pin flags at implementation time):
+The pipeline:
 
 ```bash
 RENDER_OUT="${TMPDIR:-/tmp}/linearazor-<group>-<date>.png"
@@ -212,13 +212,30 @@ linearazor_render | freeze \
   --background "$PRIMARY_BG" \
   --font.family "JetBrains Mono" \
   --font.size 13 \
-  --padding 24
+  --padding 24 \
+  --margin 12 \
+  --border.radius 8 \
+  --shadow.blur 20 \
+  --shadow.y 6
 echo "$RENDER_OUT"
 ```
 
 `$PRIMARY_BG` is the background hex from the active palette. For
 `catppuccin-mocha`, `#1e1e2e` (base). For palettes without an
 explicit background hex, default to black (`#000000`).
+
+The margin, border-radius, and shadow flags give the PNG a framed
+card look that reads well when pasted into Slack and document chat
+surfaces. They are presentation polish — adjust per palette taste, but
+keep the values in the same range so different palettes produce
+artifacts that visually belong together.
+
+`linearazor_render` produces an ANSI substrate per [Rendering
+modes](#rendering-modes) — color escapes inline, OSC 8 hyperlinks on
+identifiers, no markdown formatting. The disclaimer footer from
+[`assets/footer.md`](../assets/footer.md) is omitted in `share` mode
+(hard rule 7 — the PNG is a Slack-paste artifact and the footer reads
+as noise outside its original terminal context).
 
 ### SVG variant
 

@@ -10,9 +10,9 @@ appear, in what order, with what bounds.
 | Mode | Mood line | Exec summary | Lane stack | Project sub-headers in lanes | Lookahead | Footer |
 | --- | --- | --- | --- | --- | --- | --- |
 | `brief` | yes | no | yes (lanes render) | no — flat items with trailing `· <project>` tag | suppressed | no |
-| `digest` | optional (off with `no-mood`) | one-line counts | yes (lanes render) | yes | one-liner per project | thresholds line |
+| `digest` | optional (off with `no-mood`) | one-line counts | yes (lanes render) | yes | one-liner per project | thresholds line, no disclaimer |
 | full ritual | yes | yes | yes (lanes render) | yes | own section after the lane stack | thresholds + disclaimer |
-| `share` | full ritual content | full ritual | full ritual | full ritual | full ritual | full ritual |
+| `share` | full ritual content | full ritual | full ritual | full ritual | full ritual | no disclaimer (PNG omits the footer line; the artifact is a Slack-paste, not a terminal session) |
 
 The `share` mode renders the full ritual brief and then exports it via
 `charmbracelet/freeze` — see [presentation.md](./presentation.md) section
@@ -70,6 +70,35 @@ the relevant event:
 - `stalls`: `daysInStatus` descending.
 - `questions`, `changes`, `quality`: source-order in the fact sheet.
 
+## Indent and continuation (column-precise)
+
+Inside every lane (except `brief`-mode flat lists), items render at
+these column positions. Numbers are 0-indexed source columns, after the
+universal ASCII-art padding rule in
+[presentation.md](./presentation.md):
+
+| Element | Columns | Shape |
+| --- | --- | --- |
+| Lane title (e.g. `Questions`) | 0 | bare title, no leading whitespace |
+| Project sub-header | 2 | two leading spaces, then project name |
+| Bullet | 4 | four leading spaces, then bullet glyph, then two spaces |
+| Bullet content first line | 7 | starts immediately after the bullet glyph and its two trailing spaces |
+| Bullet continuation lines | 7 | aligned with the first content character — not aligned with the title-after-ID position, which would otherwise drift per-ID-length |
+
+For items whose first content token is an ID (`<ID>  <title>` shape),
+two spaces separate the ID from the title. Continuation lines still
+indent to column 7, not to the title's start column.
+
+**Audit:** in any rendered lane (non-`brief`), every project sub-header
+starts at column 2 with a non-space character; every bullet starts at
+column 4 with the bullet glyph followed by two spaces (content at
+column 7); every continuation line under a bullet starts with exactly
+seven leading spaces. Mismatches are a violation.
+
+For `brief` mode the lane title still sits at column 0, bullets sit at
+column 2 with the bullet glyph followed by two spaces, continuation
+lines at column 5.
+
 ## Lookahead placement
 
 The lookahead block follows the lane stack and precedes the
@@ -119,8 +148,10 @@ digest leads with its own exec-summary line, then the lane stack).
 ## Disclaimer footer
 
 Renders the literal string from [`assets/footer.md`](../assets/footer.md)
-once per run. Full-ritual and `share` modes only. Suppressed in `brief`
-and `digest`. Hard rule 7 binds.
+once per run. Full-ritual terminal mode only. Suppressed in `brief`,
+`digest`, and `share` — `share` because the PNG is a Slack-paste
+artifact and the footer reads as visual noise outside its original
+terminal context. Hard rule 7 binds.
 
 ## Mode-by-mode rendering details
 

@@ -107,8 +107,8 @@ When invoked (any non-setup mode), do:
    [mood-line.md](./references/mood-line.md), and
    [assets/animation.md](./assets/animation.md).
 7. **Footer.** Append the literal disclaimer from
-   [assets/footer.md](./assets/footer.md) (full-ritual and share
-   modes only).
+   [assets/footer.md](./assets/footer.md) in full-ritual terminal
+   mode only. Suppressed in `brief`, `digest`, and `share`.
 8. **Share-mode export.** If mode is `share`, pipe the rendered
    output to `freeze` per
    [presentation.md](./references/presentation.md) "Share as image."
@@ -154,13 +154,18 @@ so the layers can be revised independently.
    strip the run header — remaining bytes contain no characters in
    the Emoji property range.
 
-7. **[Signal] Acknowledge missing context once.** Full-ritual runs
-   end with one line: the literal disclaimer from
-   [assets/footer.md](./assets/footer.md). Suppressed in `brief`
-   mode. **Audit:** extract the text inside the fenced `text` block
-   in `assets/footer.md` and assert byte-equality with the disclaimer
-   line in the rendered output. Mechanically checkable when a smoke
-   harness exists; until then, reviewer-verified.
+7. **[Signal] Acknowledge missing context once.** Full-ritual terminal
+   runs end with one line: the literal disclaimer from
+   [assets/footer.md](./assets/footer.md). Suppressed in `brief`,
+   `digest`, and `share` modes — `brief` and `digest` because they are
+   compact-by-design; `share` because the PNG is a Slack-paste artifact
+   and the footer reads as visual noise outside its original terminal
+   context. **Audit:** in full-ritual terminal output, extract the text
+   inside the fenced `text` block in `assets/footer.md` and assert
+   byte-equality with the disclaimer line in the rendered output. In
+   `brief`, `digest`, and `share` output, assert the disclaimer string
+   does not appear. Mechanically checkable when a smoke harness exists;
+   until then, reviewer-verified.
 
 8. **[Signal] Celebrate first.** Lanes render in fixed order
    (`shipped → questions → changes → stalls → quality → retrospective`).
