@@ -140,13 +140,34 @@ Never emit more than one stall finding per issue.
 
 ### Project-level scope-hygiene stall
 
-Fires once per in-scope project whose `projects[].inScopeIssueCount`
-is below `thresholds.scopeMinIssues`. Renders under the project's
-sub-header in the stalls lane — independent of any issue-level stalls
-in the same project (both can coexist).
+Renders under the project's sub-header in the stalls lane —
+independent of any issue-level stalls in the same project (both can
+coexist). Two mutually-exclusive variants:
 
-The bullet body's wording is keyed off the cycle's `elapsed_pct =
-(today - cycle.startsAt) / cycle.length`:
+- **Empty project** — `inScopeIssueCount < scopeMinIssues`. The team
+  isn't doing this work at all in this horizon. Late-cycle, the
+  conversation this invites is "is this still appetite for the
+  cycle?"
+- **Cycle field unpopulated** — `inScopeIssueCount >= scopeMinIssues`
+  AND `cycleAssignedIssueCount == 0`. The team is shipping (issues
+  passed C2/C3/C4 of the composite horizon filter — see
+  [`horizon-and-scope.md`](./horizon-and-scope.md) "In-scope set"
+  and [`ingest-and-factsheet.md`](./ingest-and-factsheet.md) step
+  3.3) but none of the issues are bound to the cycle. The
+  conversation this invites is "hook it into the cycle so the rest
+  of the org can see it."
+
+When `inScopeIssueCount > 0 AND cycleAssignedIssueCount > 0 AND
+inScopeIssueCount > cycleAssignedIssueCount`, no scope-hygiene line
+fires for that project — the cycle field is in use, just not
+exhaustively. The carryover issues themselves surface as issue-level
+stalls (Review-aging, PR-linked-but-stuck, etc.) on their own
+merits.
+
+Both variants modulate by cycle elapsed percent, computed as
+`elapsed_pct = (today - cycle.startsAt) / cycle.length`.
+
+### Empty-project bullet bodies
 
 | Position | `elapsed_pct` | Bullet body |
 | --- | --- | --- |
@@ -159,16 +180,43 @@ threshold is raised above 1), substitute `1 issue tracked` (or
 `K issues tracked` for K > 1) for `no work tracked` and otherwise
 reuse the variant.
 
-A project with no work tracked is quiet, not slow. The scope-hygiene
-stall maps to the `stalls_silent` palette role and the turtle creature
-— same family as a single silent issue, not the cow that marks aging
-WIP. This affects which creature renders in the stalls lane when
-multiple sub-flavors fire — see [presentation.md](./presentation.md)
-"Stalls lane creature precedence."
+### Cycle-field-unpopulated bullet bodies
 
-**Audit:** for every project where `inScopeIssueCount < scopeMinIssues`,
-exactly one bullet renders under its sub-header in the stalls lane,
-matching the variant string for the project's `elapsed_pct` bucket.
+`K = inScopeIssueCount`; the IDs are drawn from
+`projects[].inScopeIssueIdsByPath.c2 ∪ c3 ∪ c4` (the issues that
+passed at least one of C2-C4 but failed C1). Cap the rendered ID
+list at three and append `… and K-3 more` when needed.
+
+| Position | `elapsed_pct` | Bullet body |
+| --- | --- | --- |
+| early | ≤ 33% | `K in-flight issues, none assigned to the cycle yet — early days (ID1, ID2, ID3, …)` |
+| mid | 33% < x ≤ 66% | `K in-flight issues, none assigned to the cycle — N days in (ID1, ID2, ID3, …)` |
+| late | > 66% | `K in-flight issues, none assigned to the cycle — cycle ends in N days (ID1, ID2, ID3, …)` |
+
+When `K == 1`, the literal becomes `1 in-flight issue` (no plural)
+and the ID list is the single ID; no ellipsis.
+
+### Creature and precedence
+
+Both variants map to the `stalls_silent` palette role and the turtle
+creature — same family as a single silent issue, not the cow that
+marks aging WIP. This affects which creature renders in the stalls
+lane when multiple sub-flavors fire — see
+[presentation.md](./presentation.md) "Stalls lane creature
+precedence."
+
+**Audit:**
+
+- For every project where `inScopeIssueCount < scopeMinIssues`, exactly
+  one empty-project bullet renders under its sub-header in the stalls
+  lane.
+- For every project where `inScopeIssueCount >= scopeMinIssues AND
+  cycleAssignedIssueCount == 0`, exactly one cycle-field-unpopulated
+  bullet renders, and its ID list is a subset of
+  `inScopeIssueIdsByPath.c2 ∪ c3 ∪ c4`.
+- No project renders both variants.
+- No project where `cycleAssignedIssueCount > 0` renders either
+  variant.
 
 ## 5. Quality
 

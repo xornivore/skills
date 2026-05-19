@@ -69,13 +69,26 @@ An issue is in scope when all apply:
   labels (when `labels` is non-empty in config). Multiple labels
   intersect — they narrow scope, not broaden it. Configured labels are
   **project labels**, not issue labels — see "Label resolution" below.
-- Satisfies the composite horizon filter — at least one of:
-  - Assigned to a cycle whose window intersects the primary horizon.
-  - Attached to a milestone whose target date falls in the primary
+- Satisfies the composite horizon filter — **at least one** of the
+  four conditions below. Each carries a label (`C1` through `C4`) so
+  the Phase-1 query plan and the audits can reference them by name:
+
+  - **C1** — `cycleId` is a cycle whose window intersects the primary
     horizon.
-  - Has a `dueDate` in the primary horizon window.
-  - Was In Progress at any point in the primary horizon window
-    (catches issues not bound to a cycle, milestone, or due date).
+  - **C2** — Attached to a milestone whose target date falls in the
+    primary horizon.
+  - **C3** — `dueDate` falls in the primary horizon window.
+  - **C4** — The issue was in a status of type `started`
+    (`In Progress`, `In Review`, etc.) at any point during the primary
+    horizon window. The check is against status *history*, not just
+    current status — an issue that was In Review on the cycle's start
+    date but has since been marked Done still passes C4.
+
+  Carryover work usually fails C1 (no `cycleId` set) but passes C4
+  (was In Progress when the cycle began). A Phase-1 implementation
+  that only checks C1 will declare the project silent while the team
+  is shipping — see the anti-pattern callout in
+  [`ingest-and-factsheet.md`](./ingest-and-factsheet.md).
 
 ## Label resolution
 
