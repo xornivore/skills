@@ -1,15 +1,15 @@
 ---
 name: linearazor
 description: |
-  Reads a scoped Linear workspace via Linear MCP and produces per-project
-  briefs framed as questions a thoughtful teammate would ask, with four
-  signals (questions, scope/date changes, stalls, clarity gaps), a shipped
-  lead-in, a tiered lookahead, a mood line, and a hand-drawn ASCII animation
-  cast. Invoke when the user says "linearazor", "linearazor for [group]",
-  "linearazor digest", "linearazor brief", "linearazor share",
-  "linearazor for [member]", "linearazor on [project]",
-  "linearazor reconfigure", "weekly Linear brief", or "what shipped in Linear
-  this week". Read-only.
+  Reads a scoped Linear workspace via Linear MCP and produces a brief
+  framed as questions a thoughtful teammate would ask, organized into
+  cross-project lanes (shipped, questions, scope/date changes, stalls,
+  clarity gaps), with a tiered lookahead, a mood line, and a hand-drawn
+  ASCII animation cast. Invoke when the user says "linearazor",
+  "linearazor for [group]", "linearazor digest", "linearazor brief",
+  "linearazor share", "linearazor for [member]", "linearazor on [project]",
+  "linearazor reconfigure", "weekly Linear brief", or "what shipped in
+  Linear this week". Read-only.
 license: MIT
 compatibility: |
   Requires Linear MCP installed and authenticated. Optional:
@@ -18,11 +18,12 @@ compatibility: |
 
 # linearazor
 
-Reads a scoped Linear workspace via Linear MCP and produces a per-project
-brief built around four signals — open questions, scope and date
-changes, stalls, and clarity gaps — preceded by a shipped lead-in per
-project and a cross-cutting exec summary at the top. Read-only; never
-edits files or Linear.
+Reads a scoped Linear workspace via Linear MCP and produces a brief
+organized into cross-project lanes — shipped, questions, scope and
+date changes, stalls, clarity gaps — with a cross-cutting exec summary
+at the top. Each lane carries one ASCII creature; projects appear as
+sub-headers inside each lane in a consistent global order. Read-only;
+never edits files or Linear.
 
 ## Install
 
@@ -96,7 +97,7 @@ When invoked (any non-setup mode), do:
 4. **Decide dispatch.** If `factSheet.projects.length` is at most the
    configured threshold (default 6), single-pass. Else parallel
    sub-agents per [parallel-dispatch.md](./references/parallel-dispatch.md).
-5. **Phase 2 signal composition.** Compose per-project blocks per
+5. **Phase 2 signal composition.** Compose the lane stack per
    [signals.md](./references/signals.md) and
    [signal-modes.md](./references/signal-modes.md). Apply
    [tone.md](./references/tone.md) to every emitted line.
@@ -106,8 +107,8 @@ When invoked (any non-setup mode), do:
    [mood-line.md](./references/mood-line.md), and
    [assets/animation.md](./assets/animation.md).
 7. **Footer.** Append the literal disclaimer from
-   [assets/footer.md](./assets/footer.md) (full-ritual and share
-   modes only).
+   [assets/footer.md](./assets/footer.md) in full-ritual terminal
+   mode only. Suppressed in `brief`, `digest`, and `share`.
 8. **Share-mode export.** If mode is `share`, pipe the rendered
    output to `freeze` per
    [presentation.md](./references/presentation.md) "Share as image."
@@ -153,21 +154,31 @@ so the layers can be revised independently.
    strip the run header — remaining bytes contain no characters in
    the Emoji property range.
 
-7. **[Signal] Acknowledge missing context once.** Full-ritual runs
-   end with one line: the literal disclaimer from
-   [assets/footer.md](./assets/footer.md). Suppressed in `brief`
-   mode. **Audit:** extract the text inside the fenced `text` block
-   in `assets/footer.md` and assert byte-equality with the disclaimer
-   line in the rendered output. Mechanically checkable when a smoke
-   harness exists; until then, reviewer-verified.
+7. **[Signal] Acknowledge missing context once.** Full-ritual terminal
+   runs end with one line: the literal disclaimer from
+   [assets/footer.md](./assets/footer.md). Suppressed in `brief`,
+   `digest`, and `share` modes — `brief` and `digest` because they are
+   compact-by-design; `share` because the PNG is a Slack-paste artifact
+   and the footer reads as visual noise outside its original terminal
+   context. **Audit:** in full-ritual terminal output, extract the text
+   inside the fenced `text` block in `assets/footer.md` and assert
+   byte-equality with the disclaimer line in the rendered output. In
+   `brief`, `digest`, and `share` output, assert the disclaimer string
+   does not appear. Mechanically checkable when a smoke harness exists;
+   until then, reviewer-verified.
 
-8. **[Signal] Celebrate first.** Each per-project block leads with
-   shipped. If nothing shipped, the block opens with
-   `No completions in window` — never with stalls.
+8. **[Signal] Celebrate first.** Lanes render in fixed order
+   (`shipped → questions → changes → stalls → quality → retrospective`).
+   When the `shipped` lane has any content, it leads the brief. When
+   `shipped` is empty, it is omitted entirely — the brief opens with
+   the next non-empty lane, never with `stalls` while `shipped` has
+   content. **Audit:** parse rendered lane order; when both `shipped`
+   and `stalls` are present, `shipped` precedes `stalls`. When `stalls`
+   is the first lane, no `shipped` lane exists in the output.
 
 9. **[Signal] No scoring, no streaks, no leaderboards.** The mood
-   line counts animals as flavor; the brief never tallies them across
-   runs as metrics. Audit: no persisted counter of animals, shipped,
+   line counts creatures as flavor; the brief never tallies them across
+   runs as metrics. Audit: no persisted counter of creatures, shipped,
    or stalls exists.
 
 10. **[Signal] Never re-query Linear from Phase 2.** If Phase 2 needs
@@ -195,3 +206,9 @@ so the layers can be revised independently.
 | Phase 2 — presentation | [presentation.md](./references/presentation.md), [palettes.md](./references/palettes.md), [mood-line.md](./references/mood-line.md), [assets/animation.md](./assets/animation.md) |
 
 All references are one level deep from `SKILL.md`.
+
+## Design history
+
+- Original design: [`2026-05-13-linearazor-design.md`](../../docs/superpowers/specs/2026-05-13-linearazor-design.md).
+- Layout: [`2026-05-14-linearazor-lane-grouped-layout-design.md`](../../docs/superpowers/specs/2026-05-14-linearazor-lane-grouped-layout-design.md)
+  — supersedes the per-project block structure from the original spec.

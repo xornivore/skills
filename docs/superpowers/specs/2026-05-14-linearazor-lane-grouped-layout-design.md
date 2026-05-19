@@ -9,9 +9,9 @@
 
 ## 1. Summary
 
-The current `linearazor` brief renders one block per project, with up to six signal lanes inside each block, each lane led by its own ASCII animal. In practice the animals stack — a six-project brief carries dozens of small animal blocks, and the lane structure is repeated six times. The animals dominate the page and the lane comparisons that matter ("what shipped this cycle? what stalled?") are hard to see at a glance.
+The current `linearazor` brief renders one block per project, with up to six signal lanes inside each block, each lane led by its own ASCII creature. In practice the creatures stack — a six-project brief carries dozens of small creature blocks, and the lane structure is repeated six times. The creatures dominate the page and the lane comparisons that matter ("what shipped this cycle? what stalled?") are hard to see at a glance.
 
-This spec inverts the structure: lanes become top-level, projects become sub-sections inside each lane, and each lane carries exactly one animal. The brief reads as "here is everything shipped, here is everything stalled" instead of "here is project A, here is project B, …, with shipped and stalls inside each."
+This spec inverts the structure: lanes become top-level, projects become sub-sections inside each lane, and each lane carries exactly one creature. The brief reads as "here is everything shipped, here is everything stalled" instead of "here is project A, here is project B, …, with shipped and stalls inside each."
 
 The Phase-1 ingest, fact-sheet schema, and signal-detection rules are unchanged. This is a presentation-layer change with two follow-on edits to the signal layer: the wording of hard rule 8 ("celebrate first") and a one-line correction to the animation-cast frequency rule.
 
@@ -19,7 +19,7 @@ The Phase-1 ingest, fact-sheet schema, and signal-detection rules are unchanged.
 
 Reading the existing rendered brief for a single cycle of seven members across six projects:
 
-- The page is roughly 60% animals by line count.
+- The page is roughly 60% creatures by line count.
 - The reader has to scan project-by-project to find all the stalls, instead of seeing one stalls lane.
 - The "celebrate first" rule fires per project — six small "Shipped:" headers, each with one or two bullets — which dilutes the actual cross-project celebration.
 - The cross-cutting cycle-end question lives outside the per-project loop and feels orphaned.
@@ -31,7 +31,7 @@ Lane-first grouping fixes all four. The page shortens, the comparisons that matt
 - Phase-1 ingest steps, Linear MCP usage, the fact-sheet schema. Unchanged.
 - Signal detection rules (which findings fire, what their thresholds are). Unchanged.
 - Mood-line voice, tone rules, palette colors, ANSI rendering contract. Unchanged in substance — a few examples that incidentally show per-project framing migrate to lane framing.
-- The animation cast (which animal represents which lane). Unchanged.
+- The animation cast (which creature represents which lane). Unchanged.
 - The `lookahead` block. Already a top-level section, stays that way.
 
 ## 4. Lane structure
@@ -55,11 +55,11 @@ lookahead        (own top-level block, after the lane stack)
 
 ### 4.2 Inside a lane
 
-Each lane is a single ASCII animal followed by the lane title and a list of projects. Inside each project, items are bullets:
+Each lane is a single ASCII creature followed by the lane title and a list of projects. Inside each project, items are bullets:
 
 ```text
 
-<animal art>
+<creature art>
 
 <Lane title>
 
@@ -72,7 +72,7 @@ Each lane is a single ASCII animal followed by the lane title and a list of proj
 
 ```
 
-One animal per lane in the entire brief. No per-project animals.
+One creature per lane in the entire brief. No per-project creatures.
 
 ### 4.3 Project order inside a lane
 
@@ -106,7 +106,7 @@ One blank line above, one blank line below every ASCII art block. Every art. Eve
 
 This applies to:
 
-- Animal art at the top of a lane.
+- Creature art at the top of a lane.
 - The setup mascot (duck) in `setup-flow.md`.
 - The empty-brief mascot (puzzled face) when every lane is empty.
 - The optional razor glyph in the run header.
@@ -131,15 +131,15 @@ The `No completions in window` literal goes away — it existed only because the
 
 Audit: parse the rendered output for lane titles in order. If `Shipped` and `Stalls` both appear, `Shipped` must precede `Stalls`. If `Stalls` is the first lane, no `Shipped` lane may exist in the output.
 
-### 6.2 Animation cast: one animal per lane per brief
+### 6.2 Animation cast: one creature per lane per brief
 
 Today (`animation.md` "Cast" intro):
 
-> One animal per signal category per per-project section, never one per item.
+> One creature per signal category per per-project section, never one per item.
 
 New:
 
-> One animal per signal category per brief, never one per project and never one per item.
+> One creature per signal category per brief, never one per project and never one per item.
 
 This is a one-line change; the cast itself is unchanged. Hard rule 12 (layer separation) still binds — this is a presentation-layer change.
 
@@ -169,7 +169,7 @@ For `brief` mode, items inside a lane render as a flat bullet list with the proj
 - `skills/linearazor/references/signal-modes.md` — update the mode tables to reflect the per-mode shapes in [section 7](#7-mode-interaction).
 - `skills/linearazor/references/presentation.md` — add the universal padding rule from [section 5](#5-padding-rule); remove any per-project layout hints; update the rendered example.
 - `skills/linearazor/references/tone.md` — minor: a handful of examples that show per-project framing migrate to lane framing.
-- `skills/linearazor/assets/animation.md` — change the one-line frequency rule per [section 6.2](#62-animation-cast-one-animal-per-lane-per-brief); update the spider sub-flavor rule per [section 6.3](#63-spider-sub-flavor-scope-drift).
+- `skills/linearazor/assets/animation.md` — change the one-line frequency rule per [section 6.2](#62-animation-cast-one-creature-per-lane-per-brief); update the spider sub-flavor rule per [section 6.3](#63-spider-sub-flavor-scope-drift).
 - `skills/linearazor/tests/fixtures/*.mcp.yaml` — fixtures themselves are Phase-1 data and don't change. If a fixture's snapshotted Phase-2 output is checked in alongside it, that snapshot is regenerated.
 - `docs/superpowers/specs/2026-05-13-linearazor-design.md` — add a one-line "superseded in part by [this spec]" pointer at the top of section 4 (the layout section).
 
@@ -230,7 +230,7 @@ A patient cat lingers — two days remain in the cycle and three issues are stil
 The skill only sees Linear data; PTO, dependencies, conscious deprioritization may explain things.
 ```
 
-Eight animal art blocks. Six project headers. Three "Shipped:" headers despite Shipped being one global lane in spirit.
+Eight creature art blocks. Six project headers. Three "Shipped:" headers despite Shipped being one global lane in spirit.
 
 ### 9.2 New shape (lane-first)
 
@@ -287,14 +287,14 @@ Stalls
 The skill only sees Linear data; PTO, dependencies, conscious deprioritization may explain things.
 ```
 
-Three animal art blocks. Three lane headings. The cross-project question lives where it belongs. The reader sees "everything shipped" and "everything stalled" without scanning six projects.
+Three creature art blocks. Three lane headings. The cross-project question lives where it belongs. The reader sees "everything shipped" and "everything stalled" without scanning six projects.
 
 ## 10. Validation
 
 After the implementation lands, the rendered output must satisfy:
 
 1. **Lane order audit.** Lane titles appear in `shipped, questions, changes, stalls, quality, retrospective` order. If a lane is absent, its slot is simply skipped. The `lookahead` block, when present, sits after the entire lane stack.
-2. **Animal count audit.** Each animal in the cast appears at most once in the lane stack of a single brief. The empty-brief mascot, when rendered, replaces the whole stack (no per-lane animals appear alongside it).
+2. **Creature count audit.** Each creature in the cast appears at most once in the lane stack of a single brief. The empty-brief mascot, when rendered, replaces the whole stack (no per-lane creatures appear alongside it).
 3. **Padding audit.** Every ASCII art block in the rendered output is bracketed by exactly one blank line above and one blank line below.
 4. **Project order audit.** Inside any given lane with multiple projects, project sub-headers appear in `started → backlog → completed` order, alphabetized within each tier. The same projects appear in the same relative order across every lane in which they participate.
 5. **Celebrate-first audit.** When `Shipped` has content, it precedes any other lane in the rendered output.

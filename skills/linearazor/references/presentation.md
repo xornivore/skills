@@ -14,7 +14,7 @@ role.
 
 What gets colored:
 
-- **Project names** (in per-project headers).
+- **Project names** (as project sub-headers inside each lane).
 - **Numbers** (`11 days`, `8d to target`).
 - **Verbs** that carry the signal (`shipped`, `moved`, `silent`).
 - **Identifiers** (`ENG-423`) — bold default Text role, not a colored
@@ -31,28 +31,42 @@ than three colored tokens on a line is a presentation-layer bug.
 ## Animation placement
 
 The animation cast lives in [`../assets/animation.md`](../assets/animation.md).
-One animal per signal category per per-project section — not one per
-item.
+One creature per signal category per brief — not one per project, not
+one per item.
 
-For each signal lane that has at least one finding in the current
-per-project block, render the animal once at the top of that lane,
-left-aligned with two-space indent, before the finding lines. All
-animals face right toward the finding list below.
+For each lane that has at least one finding across the in-scope
+project set, render the creature once at the top of the lane, before
+the lane title and the finding lines. All creatures face right toward
+the finding list below.
 
-If a signal lane is empty, no animal renders for that lane.
+If a lane is empty across every project, no creature renders for that
+lane — the whole lane is omitted (see
+[signals.md](./signals.md) "Lane order").
+
+### ASCII art padding (universal)
+
+Every ASCII art block — creature art, the setup duck, the empty-brief
+mascot, the optional razor glyph in the run header — is bracketed by
+exactly one blank line above and one blank line below. No exceptions,
+no second blank for "breathing room," no zero-line tight-coupling
+between the art and the heading beneath it.
+
+**Audit:** in the rendered output, every ASCII art block has exactly
+one blank line of separation on each side. Two or more blank lines, or
+zero, is a violation.
 
 ### Sub-flavor overrides
 
-A per-project signal block may swap its default animal for a
-sub-flavor variant when a stronger condition matches. The sub-flavor
-inherits the same palette role as the lane it overrides.
+A lane may swap its default creature for a sub-flavor variant when a
+stronger condition matches. The sub-flavor inherits the same palette
+role as the lane it overrides.
 
 | Lane | Default | Sub-flavor (when) | Color |
 | --- | --- | --- | --- |
-| `changes_scope` | Penguin | Spider — when the per-project scope-changes count is at least 3 ("scope drift") | `changes_scope` |
+| `changes_scope` | Penguin | Spider — when the total scope-changes count across all in-scope projects in the primary horizon is at least 3 ("scope drift") | `changes_scope` |
 
-When a sub-flavor renders, the default animal is suppressed for that
-block — never both.
+When a sub-flavor renders, the default creature is suppressed for that
+lane — never both.
 
 ## Unicode flourishes
 
@@ -188,7 +202,7 @@ Falling back to markdown export at <path>.md
 
 ### Freeze invocation
 
-The pipeline (illustrative — pin flags at implementation time):
+The pipeline:
 
 ```bash
 RENDER_OUT="${TMPDIR:-/tmp}/linearazor-<group>-<date>.png"
@@ -198,13 +212,30 @@ linearazor_render | freeze \
   --background "$PRIMARY_BG" \
   --font.family "JetBrains Mono" \
   --font.size 13 \
-  --padding 24
+  --padding 24 \
+  --margin 12 \
+  --border.radius 8 \
+  --shadow.blur 20 \
+  --shadow.y 6
 echo "$RENDER_OUT"
 ```
 
 `$PRIMARY_BG` is the background hex from the active palette. For
 `catppuccin-mocha`, `#1e1e2e` (base). For palettes without an
 explicit background hex, default to black (`#000000`).
+
+The margin, border-radius, and shadow flags give the PNG a framed
+card look that reads well when pasted into Slack and document chat
+surfaces. They are presentation polish — adjust per palette taste, but
+keep the values in the same range so different palettes produce
+artifacts that visually belong together.
+
+`linearazor_render` produces an ANSI substrate per [Rendering
+modes](#rendering-modes) — color escapes inline, OSC 8 hyperlinks on
+identifiers, no markdown formatting. The disclaimer footer from
+[`assets/footer.md`](../assets/footer.md) is omitted in `share` mode
+(hard rule 7 — the PNG is a Slack-paste artifact and the footer reads
+as noise outside its original terminal context).
 
 ### SVG variant
 

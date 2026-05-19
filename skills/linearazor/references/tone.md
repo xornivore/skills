@@ -48,7 +48,7 @@ Forbidden tokens:
 | --- | --- |
 | "ENG-423 AT RISK — 11 days in progress." | "ENG-423  In Progress 11 days  (default threshold: 7)" |
 | "Milestone \"May runtime cut\" is BEHIND SCHEDULE." | `Milestone "May runtime cut" moved from May 14 -> May 21` |
-| "Stall." | The factual stall line, with the cow animal rendered above it by the presentation layer. |
+| "Stall." | The factual stall line, with the cow creature rendered above it by the presentation layer. |
 
 **Audit:** grep over the output for `CRITICAL|AT RISK|BEHIND|FAILING`. Any match is a violation.
 
@@ -67,16 +67,19 @@ signal source is "no acceptance criteria" with a question framing).
 
 ## Celebrate first
 
-Hard rule 8 binds: each per-project block opens with shipped or the
-literal `No completions in window` — never with stalls.
+Hard rule 8 binds: the brief leads with the `shipped` lane when it
+has content; lanes render in fixed order; an empty `shipped` lane is
+omitted entirely and the next non-empty lane leads — never opening
+with `stalls` while `shipped` has content.
 
 | Wrong | Right |
 | --- | --- |
-| Block opens with `Stalls:` ahead of `Shipped:`. | Block opens with `Shipped:` (or `No completions in window`), then questions, changes, stalls, quality. |
+| Brief opens with the `Stalls` lane while the `Shipped` lane also exists with items. | Brief opens with `Shipped`, then questions, changes, stalls, quality, retrospective. |
+| Rendering an empty `Shipped` section with `No completions in window` as a placeholder. | Omitting the `Shipped` lane entirely; the next non-empty lane leads. |
 
 ## No scoring, no streaks, no leaderboards
 
-Hard rule 9 binds: the mood line counts animals as flavor; the brief
+Hard rule 9 binds: the mood line counts creatures as flavor; the brief
 never tallies them across runs as metrics. There is no state file in
 which to persist counters — the rule is structurally enforced.
 
