@@ -63,6 +63,75 @@ between the art and the heading beneath it.
 one blank line of separation on each side. Two or more blank lines, or
 zero, is a violation.
 
+### Column alignment within tabular bullets
+
+Issue-stall and shipped-issue bullets follow a tabular shape so the
+verb (`In Review`, `In Progress`, etc.) and the trailing
+`(default threshold: N)` parenthetical line up across all bullets in
+the same lane. Project sub-headers and prose bullets (the
+scope-hygiene cycle-field-unpopulated / empty-project lines) are not
+tabular and do not participate.
+
+The tabular bullet has four left-aligned columns separated by exactly
+two spaces:
+
+```text
+    •  <ID>     <estimate>  <stall-or-title-string>  (default threshold: N)
+    ^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |  col 7   <- bullet content starts here per signal-modes.md
+    col 4      <- bullet glyph per signal-modes.md indent rule
+```
+
+Column widths are computed per lane, not per brief:
+
+- **ID column** — width = length of the longest ID in the lane's
+  tabular bullets. IDs shorter than the column width are
+  right-padded with spaces.
+- **Estimate column** — width = length of the longest estimate
+  badge in the lane's tabular bullets, including parentheses. Format
+  is `(<name>)` where `<name>` is `estimate.name` (e.g. `(L)`,
+  `(XS)`, `(5)`). When a bullet has no estimate, the slot renders as
+  the same number of spaces. When no bullet in the lane carries an
+  estimate, the column is omitted entirely (width zero, no separator
+  spaces).
+- **Stall-or-title column** — for stall bullets, this is the
+  `<verb> <duration>` literal from the stall table in
+  [signals.md](./signals.md). For shipped bullets, this is the issue
+  title. Width = length of the longest such string in the lane.
+  Padded on the right with spaces so the trailing parenthetical (when
+  present) aligns.
+- **Trailing parenthetical** — when present (`(default threshold:
+  N)` for stalls; not used for shipped), it starts exactly two spaces
+  after the padded stall-or-title column. Threshold values themselves
+  vary (3 vs 7) — only the `(default threshold:` prefix needs to
+  align across bullets.
+
+The padding lets the eye scan a lane vertically and compare like
+columns. Without padding, the `(S)` badge on one bullet pushes the
+verb on that line right of the verb on a no-badge bullet next to it,
+and the table degrades into ragged prose.
+
+**Wrong** (no padding, ragged columns):
+
+```text
+    •  CON-1263  In Review 26 days  (default threshold: 3)
+    •  CON-1344 (S)  In Review 14 days  (default threshold: 3)
+    •  CON-993  In Progress 21 days  (default threshold: 7)
+```
+
+**Right** (padded, columns align):
+
+```text
+    •  CON-1263       In Review 26 days    (default threshold: 3)
+    •  CON-1344  (S)  In Review 14 days    (default threshold: 3)
+    •  CON-993        In Progress 21 days  (default threshold: 7)
+```
+
+**Audit:** for every lane with two or more tabular bullets, the
+column at which the verb (first non-space character after the
+estimate column) starts is identical across bullets. Likewise for
+the trailing `(default threshold:` substring when present.
+
 ### Sub-flavor overrides
 
 A lane may swap its default creature for a sub-flavor variant when a
