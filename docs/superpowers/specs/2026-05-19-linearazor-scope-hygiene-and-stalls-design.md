@@ -64,7 +64,7 @@ When `0 < count < scopeMinIssues` (only possible when the threshold is raised ab
 
 Renders under the affected project's sub-header inside the **stalls** lane. The brief still emits the project sub-header even though the project has no items in any other lane — scope hygiene is the reason the project shows up at all in this brief.
 
-The scope-hygiene stall maps to the `stalls_silent` palette role and the turtle creature. Project muteness reads as silence, not as aging.
+The scope-hygiene stall maps to the `stalls_silent` palette role and the turtle creature. A project with no work tracked is quiet, not slow — same family as a single silent issue, not the cow that marks aging WIP.
 
 ## 5. Story-point estimates
 

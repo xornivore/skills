@@ -142,6 +142,26 @@ Format:
 Across <N> projects: <S> shipped · <T> stalls · <Q> questions · <C> changes
 ```
 
+When at least one item in a given lane has a numeric `estimate.value`,
+the lane's count gains a parenthesized point aggregate:
+
+```text
+Across <N> projects: <S> shipped (12pt) · <T> stalls (8pt) · <Q> questions · <C> changes
+```
+
+Aggregation rule:
+
+- Numeric `estimate.value` is summed across in-lane items.
+- Items with a non-null `estimate.name` but null `estimate.value`
+  (T-shirt sizes with no point mapping) are excluded from the
+  aggregate — counted in `S` / `T` / etc. but contributing 0 to the
+  `(pt)` total.
+- Lanes where every item lacks a numeric `estimate.value` render
+  without the `(pt)` suffix.
+- The unit literal is `pt` regardless of the workspace's estimate
+  scheme. Per-bullet badges keep the raw display string (`(L)`, `(5)`);
+  the aggregate normalizes to points.
+
 Suppressed in `brief` and `digest` modes (brief is counts at the foot;
 digest leads with its own exec-summary line, then the lane stack).
 
@@ -165,12 +185,12 @@ dot-separated tag, suited for slack-paste:
 <mood line>
 
 Shipped
-  •  ENG-481  finalize scope for runtime backpressure  · Runtime backpressure
-  •  ENG-492  rough draft of post-migration roadmap    · Scheduler refactor
+  •  ENG-481 (M)  finalize scope for runtime backpressure  · Runtime backpressure
+  •  ENG-492 (L)  rough draft of post-migration roadmap    · Scheduler refactor
   [...]
 
 Stalls
-  •  ENG-487  In Progress 8 days  (default threshold: 7)  · Runtime backpressure
+  •  ENG-487 (L)  In Progress 8 days  (default threshold: 7)  · Runtime backpressure
 ```
 
 No animation cast. No flourishes. Counts line at the foot when the

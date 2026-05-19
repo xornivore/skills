@@ -99,16 +99,76 @@ Each line states the *what* and the *when*; no verdicts.
 Defaults from `thresholds`, never learned. Each stall lists facts —
 never the person (hard rule 3).
 
+### Issue-level stalls
+
 | Stall | Detection | Render |
 | --- | --- | --- |
-| Aging WIP | `daysInStatus("In Progress") > agingWipDays` | `<ID>  In Progress N days  (default threshold: M)` |
-| No PR linked | `daysInStatus("In Progress") > noPrDays` AND `linkedPRs == []` | `<ID>  In Progress N days, no PR linked` |
-| Silent | No status change AND `lastCommentDaysAgo > silentDays` | `<ID>  silent N days` |
+| Reverted | `openIssues[].revertedAt != null` AND `revertedAt` falls in the primary horizon | `<ID>  rolled back from Done <date>` |
 | Blocked-without-blocker | Status `Blocked` AND `blockedBy == []` | `<ID>  marked Blocked, no blocker linked` |
+| Awaiting-merge | Status name matches the review pattern below AND any `linkedPRs[*].openedAt` is older than `prReviewDays` ago | `<ID>  PR open N days, no merge` |
+| Review-aging | `daysInStatus > prReviewDays` AND status name matches the review pattern | `<ID>  In Review N days  (default threshold: M)` |
+| PR-linked but stuck | `daysInStatus("In Progress") > noPrDays` AND `linkedPRs != []` AND status name does NOT match the review pattern | `<ID>  In Progress N days with PR open — flip status?` |
+| Silent | No status change AND `lastCommentDaysAgo > silentDays` | `<ID>  silent N days` |
+| No-PR | `daysInStatus("In Progress") > noPrDays` AND `linkedPRs == []` | `<ID>  In Progress N days, no PR linked` |
+| Aging-WIP | `daysInStatus("In Progress") > agingWipDays` | `<ID>  In Progress N days  (default threshold: M)` |
 
-A single issue may match multiple stall patterns; emit the most
-specific one (Blocked-without-blocker beats Silent beats No-PR beats
-Aging-WIP). Never emit more than one stall finding per issue.
+**Review pattern.** Status name matches the case-insensitive regex
+`\b(in[ -]?)?review\b|code[ -]?review`. Calibrate against the user's
+workspace status set at implementation time — different workspaces use
+different review-stage names (`In Review`, `Code Review`, `PR Review`).
+The regex above is the floor.
+
+**Awaiting-merge fallback.** When `linkedPRs[*].prOpenedAtApproximate`
+is `true` for a given PR, fall back to `daysInStatus` against the
+review-stage status — approximate but bounded. The audit treats
+fallback firings the same as direct firings; the fact-sheet field
+captures the degraded-mode source for transparency.
+
+A single issue may match multiple patterns; emit the most-specific one
+per precedence — top-down, first match wins:
+
+1. Reverted
+2. Blocked-without-blocker
+3. Awaiting-merge
+4. Review-aging
+5. PR-linked but stuck
+6. Silent
+7. No-PR
+8. Aging-WIP
+
+Never emit more than one stall finding per issue.
+
+### Project-level scope-hygiene stall
+
+Fires once per in-scope project whose `projects[].inScopeIssueCount`
+is below `thresholds.scopeMinIssues`. Renders under the project's
+sub-header in the stalls lane — independent of any issue-level stalls
+in the same project (both can coexist).
+
+The bullet body's wording is keyed off the cycle's `elapsed_pct =
+(today - cycle.startsAt) / cycle.length`:
+
+| Position | `elapsed_pct` | Bullet body |
+| --- | --- | --- |
+| early | ≤ 33% | `no work tracked yet — cycle just started (day N of M)` |
+| mid | 33% < x ≤ 66% | `no work tracked — N days in, M days remaining` |
+| late | > 66% | `no work tracked — cycle ends in N days` |
+
+When `0 < inScopeIssueCount < scopeMinIssues` (only possible when the
+threshold is raised above 1), substitute `1 issue tracked` (or
+`K issues tracked` for K > 1) for `no work tracked` and otherwise
+reuse the variant.
+
+A project with no work tracked is quiet, not slow. The scope-hygiene
+stall maps to the `stalls_silent` palette role and the turtle creature
+— same family as a single silent issue, not the cow that marks aging
+WIP. This affects which creature renders in the stalls lane when
+multiple sub-flavors fire — see [presentation.md](./presentation.md)
+"Stalls lane creature precedence."
+
+**Audit:** for every project where `inScopeIssueCount < scopeMinIssues`,
+exactly one bullet renders under its sub-header in the stalls lane,
+matching the variant string for the project's `elapsed_pct` bucket.
 
 ## 5. Quality
 

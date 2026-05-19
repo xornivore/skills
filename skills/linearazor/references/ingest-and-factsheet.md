@@ -22,9 +22,10 @@ stable.
 
    **Threshold-name translation.** The TOML config uses
    `snake_case` keys (`aging_wip_days`, `silent_days`,
-   `no_pr_days`) per TOML convention. Phase 1 translates these to
-   the fact sheet's `camelCase` keys
-   (`agingWipDays`, `silentDays`, `noPrDays`) per YAML / wire-format
+   `no_pr_days`, `pr_review_days`, `scope_min_issues`) per TOML
+   convention. Phase 1 translates these to the fact sheet's
+   `camelCase` keys (`agingWipDays`, `silentDays`, `noPrDays`,
+   `prReviewDays`, `scopeMinIssues`) per YAML / wire-format
    convention before emitting. Phase 2 always reads the camelCase
    form from the fact sheet — it never sees the TOML keys.
 2. **Resolve horizon and lookahead windows.** See
@@ -43,16 +44,33 @@ stable.
       `openIssues[].labels` for downstream signals only).
 4. **Fetch per-issue details** (one MCP call per page; batch as
    permitted): status, status history, assignee, last comment
-   timestamp, linked PR URLs, blocker / blocking relations, project,
-   milestone, due date, label set, title, body, canonical Linear
-   URL. Linear MCP returns the URL alongside the issue (typically
-   `https://linear.app/<workspace>/issue/<ID>/<slug>`); record it
-   verbatim into the `url` field of every per-issue entry in the
-   fact sheet (shipped, openIssues, scopeChangesInWindow,
+   timestamp, linked PRs (URL + `openedAt`), blocker / blocking
+   relations, project, milestone, due date, label set, title, body,
+   `estimate` (both `value` and `name` when present; null otherwise),
+   canonical Linear URL. Linear MCP returns the URL alongside the
+   issue (typically `https://linear.app/<workspace>/issue/<ID>/<slug>`);
+   record it verbatim into the `url` field of every per-issue entry in
+   the fact sheet (shipped, openIssues, scopeChangesInWindow,
    lookaheadIssues). Phase 2 renders identifiers as hyperlinks per
    the rendering-mode contract in
    [presentation.md](./presentation.md) — a missing URL falls back
    to a bare identifier, which is the failure mode to avoid.
+
+   **Linked-PR open date.** Each `linkedPRs[*]` entry carries both
+   `url` and `openedAt` (ISO-8601 timestamp). When the MCP response
+   doesn't expose `openedAt` for a given PR, set
+   `linkedPRs[*].prOpenedAtApproximate = true` and approximate the
+   value from the issue's most recent transition into a review-stage
+   status. The Awaiting-merge stall detector
+   ([signals.md](./signals.md) "Stalls") reads `openedAt` directly;
+   when `prOpenedAtApproximate` is true, the same detector falls back
+   to `daysInStatus` against the review-stage status.
+
+   **Estimates.** Linear's `estimate` field comes back on `list_issues`
+   and `get_issue` responses with `value` (numeric) and `name`
+   (display string — `S` / `M` / `L` / `5` / etc.). Either may be null
+   when the workspace's estimation scheme omits one of the two
+   representations. Record both verbatim per issue.
 5. **Compute derived fields** per issue (no MCP calls):
    - `daysInStatus`: now minus the timestamp of the latest status
      transition into the current status.
