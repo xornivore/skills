@@ -65,8 +65,9 @@ one-liner-per-project shape.
 An issue is in scope when all apply:
 
 - Belongs to the configured Linear team.
-- Belongs to a project carrying at least one of the configured labels
-  (when `labels` is non-empty in config). Configured labels are
+- Belongs to a project carrying **every** one of the configured
+  labels (when `labels` is non-empty in config). Multiple labels
+  intersect — they narrow scope, not broaden it. Configured labels are
   **project labels**, not issue labels — see "Label resolution" below.
 - Satisfies the composite horizon filter — at least one of:
   - Assigned to a cycle whose window intersects the primary horizon.
@@ -88,8 +89,12 @@ Linear has two distinct label namespaces:
 The `labels` array in `~/.config/linearazor/<group>.toml` resolves to
 **project labels**. Phase 1 looks up label IDs via Linear's
 `list_project_labels` (not `list_issue_labels`) and uses them to filter
-projects, then takes the union of those projects' issues as the
-candidate set before applying the horizon filter.
+projects. With multiple labels, Phase 1 calls `list_projects --label
+<id>` once per label and intersects the returned project-ID sets, so
+the candidate project set is exactly the projects carrying every
+configured label. The candidate issue set is the union of all
+in-cycle issues under those projects before the horizon filter
+applies.
 
 **Why project-labels.** Most teams scope by initiative or sub-team
 membership, which is a property of the project, not of each issue.
@@ -101,9 +106,13 @@ survives churn at the issue level.
 issues directly — returns empty when the label is applied at the
 project level only.
 
-**Right:** resolve the configured label as a project label, narrow
-projects with it, then include every in-cycle issue under those
-projects.
+**Wrong:** with multiple configured labels, take the union of
+per-label project sets — that broadens scope each time the user adds
+a label, the opposite of intent.
+
+**Right:** resolve every configured label as a project label,
+intersect the per-label project sets, then include every in-cycle
+issue under the resulting projects.
 
 **Audit:** Phase-1 ingest must call `list_project_labels` to resolve
 the configured `labels`; calling `list_issue_labels` on the configured
