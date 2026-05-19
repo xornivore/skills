@@ -41,9 +41,23 @@ unresolved: []             # member names that failed to resolve against
 projects:
   - name: "<project-name>"
     state: started         # started | paused | completed | canceled
-    inScopeIssueCount: 0   # count of issues in this project passing the
-                           # composite horizon filter; drives the
-                           # scope-hygiene stall (signals.md)
+    inScopeIssueCount: 0   # count of issues in this project passing any
+                           # of C1-C4 of the composite horizon filter
+                           # (ingest-and-factsheet.md step 3.3); drives
+                           # the empty-project scope-hygiene stall
+    cycleAssignedIssueCount: 0
+                           # count of issues with cycleId equal to the
+                           # active cycle's ID. By construction
+                           # cycleAssignedIssueCount <= inScopeIssueCount
+                           # for cycle horizons. Drives the
+                           # cycle-field-unpopulated scope-hygiene stall
+                           # (signals.md)
+    inScopeIssueIdsByPath:
+      c1: []               # IDs that passed via cycle assignment
+      c2: []               # IDs that passed via milestone date in horizon
+      c3: []               # IDs that passed via dueDate in horizon
+      c4: []               # IDs that passed via status-history overlap
+                           # with the horizon window
     milestones:
       - name: "<milestone-name>"
         targetDate: "YYYY-MM-DD"

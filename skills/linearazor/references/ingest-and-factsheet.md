@@ -40,8 +40,58 @@ stable.
    2. **Issue narrowing.** Query in-scope issues constrained to the
       candidate projects + team + composite horizon filter from
       [horizon-and-scope.md](./horizon-and-scope.md) "In-scope set".
-      Issue labels are not used for scoping (they are recorded in
-      `openIssues[].labels` for downstream signals only).
+      The composite filter is a **union** over four conditions
+      (C1-C4); the in-scope set is every issue that passes at least
+      one. Run the query plan in step 3.3 below and **union** the
+      results by issue ID before applying the project-label filter. Issue labels are not used for scoping
+      (they are recorded in `openIssues[].labels` for downstream
+      signals only).
+
+      **Anti-pattern.** Running only `list_issues --cycle <name>` and
+      treating the result as the in-scope set. That query only covers
+      C1 — it misses any issue that was In Progress when the cycle
+      started but has no `cycleId` set. Real cycles have carryover
+      work that lives outside the cycle field; the brief that ignores
+      it claims a project is silent while it's shipping.
+
+      **Wrong:** `list_issues --team T --cycle FY27-6` → assume that
+      is the universe of in-scope issues.
+
+      **Right:** call all four queries below, union by issue ID,
+      dedupe, then filter by the candidate project set.
+
+   3. **Composite horizon query plan.** Execute the union explicitly.
+      The minimum set of MCP calls:
+
+      - **Q1 (C1):** `list_issues --team <id> --cycle <name>` —
+        issues with `cycleId` matching the active cycle.
+      - **Q2 (C2):** for each candidate project, call
+        `list_milestones --project <id>`; for each milestone whose
+        `targetDate` falls in the primary horizon, call
+        `list_issues --team <id>` filtered by that milestone (or read
+        from the per-issue `projectMilestone` field on already-fetched
+        issues).
+      - **Q3 (C3):** issues with `dueDate` inside the horizon. Linear
+        MCP's `list_issues` supports `--updatedAt -P<horizon>D` as a
+        rough pre-filter; intersect locally against `dueDate`.
+      - **Q4 (C4):** issues that held a status of type `started` at
+        any point in the horizon window. Phase 1 fetches status
+        history on the per-issue detail call (step 4) and includes
+        the issue when its status history contains a `started`-typed
+        status that overlaps the horizon. The pre-filter is the same
+        `--updatedAt -P<horizon>D` window as Q3; the locally-applied
+        history check decides inclusion.
+
+      Q3 and Q4 share the same MCP call. Phase 1 unions the four
+      result sets by issue ID. Order of the unions does not matter;
+      the result is the in-scope set before project-label filtering.
+
+      **Audit:** for every shipped fact sheet, every issue in
+      `openIssues[]` or `shipped[]` must pass at least one of C1-C4.
+      Per [signals.md](./signals.md) "Scope hygiene", Phase 1 also
+      records which conditions each issue passed under
+      `projects[].inScopeIssueIdsByPath`; reviewers can spot-check the
+      decomposition.
 4. **Fetch per-issue details** (one MCP call per page; batch as
    permitted): status, status history, assignee, last comment
    timestamp, linked PRs (URL + `openedAt`), blocker / blocking
