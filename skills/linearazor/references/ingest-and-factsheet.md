@@ -33,10 +33,14 @@ stable.
 3. **Query in-scope issues** for the primary horizon. Order of
    operations:
    1. **Project narrowing.** When `labels` is non-empty, call
-      `list_projects` filtered by each resolved project-label
-      identifier to get the candidate project set. When `labels` is
-      empty, the candidate set is every project under the configured
-      team.
+      `list_projects --label <id>` once per resolved project-label
+      identifier and intersect the returned project-ID sets — the
+      candidate set is every project carrying every configured label
+      (AND semantics). When `labels` is empty, the candidate set is
+      every project under the configured team. When the intersection
+      is empty, surface a one-line setup-health note pointing at
+      `~/.config/linearazor/<group>.toml`; do not fall back to a
+      broader scope.
    2. **Issue narrowing.** Query in-scope issues constrained to the
       candidate projects + team + composite horizon filter from
       [horizon-and-scope.md](./horizon-and-scope.md) "In-scope set".

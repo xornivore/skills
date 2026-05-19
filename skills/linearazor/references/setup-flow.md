@@ -61,10 +61,14 @@ whose state is `started` or whose latest milestone target date is
 within the next 60 days. Present these as a pick list (suggestion).
 Allow free text. Multiple labels allowed.
 
-The `labels` array in config always resolves against the
-project-label namespace. See
+Tell the user explicitly: picking multiple labels narrows the scope
+to projects carrying every selected label. To broaden ("blue or Q2"),
+use a single broader label instead. See
 [horizon-and-scope.md](./horizon-and-scope.md) "Label resolution" for
-the rationale.
+the full semantics.
+
+The `labels` array in config always resolves against the
+project-label namespace.
 
 Skip allowed — when no labels are set, the in-scope filter does not
 apply the label clause and the candidate set is every project under
