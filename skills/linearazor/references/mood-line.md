@@ -49,19 +49,19 @@ A drifting penguin nudges the May cut out to May 21.
 #### Exemplars — `vehicles`
 
 ```text
-A patient traffic light blinks over the June runtime cut for acceptance criteria.
+A patient stop sign waits at the June runtime cut for acceptance criteria.
 ```
 
 ```text
-A racing car slows by ENG-481 — the backplane shipped Tuesday.
+A sport car blows past ENG-481 — the backplane shipped Tuesday.
 ```
 
 ```text
-A rusted truck sits on the scheduler refactor.
+An old pick-up truck sits on the scheduler refactor.
 ```
 
 ```text
-A detour sign points the May cut out to May 21.
+An exit sign moves the May cut out to May 21.
 ```
 
 ### Secondary form (when a connection is the point)
@@ -95,17 +95,17 @@ the date moving.
 #### Exemplars — `vehicles`
 
 ```text
-A horse trails an odometer — last cycle's lessons land just as June's
+A horse trails an exit sign — last cycle's lessons land just as June's
 target slides.
 ```
 
 ```text
-A race car outruns a rusted truck — runtime shipped Tuesday, but the
+A sport car outruns a pick-up truck — runtime shipped Tuesday, but the
 scheduler still hasn't moved.
 ```
 
 ```text
-A patient traffic light shadows an odometer — quality questions ride
+A patient stop sign shadows an exit sign — quality questions ride
 alongside the date moving.
 ```
 
@@ -114,7 +114,7 @@ alongside the date moving.
 ```text
 WRONG: Three cows, one bee, and a cat are here.
 WRONG: Two snakes, a bat, and a few penguins this week.
-WRONG: Three rusted trucks, one race car, and a scooter are here.
+WRONG: Three pick-up trucks, one sport car, and a scooter are here.
 ```
 
 These are sort-shapers — they list the cast instead of noticing

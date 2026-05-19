@@ -244,188 +244,214 @@ forced upbeat mood line.
 Things that move. Mechanical register; the cast lines up directly
 with the momentum metaphor that the brief is already organized around.
 
-#### shipped — Race car
+#### shipped — Sport car
 
-Momentum, just zoomed past — motion lines trail right.
+Driver's hair flowing back — motion in the canon itself, no added
+streaks needed. Marijn Kampf (`MK`) form from `ascii-art.de/ascii/t/traffic.txt`.
 
 ```text
-   ______
- _/______\_
-|  o    o  |  ~~~
-'-(O)--(O)-'
+  __~p\___
+ (_,.__,._)
+---`'--`'--
 ```
 
-#### questions — Scooter
+#### questions — Push scooter with squeeze horn
 
-Small, curious, hops around lanes.
+The horn is the point. A small, curious thing that honks when it has
+something to ask. `MJP` form from `ascii-art.de/ascii/s/scooter.txt`.
 
 ```text
-  __
- /  \
-|o   \____
- \________\
-   o----o
+       ==,
+        _|
+       (_|=<
+___        _|
+,-.\      /,|.
+o :======: o :
+`-'        `-'
 ```
 
-#### stalls_aging — Rusted truck
+#### stalls_aging — Pick-up truck
 
-Sitting in the lot too long; paint peeling, dots for weathering.
+Old MK pickup with a small bed in the back — has sat through enough
+seasons to register. `MK` form from `ascii-art.de/ascii/t/traffic.txt`.
 
 ```text
- _____
-|_:_:_|____
-|__,______|
- /o\.    /o\.
- \_/     \_/
+       __
+  _____|L\___
+ (_,._____,._)
+---`'-----`'--
 ```
 
 #### stalls_no_pr — Wheelbarrow
 
-Manual, no engine — work without automation backing it.
+Manual, single wheel, no engine — work without automation backing it.
+`LGB` (lgbeard) form from `ascii.co.uk/art/wheelbarrow`. Trimmed from
+the 9-row canonical to fit the lane envelope.
 
 ```text
-  ______
- /      \_____
-/________  \  \
-\  ___  /---O )
- \(___)/    \/
+                            _______
+   ___________________________.'.------`
+  '---------------------------.'
+.' .//.'/`================'
+=[=:====:=]=           \\||
+'. `--' .'              \_|
+  `-  -'
 ```
 
-#### stalls_silent — Parked car
+#### stalls_silent — Basic car
 
-Present, lights off, nothing moving. Dots stand in for windows seen
-from the side at night.
+Generic, no motion lines, lights off implicit — sitting on the road
+without going anywhere. `MK` form from `ascii-art.de/ascii/t/traffic.txt`.
 
 ```text
-     _________
- __/           \__
-|  . . . . . . .  |
-'-(_)---------(_)-'
+    ___
+  _/[]L\__
+ (_,.__,._)
+---`'--`'--
 ```
 
 #### stalls_blocked — Traffic cone
 
-Literally blocking the lane.
+Literally blocking the lane. Composed for this cast; no canonical
+small traffic-cone glyph surfaced in the commons.
 
 ```text
-    /\
-   /  \
-  /----\
- /  ==  \
-/________\
-__________
+   /\
+  /==\
+ /----\
+/======\
+‾‾‾‾‾‾‾‾
 ```
 
-#### changes_scope — Detour sign
+#### changes_scope — Car with caravan
 
-Diamond sign, arrow pointing the new way.
+Scope just grew — there's a trailer bolted on now. `MK` form from
+`ascii-art.de/ascii/t/traffic.txt`. Reads "this isn't what was on the
+road yesterday" without needing a separate detour-sign metaphor.
 
 ```text
-  /\
- /->\
-/----\
-\    /
- \  /
-  \/
+ ______     ___
+/[]  []\  _/[]L\__
+\__,.__|-(_,.__,._)
+---`'------`'--`'--
 ```
 
-#### changes_date — Odometer
+#### changes_date — Exit sign
 
-The number moved.
+The exit number is the milestone date — when it moves, the freeway
+sign reads differently. Composed for this cast; the public commons
+has no canonical small odometer / mile-marker glyph.
 
 ```text
- _________
-| _______ |
-||0|0|9|3||
-||_|_|_|_||
-|_________|
+.--------.
+|        |
+|  EXIT  |
+|   14   |
+'--------'
+   |||
 ```
 
-#### quality — Traffic light
+#### quality — Stop sign
 
-"Did we check before going through?"
+"Stop and check before going through." `jgs` (Joan G. Stark) form
+from `ascii-art.de/ascii/t/traffic.txt`.
 
 ```text
- ___
-|(O)|
-| o |
-| o |
-|___|
-  |
+   __
+ .'  '.
+| STOP |
+ '.__.'
+   ||
+   ||
+   ||
+\\||///
 ```
 
 #### retrospective — Horse
 
-The run that just ended — a horse rounding out the stable of
-mechanized lanes. Animate among machines, the way a retro looks back
-at the work that's already left the road.
+A horse rounding out the stable of mechanized lanes — the run that
+just ended. `hjw` (Hayley Wakenshaw) form from
+`ascii-art.de/ascii/ghi/horse.txt`.
 
 ```text
-  ,~~,
- /    \____
-|  o       \,
- \    ____,'
-  |  |
-  |  |
+   _|\ _/|_,
+ ,((\\``-\\\\_
+,(())      `))\
+,(()))       ,_ \
+((())'   |        \
+)))))     >.__     \
+((('     /    `-. .c|
+            /        `-`'
 ```
 
 #### changes_scope drift — Traffic jam
 
-Three vehicles pressed together — sub-flavor of `changes_scope` when
-the total scope-changes count across all in-scope projects in the
-primary horizon is at least 3. Inherits the `changes_scope` palette
-color.
+Sub-flavor of `changes_scope` when the total scope-changes count
+across all in-scope projects in the primary horizon is at least 3.
+Inherits the `changes_scope` palette color. `Shimrod` form from
+`ascii-art.de/ascii/t/traffic.txt` — wider than the rest of the cast
+on purpose; width *is* the message.
 
 ```text
- _____    _____    _____
-/__|__\__/__|__\__/__|__\
- '-o-'    '-o-'    '-o-'
+   _____
+ _/__|_,\__                 aaaah                   _O
+|,-.___,-. )    _____      _o'   @           __     (`
+( O ) ( O )   _/__|_,\__   /` __( `>    ____|_,\_   |>
+,`-'/_~`-'/) |,-.___,-._) />  )-.)/\-. |,-.___,-.| ,|.
+`===---===-'  `-'   `-'       `-'  `-'  `-'   `-'  `-'
 ```
 
 #### Setup mascot — Gas pump
 
-Conversational, single-shot — "let's get fueled up before the trip."
-Appears only in the setup flow and the first ritual run after a fresh
-`reconfigure`.
+"Let's get fueled up before the trip." `jgs` (Joan G. Stark) form
+from `ascii-art.de/ascii/ghi/gasoline.txt`. Base row trimmed to fit
+the envelope.
 
 ```text
- ____
-| $$ |__
-|____|  )
-|    |_/
-|____|
+ .-""""-.
+ |==  ==|-.
+ |~~ ~~~|`\\
+ |LILILI| ||
+ |      |//
+ |      |/
+ |      |
+__|______|__
 ```
 
-#### Empty-brief mascot — Empty parking lot
+#### Empty-brief mascot — Lonely parking meter
 
-Appears only when every signal lane comes up empty across every
-in-scope project. Two empty stalls; nothing parked, nothing moving.
-Honest about the edge case the same way the puzzled face is in
-animal-kingdom.
+A meter and no car at it — present, but nothing parked. `jgs` (Joan
+G. Stark) form from `ascii-art.de/ascii/pqr/parking.txt`, trimmed to
+just the head and a stub of post.
 
 ```text
-|         |         |
-|    -    |    -    |
-|_________|_________|
+ .-""""-.
+/`     (_)`\
+|   .-""-.   |
+;  /#.--. \  ;
+ \ \/    \/ /
+  |  =\\=  |
+  '-.____.-'
+     ||
 ```
 
 #### Lane → icon (vehicles)
 
 | Role | Icon |
 | --- | --- |
-| `shipped` | Race car |
-| `questions` | Scooter |
-| `stalls_aging` | Rusted truck |
+| `shipped` | Sport car |
+| `questions` | Push scooter |
+| `stalls_aging` | Pick-up truck |
 | `stalls_no_pr` | Wheelbarrow |
-| `stalls_silent` | Parked car |
+| `stalls_silent` | Basic car |
 | `stalls_blocked` | Traffic cone |
-| `changes_scope` | Detour sign |
-| `changes_date` | Odometer |
-| `quality` | Traffic light |
+| `changes_scope` | Car with caravan |
+| `changes_date` | Exit sign |
+| `quality` | Stop sign |
 | `retrospective` | Horse |
-| `changes_scope` drift | Traffic jam (overrides Detour sign) |
+| `changes_scope` drift | Traffic jam (overrides Car with caravan) |
 | Setup mascot | Gas pump |
-| Empty-brief mascot | Empty parking lot |
+| Empty-brief mascot | Lonely parking meter |
 
 ## Adding a theme
 
@@ -497,8 +523,28 @@ Known artists to credit when the attribution pass happens:
 
 ### vehicles
 
-The race car, scooter, rusted truck, wheelbarrow, parked car, traffic
-cone, detour sign, odometer, traffic light, horse, traffic jam, gas
-pump, and empty parking lot are stylized from uncredited canonical
-forms in the ASCII commons and treated as effectively public-domain.
-Same attribution-pass treatment applies before external publication.
+Canonical pieces from established public-commons ASCII collections,
+with the artist signature stripped from the art body and recorded here
+instead. Same attribution-pass treatment applies before external
+publication.
+
+- **Marijn Kampf** (`MK`) — sport car (`shipped`), pick-up truck
+  (`stalls_aging`), basic car (`stalls_silent`), car with caravan
+  (`changes_scope`). Source: `ascii-art.de/ascii/t/traffic.txt`.
+- **Shimrod** — traffic jam (`changes_scope` drift). Source:
+  `ascii-art.de/ascii/t/traffic.txt`.
+- **Joan G. Stark** (`jgs`) — stop sign (`quality`), gas pump (setup
+  mascot), parking meter (empty-brief mascot). Sources:
+  `ascii-art.de/ascii/t/traffic.txt`,
+  `ascii-art.de/ascii/ghi/gasoline.txt`,
+  `ascii-art.de/ascii/pqr/parking.txt`.
+- **MJP** — push scooter with squeeze horn (`questions`). Source:
+  `ascii-art.de/ascii/s/scooter.txt`.
+- **lgbeard** (`LGB`) — wheelbarrow (`stalls_no_pr`). Source:
+  `ascii.co.uk/art/wheelbarrow`.
+- **Hayley Wakenshaw** (`hjw`) — horse (`retrospective`). Source:
+  `ascii-art.de/ascii/ghi/horse.txt`.
+- The traffic cone (`stalls_blocked`) and exit sign (`changes_date`)
+  are composed for this cast — the public commons has no canonical
+  small piece for either, so they're freehand best-effort rather than
+  uncredited canon. Replace with canonical art if you find a fit.
