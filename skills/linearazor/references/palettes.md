@@ -46,18 +46,23 @@ formatting; bare ASCII.
 Role names are palette-independent. Every shipped palette assigns the
 same roles to its accents — only the hues change.
 
+Each role colors its own lane's text *and* the lane icon above it. The
+icon name varies by `animation_theme` (see
+[`../assets/animation.md`](../assets/animation.md)); the role name is
+theme-agnostic.
+
 | Role | What it colors |
 | --- | --- |
-| `shipped` | Shipped lead-in, momentum, bee creature |
-| `questions` | Questions lane, cat creature, `→` flourish |
-| `changes_scope` | Scope-change lines, penguin creature |
-| `changes_date` | Date-move lines, snake creature |
-| `stalls_aging` | Aging-WIP stall lines, cow creature |
-| `stalls_no_pr` | No-PR-linked stall lines, snail creature |
-| `stalls_silent` | Silent stall lines, turtle creature |
-| `stalls_blocked` | Blocked-without-blocker stall lines, fish creature |
-| `quality` | Quality lines, bat creature |
-| `retrospective` | Retrospective block, dog creature |
+| `shipped` | Shipped lead-in, momentum, the lane icon above the lane |
+| `questions` | Questions lane, the lane icon, `→` flourish |
+| `changes_scope` | Scope-change lines, the lane icon (and its drift sub-flavor) |
+| `changes_date` | Date-move lines, the lane icon |
+| `stalls_aging` | Aging-WIP stall lines, the stalls lane icon when this sub-flavor wins precedence |
+| `stalls_no_pr` | No-PR-linked stall lines, the stalls lane icon when this sub-flavor wins |
+| `stalls_silent` | Silent stall lines, the stalls lane icon when this sub-flavor wins |
+| `stalls_blocked` | Blocked-without-blocker stall lines, the stalls lane icon when this sub-flavor wins |
+| `quality` | Quality lines, the lane icon |
+| `retrospective` | Retrospective block, the lane icon |
 | `lookahead` | Lookahead block headings and milestone lines |
 | `metadata` | Dim context — file paths, timestamps, footer text |
 

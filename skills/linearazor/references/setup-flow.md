@@ -10,11 +10,17 @@ the user refuses to scope, exit with a one-line explanation.
 
 ## Welcome mascot
 
-Render the duck from
-[`../assets/animation.md`](../assets/animation.md) "Setup mascot" at
-the top of the setup output, in the `shipped` palette role (a friendly
-green). The duck appears only here and in the first ritual run after a
+Render the active theme's setup mascot from
+[`../assets/animation.md`](../assets/animation.md) at the top of the
+setup output, in the `shipped` palette role (a friendly green). The
+setup mascot appears only here and in the first ritual run after a
 fresh `reconfigure` — never in normal brief output.
+
+When the setup flow runs from scratch (no config yet), the
+animal-kingdom duck is rendered — there is no `animation_theme`
+selection to honor until Step 5 below resolves it. When reconfigure
+runs against an existing config, render that config's theme's setup
+mascot.
 
 ## Step 1: Detect workspace shape
 
@@ -78,7 +84,17 @@ the team.
 
 Default `cycle`. Pick list: `cycle`, `week`, `2w`, `4w`, `milestone`.
 
-## Step 6: Offer to persist
+## Step 6: Ask for animation theme
+
+Pick list, default `animal-kingdom`. Legal values are the `### Theme:`
+headings in [`../assets/animation.md`](../assets/animation.md) —
+currently `animal-kingdom` and `vehicles`. ENTER accepts the default.
+
+Skippable. The selection writes to `[render] animation_theme` in the
+config. The lane spec is identical across themes — this question is
+presentation polish, not signal scope.
+
+## Step 7: Offer to persist
 
 Show the rendered config (full TOML). Ask "Save to
 `~/.config/linearazor/<group>.toml`?" Two paths:

@@ -211,7 +211,7 @@ Lookahead collapses to one line per project.
 <exec summary line>
 
 
-<bee art>
+<shipped icon>
 
 Shipped
   <project name>
@@ -219,7 +219,7 @@ Shipped
   [...]
 
 
-<cow art>
+<stalls icon>
 
 Stalls (new)
   <project name>

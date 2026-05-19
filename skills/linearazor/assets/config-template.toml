@@ -19,6 +19,7 @@ scope_min_issues = 1             # Project below this in-scope issue count -> sc
 
 [render]
 palette                       = "catppuccin-mocha"
+animation_theme               = "animal-kingdom"   # animal-kingdom | vehicles
 parallel_project_threshold    = 6
 lookahead_unclarities         = true
 lookahead_appetite            = true
