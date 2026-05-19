@@ -90,9 +90,9 @@ creature for the brief. Precedence — top-down, first non-empty wins:
 | 4 | `stalls_aging` | Cow | any Aging-WIP / Review-aging / Awaiting-merge / Reverted fires |
 
 New stall patterns map onto existing creatures — no new art, no new
-palette roles. Project muteness reads as silence (turtle), not as
-aging (cow), so a brief with only the scope-hygiene stall renders the
-turtle.
+palette roles. A project with no work tracked is quiet, not slow, so
+a brief with only the scope-hygiene stall renders the turtle — same
+family as a single silent issue, not the cow that marks aging WIP.
 
 **Audit:** the stalls lane's creature corresponds to the highest-
 precedence non-empty sub-flavor in the brief.

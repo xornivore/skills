@@ -159,11 +159,12 @@ threshold is raised above 1), substitute `1 issue tracked` (or
 `K issues tracked` for K > 1) for `no work tracked` and otherwise
 reuse the variant.
 
-Project muteness reads as silence, not as aging — the scope-hygiene
-stall maps to the `stalls_silent` palette role and the turtle creature.
-This affects the stalls-lane creature-precedence choice when multiple
-sub-flavors fire — see [presentation.md](./presentation.md) "Stalls
-lane creature precedence."
+A project with no work tracked is quiet, not slow. The scope-hygiene
+stall maps to the `stalls_silent` palette role and the turtle creature
+— same family as a single silent issue, not the cow that marks aging
+WIP. This affects which creature renders in the stalls lane when
+multiple sub-flavors fire — see [presentation.md](./presentation.md)
+"Stalls lane creature precedence."
 
 **Audit:** for every project where `inScopeIssueCount < scopeMinIssues`,
 exactly one bullet renders under its sub-header in the stalls lane,
