@@ -285,13 +285,16 @@ seasons to register. `MK` form from `ascii-art.de/ascii/t/traffic.txt`.
 #### stalls_no_pr — Wheelbarrow
 
 Manual, single wheel, no engine — work without automation backing it.
-`LGB` (lgbeard) form from `ascii.co.uk/art/wheelbarrow`. Trimmed from
-the 9-row canonical to fit the lane envelope.
+`LGB` (lgbeard) form from `ascii.co.uk/art/wheelbarrow`. Kept at the
+full 9-row canonical — the converging tray walls don't trim cleanly,
+and shipping the canon beats chopping it for a one-row budget.
 
 ```text
                             _______
    ___________________________.'.------`
   '---------------------------.'
+    `.                      .'
+  .-//`.                  .'
 .' .//.'/`================'
 =[=:====:=]=           \\||
 '. `--' .'              \_|
