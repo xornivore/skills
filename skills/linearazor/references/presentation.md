@@ -19,11 +19,19 @@ What gets colored:
 - **Verbs** that carry the signal (`shipped`, `moved`, `silent`).
 - **Identifiers** (`ENG-423`) — bold default Text role, not a colored
   accent.
+- **Estimate-badge parentheses** (`(L)`, `(5)`, `(M)`) following an
+  identifier — only the parens carry the lane color; the glyph between
+  them stays plain. Hairline accent that lets the reader scan weight
+  without competing with the identifier next to it.
 
 What stays plain:
 
 - Prose. Sentences are not colored.
 - Punctuation, divider characters, spaces.
+- The glyph inside an estimate badge (`L`, `5`, `M`) — see above.
+- The `(<N>pt)` aggregate in the exec summary — the parens carry the
+  lane color matching the lane count they follow; the `Npt` literal
+  stays plain.
 
 Rule of thumb: a single line carries one or two colored tokens. More
 than three colored tokens on a line is a presentation-layer bug.
@@ -67,6 +75,27 @@ role as the lane it overrides.
 
 When a sub-flavor renders, the default creature is suppressed for that
 lane — never both.
+
+### Stalls lane creature precedence
+
+The stalls lane has four sub-flavors and one project-level scope-hygiene
+variant (per [signals.md](./signals.md) "Stalls"). The lane carries one
+creature for the brief. Precedence — top-down, first non-empty wins:
+
+| Precedence | Sub-flavor | Creature | Fires when |
+| --- | --- | --- | --- |
+| 1 | `stalls_blocked` | Fish | any Blocked-without-blocker fires |
+| 2 | `stalls_silent` | Turtle | any Silent fires OR any project-level scope-hygiene fires |
+| 3 | `stalls_no_pr` | Snail | any No-PR fires OR any PR-linked-but-stuck fires |
+| 4 | `stalls_aging` | Cow | any Aging-WIP / Review-aging / Awaiting-merge / Reverted fires |
+
+New stall patterns map onto existing creatures — no new art, no new
+palette roles. Project muteness reads as silence (turtle), not as
+aging (cow), so a brief with only the scope-hygiene stall renders the
+turtle.
+
+**Audit:** the stalls lane's creature corresponds to the highest-
+precedence non-empty sub-flavor in the brief.
 
 ## Unicode flourishes
 

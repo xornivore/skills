@@ -11,9 +11,11 @@ labels  = []                     # PROJECT labels (not issue labels) used to sco
 default_horizon = "cycle"        # cycle | week | 2w | 4w | milestone
 
 [thresholds]
-aging_wip_days = 7               # In Progress longer than this -> aging
-silent_days    = 7               # No status change AND no comment in this window
-no_pr_days     = 3               # In Progress this long with no linked PR
+aging_wip_days   = 7             # In Progress longer than this -> aging
+silent_days      = 7             # No status change AND no comment in this window
+no_pr_days       = 3             # In Progress this long with no linked PR
+pr_review_days   = 3             # In Review longer than this -> review-aging / awaiting-merge
+scope_min_issues = 1             # Project below this in-scope issue count -> scope-hygiene stall
 
 [render]
 palette                       = "catppuccin-mocha"
