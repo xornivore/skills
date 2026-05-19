@@ -189,12 +189,13 @@ list at three and append `… and K-3 more` when needed.
 
 | Position | `elapsed_pct` | Bullet body |
 | --- | --- | --- |
-| early | ≤ 33% | `K in-flight issues, none assigned to the cycle yet — early days (ID1, ID2, ID3, …)` |
-| mid | 33% < x ≤ 66% | `K in-flight issues, none assigned to the cycle — N days in (ID1, ID2, ID3, …)` |
-| late | > 66% | `K in-flight issues, none assigned to the cycle — cycle ends in N days (ID1, ID2, ID3, …)` |
+| early | ≤ 33% | `K open issues here, none on the cycle yet — early days (ID1, ID2, ID3, …)` |
+| mid | 33% < x ≤ 66% | `K open issues here, none on the cycle — N days in (ID1, ID2, ID3, …)` |
+| late | > 66% | `K open issues here, none on the cycle — cycle ends in N days (ID1, ID2, ID3, …)` |
 
-When `K == 1`, the literal becomes `1 in-flight issue` (no plural)
-and the ID list is the single ID; no ellipsis.
+When `K == 1`, the literal becomes `1 open issue here, not on the
+cycle` (singular, "not on" replaces "none on"); the ID list is the
+single ID; no ellipsis.
 
 ### Creature and precedence
 
