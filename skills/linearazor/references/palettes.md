@@ -82,6 +82,7 @@ Truecolor. Source: <https://github.com/catppuccin/catppuccin>.
 | `retrospective` | `#cba6f7` (mauve) | `\x1b[38;2;203;166;247m` |
 | `lookahead` | `#89dceb` (sky) | `\x1b[38;2;137;220;235m` |
 | `metadata` | `#7f849c` (overlay1) | `\x1b[38;2;127;132;156m` |
+| `background` | `#24282f` | n/a (render substrate, used by `share` mode) |
 
 ### catppuccin-latte
 

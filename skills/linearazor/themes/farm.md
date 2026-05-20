@@ -10,29 +10,29 @@ audit cues) see [`../assets/animation.md`](../assets/animation.md).
 
 ## Cast
 
-### shipped — Galloping horse
+### shipped — Cheering crowd
 
-Frontal-ish horse face with two eyes and ears, trailing motion lines
-behind. `Neil Smith` form from `ascii-art.de/ascii/ghi/horse.txt`.
+Three stick figures with arms raised — the universal "we just landed
+it" gesture. Reads cleanly at small sizes and travels well to Slack.
+Freehand from the ASCII commons idiom; no canonical attribution.
 
 ```text
-    ./|,,/|
-   <   o o)
-  <\ (    |
- <\\  |\  |
-<\\\  |(__)
-<\\\\  |
+\o/ \o/ \o/
 ```
 
-### questions — Cat
+### questions — Pondering horse
 
-Front-face cat — sitting, curious, alert. Uncredited canonical form
-from the ASCII commons.
+Frontal horse face with ears up and one eye widened — head tilted in
+thought, motion lines trimmed away from the original galloping form.
+The trailing `?` marks the lane without leaning on emoji. Adapted from
+the `Neil Smith` horse in `ascii-art.de/ascii/ghi/horse.txt`.
 
 ```text
- /\_/\
-( o.o )
- > ^ <
+ ./|,,/|
+(   o O)?
+ (    |
+  |\  |
+  |(__)
 ```
 
 ### stalls_aging — Cow
@@ -171,8 +171,8 @@ Theme-agnostic uncredited canonical form from the ASCII commons.
 
 | Role | Icon |
 | --- | --- |
-| `shipped` | Galloping horse |
-| `questions` | Cat |
+| `shipped` | Cheering crowd |
+| `questions` | Pondering horse |
 | `stalls_aging` (aging WIP / no PR / silent / scope-hygiene — collapsed) | Cow |
 | `stalls_blocked` | Closed door |
 | `changes_scope` | Windmill |
@@ -190,10 +190,11 @@ in the public commons, with one piece (signpost) built freehand
 because no compact canonical form exists. Artist signatures were
 stripped from the glyphs for visual consistency and recorded below.
 
-- **Neil Smith** — galloping horse (frontal face with motion lines)
-  and chicken. Sources: `ascii-art.de/ascii/ghi/horse.txt`,
-  `ascii-art.de/ascii/c/chicken.txt`. Used verbatim with the artist
-  signature stripped.
+- **Neil Smith** — pondering horse (frontal face, motion lines
+  trimmed from the canonical galloping form) and chicken. Sources:
+  `ascii-art.de/ascii/ghi/horse.txt`, `ascii-art.de/ascii/c/chicken.txt`.
+  Chicken used verbatim; horse adapted (motion lines removed, one eye
+  widened) with the artist signature stripped.
 - **PhS** — windmill. Source:
   `ascii-art.de/ascii/uvw/windmill.txt`. Used verbatim with the
   artist signature stripped and common leading whitespace removed.
@@ -201,7 +202,7 @@ stripped from the glyphs for visual consistency and recorded below.
   `ascii-art.de/ascii/ghi/goose.txt`. Cropped to head + neck.
 - **ejm** — closed door. Source: ASCII commons. Vertically trimmed
   ~40% from the canonical (collapsed each panel's vertical bars).
-- **Uncredited canonical** — cat, cow, dog (floppy-eared sitting),
-  spider, puzzled face, plus the small barn from
-  `asciiart.eu/buildings-and-places/houses`. Treated as effectively
-  public-domain.
+- **Uncredited canonical** — cow, dog (floppy-eared sitting), spider,
+  puzzled face, plus the small barn from
+  `asciiart.eu/buildings-and-places/houses`, and the cheering-crowd
+  raised-hands idiom (`\o/`). Treated as effectively public-domain.
