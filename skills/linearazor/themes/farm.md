@@ -56,10 +56,12 @@ Two-paneled closed door with a doorknob — literal "path closed."
 `ejm` form from the ASCII commons, vertically trimmed ~40%.
 
 ```text
-__________
+ __________
 |  __  __  |
+| |  ||  | |
 | |__||__| |
 |  __  __()|
+| |  ||  | |
 | |  ||  | |
 | |__||__| |
 |__________|
