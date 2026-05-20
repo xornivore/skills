@@ -57,10 +57,8 @@ icon name varies by `animation_theme` (see
 | `questions` | Questions lane, the lane icon, `→` flourish |
 | `changes_scope` | Scope-change lines, the lane icon (and its drift sub-flavor) |
 | `changes_date` | Date-move lines, the lane icon |
-| `stalls_aging` | Aging-WIP stall lines, the stalls lane icon when this sub-flavor wins precedence |
-| `stalls_no_pr` | No-PR-linked stall lines, the stalls lane icon when this sub-flavor wins |
-| `stalls_silent` | Silent stall lines, the stalls lane icon when this sub-flavor wins |
-| `stalls_blocked` | Blocked-without-blocker stall lines, the stalls lane icon when this sub-flavor wins |
+| `stalls_aging` | All non-blocked stall lines (Aging-WIP / Review-aging / Awaiting-merge / Reverted / PR-linked-but-stuck / No-PR / Silent / scope-hygiene), the stalls lane icon when no blocked stall fires |
+| `stalls_blocked` | Blocked-without-blocker stall lines, the stalls lane icon when this sub-flavor wins precedence |
 | `quality` | Quality lines, the lane icon |
 | `retrospective` | Retrospective block, the lane icon |
 | `lookahead` | Lookahead block headings and milestone lines |
@@ -79,8 +77,6 @@ Truecolor. Source: <https://github.com/catppuccin/catppuccin>.
 | `changes_scope` | `#fab387` (peach) | `\x1b[38;2;250;179;135m` |
 | `changes_date` | `#cba6f7` (mauve) | `\x1b[38;2;203;166;247m` |
 | `stalls_aging` | `#fab387` (peach) | `\x1b[38;2;250;179;135m` |
-| `stalls_no_pr` | `#fab387` (peach) | `\x1b[38;2;250;179;135m` |
-| `stalls_silent` | `#74c7ec` (sapphire) | `\x1b[38;2;116;199;236m` |
 | `stalls_blocked` | `#9399b2` (overlay2) | `\x1b[38;2;147;153;178m` |
 | `quality` | `#89dceb` (sky) | `\x1b[38;2;137;220;235m` |
 | `retrospective` | `#cba6f7` (mauve) | `\x1b[38;2;203;166;247m` |
@@ -98,8 +94,6 @@ Light-terminal mirror.
 | `changes_scope` | `#fe640b` (peach) |
 | `changes_date` | `#8839ef` (mauve) |
 | `stalls_aging` | `#fe640b` (peach) |
-| `stalls_no_pr` | `#fe640b` (peach) |
-| `stalls_silent` | `#209fb5` (sapphire) |
 | `stalls_blocked` | `#8c8fa1` (overlay2) |
 | `quality` | `#04a5e5` (sky) |
 | `retrospective` | `#8839ef` (mauve) |
@@ -117,8 +111,6 @@ Source: <https://ethanschoonover.com/solarized/>.
 | `changes_scope` | `#cb4b16` (orange) |
 | `changes_date` | `#6c71c4` (violet) |
 | `stalls_aging` | `#cb4b16` (orange) |
-| `stalls_no_pr` | `#cb4b16` (orange) |
-| `stalls_silent` | `#2aa198` (cyan) |
 | `stalls_blocked` | `#586e75` (base01) |
 | `quality` | `#2aa198` (cyan) |
 | `retrospective` | `#6c71c4` (violet) |
@@ -136,8 +128,6 @@ Source: <https://github.com/folke/tokyonight.nvim>.
 | `changes_scope` | `#ff9e64` (orange) |
 | `changes_date` | `#7aa2f7` (blue) |
 | `stalls_aging` | `#ff9e64` (orange) |
-| `stalls_no_pr` | `#ff9e64` (orange) |
-| `stalls_silent` | `#7dcfff` (cyan) |
 | `stalls_blocked` | `#565f89` (comment) |
 | `quality` | `#7dcfff` (cyan) |
 | `retrospective` | `#bb9af7` (purple) |

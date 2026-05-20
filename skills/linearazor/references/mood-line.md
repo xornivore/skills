@@ -14,7 +14,7 @@ like a teammate noticing.
 
 The grammar is theme-agnostic; the *vocabulary* is the active theme's
 cast (see [`../themes/`](../themes/)). Pick adjectives and verbs that
-fit the noun: a goose can be `patient`, a tractor cannot. A cow can
+fit the noun: a goose can be `patient`, a closed door cannot. A cow can
 `linger`, a signpost cannot. The exemplars below use the default
 `farm` cast; a new theme either ships its own exemplars in
 `../themes/<name>.md` or relies on the same grammar applied to its
@@ -36,7 +36,7 @@ A patient goose watches the June runtime cut for acceptance criteria.
 ```
 
 ```text
-A loud rooster crows over ENG-481 — the backplane shipped Tuesday.
+A galloping horse blows past ENG-481 — the backplane shipped Tuesday.
 ```
 
 ```text
@@ -61,12 +61,12 @@ verbs that fit the nouns from the active theme.
 Exemplars (farm theme):
 
 ```text
-A dog watches a rooster — last cycle's lessons land just as June's
+A dog watches a chicken — last cycle's lessons land just as June's
 target slides.
 ```
 
 ```text
-A tractor outruns a mule — runtime shipped Tuesday, but the scheduler
+A horse outruns a cow — runtime shipped Tuesday, but the scheduler
 still hasn't moved.
 ```
 
@@ -78,8 +78,8 @@ the date moving.
 ### Anti-patterns (avoid these)
 
 ```text
-WRONG: Three cows, one tractor, and a cat are here.
-WRONG: Two roosters, a goose, and a few chickens this week.
+WRONG: Three cows, one horse, and a cat are here.
+WRONG: Two horses, a goose, and a few chickens this week.
 ```
 
 These are sort-shapers — they list the cast instead of noticing
@@ -93,11 +93,11 @@ patterns:
 
 | Wrong | Right |
 | --- | --- |
-| "Best week yet — 8 tractors!" | "A loud rooster crows over ENG-481." |
+| "Best week yet — 8 horses!" | "A galloping horse blows past ENG-481." |
 | "Stall count up 30% from last cycle." | "A stubborn cow lingers on the scheduler refactor." |
-| "Bob: 4 tractors · Carol: 3 tractors" | (No per-person framing in the mood line.) |
+| "Bob: 4 horses · Carol: 3 horses" | (No per-person framing in the mood line.) |
 | "Icons as emoji decorations" | (No emoji. Color and prose carry the cast.) |
-| "Three cows, one tractor, and a cat are here." | "A patient goose watches the June cut for AC." |
+| "Three cows, one horse, and a cat are here." | "A patient goose watches the June cut for AC." |
 
 The brief never tallies icons across runs as metrics. There is no
 state file in which to persist counters — the rule is structurally

@@ -28,9 +28,7 @@ icons.
 | --- | --- |
 | `shipped` | Active, momentum, just shipped |
 | `questions` | Curious, alert |
-| `stalls_aging` | Been sitting too long |
-| `stalls_no_pr` | Slow, manual, no automation backing it |
-| `stalls_silent` | Present but not moving |
+| `stalls_aging` | Stalled — aging WIP, no PR linked, silent, or scope-hygiene (all collapsed to one) |
 | `stalls_blocked` | Constrained from moving forward |
 | `changes_scope` | The path moved |
 | `changes_date` | The clock moved |
@@ -81,7 +79,7 @@ change — no signal-layer file needs updating. Hard rule 12 binds.
   plus exactly one setup mascot and one empty-brief mascot.
   **Audit:** for each `../themes/<name>.md`, count the `###`
   sub-headings under "Cast" plus the two mascot sub-headings;
-  expected count equals the number of roles in the lane spec (11,
+  expected count equals the number of roles in the lane spec (9,
   including the drift sub-flavor) plus two.
 - The set of theme filenames equals the set of legal
   `animation_theme` config values. **Audit:** `ls ../themes/*.md`;

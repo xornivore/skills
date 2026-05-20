@@ -150,24 +150,21 @@ lane — never both.
 
 ### Stalls lane icon precedence
 
-The stalls lane has four sub-flavors and one project-level scope-hygiene
-variant (per [signals.md](./signals.md) "Stalls"). The lane carries one
-icon for the brief. Precedence — top-down, first non-empty wins:
+The stalls lane has two sub-flavors. The lane carries one icon for
+the brief. Precedence — top-down, first non-empty wins:
 
 | Precedence | Sub-flavor | Fires when |
 | --- | --- | --- |
 | 1 | `stalls_blocked` | any Blocked-without-blocker fires |
-| 2 | `stalls_silent` | any Silent fires OR any project-level scope-hygiene fires |
-| 3 | `stalls_no_pr` | any No-PR fires OR any PR-linked-but-stuck fires |
-| 4 | `stalls_aging` | any Aging-WIP / Review-aging / Awaiting-merge / Reverted fires |
+| 2 | `stalls_aging` | any Aging-WIP / Review-aging / Awaiting-merge / Reverted / PR-linked-but-stuck / No-PR / Silent / Reverted / scope-hygiene fires |
 
 The icon for each sub-flavor comes from the active theme's lane → icon
-mapping under [`../themes/`](../themes/). New stall patterns map onto
-the existing four sub-flavors — no new art, no new palette roles. A
-project with no work tracked is quiet, not slow, so a brief with only
-the scope-hygiene stall renders the `stalls_silent` icon — same family
-as a single silent issue, not the `stalls_aging` icon that marks aging
-WIP.
+mapping under [`../themes/`](../themes/). All non-blocked stall
+patterns collapse onto the same generic `stalls_aging` sub-flavor —
+one icon, one palette color. The scope-hygiene stall (empty project
+or unpopulated cycle field) also renders the `stalls_aging` icon, not
+the `stalls_blocked` icon — scope-hygiene is "no work moving," not
+"work constrained."
 
 **Audit:** the stalls lane's icon corresponds to the highest-precedence
 non-empty sub-flavor in the brief, looked up in the active theme's

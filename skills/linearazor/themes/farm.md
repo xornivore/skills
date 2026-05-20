@@ -37,7 +37,10 @@ from the ASCII commons.
 
 ### stalls_aging — Cow
 
-Standing in a field of grass — head down, plodding. Uncredited
+Standing in a field of grass — head down, plodding. Covers the
+collapsed generic stalls sub-flavor (aging WIP, no PR linked, silent,
+or scope-hygiene — see
+[`../references/signals.md`](../references/signals.md)). Uncredited
 canonical form from the ASCII commons.
 
 ```text
@@ -47,42 +50,19 @@ canonical form from the ASCII commons.
   ||w--||     \|/
 ```
 
-### stalls_no_pr — Pig
+### stalls_blocked — Closed door
 
-Lying-down pig, curly tail — present and slow, doing pig things,
-producing nothing visible to a PR. `Asik` form from
-`ascii-art.de/ascii/pqr/pig.txt`.
-
-```text
-  ___&
-e'^_ )
-  " "
-```
-
-### stalls_silent — Chicken
-
-A chicken sitting still in the coop — present, alert, not moving
-forward. Neil Smith form from `ascii-art.de/ascii/c/chicken.txt`.
+Two-paneled closed door with a doorknob — literal "path closed."
+`ejm` form from the ASCII commons, vertically trimmed ~40%.
 
 ```text
-   \\
-   (o>
-\\_//)
- \_/_)
-  _|_
-```
-
-### stalls_blocked — Closed gate
-
-Latched wooden farm gate — literal "path blocked." Freehand for this
-cast; no compact canonical closed-gate piece exists in the surveyed
-commons.
-
-```text
-.----.----.----.
-|    |    |    |
-|====|====|====|
-'----'----'----'
+__________
+|  __  __  |
+| |__||__| |
+|  __  __()|
+| |  ||  | |
+| |__||__| |
+|__________|
 ```
 
 ### changes_scope — Windmill
@@ -101,19 +81,17 @@ Blades turning with the wind — direction shifted. `PhS` form from
 ______ |_H___|____
 ```
 
-### changes_date — Rooster
+### changes_date — Chicken
 
-Cock-a-doodle-doo, the hour arrived. `ejm97` form from
-`ascii-art.de/ascii/pqr/rooster.txt`.
+Head up, watching the hour pass. Neil Smith form from
+`ascii-art.de/ascii/c/chicken.txt`.
 
 ```text
-   www
-   (*)<
-   )((
-__/  ))
-( _\/_  /
-( (    \|\
-        ,, ,,
+   \\
+   (o>
+\\_//)
+ \_/_)
+  _|_
 ```
 
 ### quality — Goose
@@ -193,12 +171,10 @@ Theme-agnostic uncredited canonical form from the ASCII commons.
 | --- | --- |
 | `shipped` | Galloping horse |
 | `questions` | Cat |
-| `stalls_aging` | Cow |
-| `stalls_no_pr` | Pig |
-| `stalls_silent` | Chicken |
-| `stalls_blocked` | Closed gate |
+| `stalls_aging` (aging WIP / no PR / silent / scope-hygiene — collapsed) | Cow |
+| `stalls_blocked` | Closed door |
 | `changes_scope` | Windmill |
-| `changes_date` | Rooster |
+| `changes_date` | Chicken |
 | `quality` | Goose |
 | `retrospective` | Dog |
 | `changes_scope` drift | Spider (overrides Windmill) |
@@ -212,25 +188,18 @@ in the public commons, with one piece (signpost) built freehand
 because no compact canonical form exists. Artist signatures were
 stripped from the glyphs for visual consistency and recorded below.
 
-- **Neil Smith** — galloping horse (frontal face with motion lines).
-  Source: `ascii-art.de/ascii/ghi/horse.txt`. Used verbatim with the
-  artist signature stripped.
-- **Asik** — pig. Source: `ascii-art.de/ascii/pqr/pig.txt`. Used
-  verbatim with the artist signature stripped.
+- **Neil Smith** — galloping horse (frontal face with motion lines)
+  and chicken. Sources: `ascii-art.de/ascii/ghi/horse.txt`,
+  `ascii-art.de/ascii/c/chicken.txt`. Used verbatim with the artist
+  signature stripped.
 - **PhS** — windmill. Source:
   `ascii-art.de/ascii/uvw/windmill.txt`. Used verbatim with the
   artist signature stripped and common leading whitespace removed.
-- **Neil Smith** — chicken. Source:
-  `ascii-art.de/ascii/c/chicken.txt`. Used verbatim with the artist
-  signature stripped.
-- **ejm97** — rooster. Source: `ascii-art.de/ascii/pqr/rooster.txt`.
-  Used as the seven-row form.
 - **Hayley Wakenshaw** (`hjw`) — goose (head crop). Source:
   `ascii-art.de/ascii/ghi/goose.txt`. Cropped to head + neck.
+- **ejm** — closed door. Source: ASCII commons. Vertically trimmed
+  ~40% from the canonical (collapsed each panel's vertical bars).
 - **Uncredited canonical** — cat, cow, dog (floppy-eared sitting),
   spider, puzzled face, plus the small barn from
   `asciiart.eu/buildings-and-places/houses`. Treated as effectively
   public-domain.
-- **Freehand** — closed gate. Composed for this cast because no
-  canonical compact piece exists in the surveyed collections. Replace
-  with canonical art if a fit is found.

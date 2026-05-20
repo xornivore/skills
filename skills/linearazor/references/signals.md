@@ -202,11 +202,11 @@ single ID; no ellipsis.
 
 ### Icon and precedence
 
-Both variants map to the `stalls_silent` palette role and that lane's
-icon in the active theme — same family as a single silent issue, not
-the `stalls_aging` icon that marks aging WIP. This affects which icon
-renders in the stalls lane when multiple sub-flavors fire — see
+Both scope-hygiene variants map to the `stalls_aging` palette role
+(the generic stalls icon, post-collapse) — see
 [presentation.md](./presentation.md) "Stalls lane icon precedence."
+Only `stalls_blocked` (any Blocked-without-blocker firing) overrides
+the generic icon.
 
 **Audit:**
 
