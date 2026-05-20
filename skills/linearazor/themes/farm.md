@@ -12,28 +12,27 @@ audit cues) see [`../assets/animation.md`](../assets/animation.md).
 
 ### shipped — Galloping horse
 
-Slanted body, mane streaming, motion implied. `ejm96` form from
-`ascii-art.de/ascii/ghi/horse.txt`.
+Frontal-ish horse face with two eyes and ears, trailing motion lines
+behind. `Neil Smith` form from `ascii-art.de/ascii/ghi/horse.txt`.
 
 ```text
- _,,
-"-=\~     _
-   \\~___( ~
-  _|/---\\_
-  \        \
+    ./|,,/|
+   <   o o)
+  <\ (    |
+ <\\  |\  |
+<\\\  |(__)
+<\\\\  |
 ```
 
-### questions — Walking cat
+### questions — Cat
 
-Side-profile walking cat — alert head on the left, body extending
-right. `BP` form from `ascii-art.de/ascii/c/cat.txt`.
+Front-face cat — sitting, curious, alert. Uncredited canonical form
+from the ASCII commons.
 
 ```text
-  /\_/\
-  >^.^<.---.
- _'-`-'     )\
-(6--\ |--\ (`.`-.
-    --'  --'  ``-'
+ /\_/\
+( o.o )
+ > ^ <
 ```
 
 ### stalls_aging — Cow
@@ -73,29 +72,33 @@ forward. Neil Smith form from `ascii-art.de/ascii/c/chicken.txt`.
   _|_
 ```
 
-### stalls_blocked — Mule
+### stalls_blocked — Closed gate
 
-Stubborn-as-a-mule — planted feet, refusing. `Asik` form from
-`ascii-art.de/ascii/def/donkey.txt`.
+Latched wooden farm gate — literal "path blocked." Freehand for this
+cast; no compact canonical closed-gate piece exists in the surveyed
+commons.
 
 ```text
-   _\
-    /`b
-/####J
- |\ ||
+.----.----.----.
+|    |    |    |
+|====|====|====|
+'----'----'----'
 ```
 
-### changes_scope — Signpost
+### changes_scope — Windmill
 
-Wooden sign with an arrow — the way changed. Freehand for this cast;
-no compact canonical signpost exists in the public commons.
+Blades turning with the wind — direction shifted. `PhS` form from
+`ascii-art.de/ascii/uvw/windmill.txt`.
 
 ```text
- _________
-|   -->   |
-'---------'
-    |
-   _|_
+     /\     /\
+    '. \   / ,'
+      `.\-/,'
+       ( X   )
+      ,'/ \`.\
+    .' /   \ `,
+     \/-----\/'
+______ |_H___|____
 ```
 
 ### changes_date — Rooster
@@ -128,15 +131,16 @@ Long-necked sentinel — geese alert at anything off. Head crop from
 
 ### retrospective — Dog
 
-Looking back, loyal — the run that just ended. `hjw` (Hayley
-Wakenshaw) form from the ASCII commons.
+Floppy-eared dog head with a bit of neck — looking right at you, the
+run that just ended, attentive. Uncredited canonical form from the
+ASCII commons, cropped to head + neck.
 
 ```text
-   __
-o-''|\_____/)
- \_/|_)     )
-    \  __  /
-    (_/ (_/
+/^-----^\
+V  o o  V
+ |  Y  |
+  \ Q /
+  / - \
 ```
 
 ### changes_scope drift — Spider
@@ -188,46 +192,45 @@ Theme-agnostic uncredited canonical form from the ASCII commons.
 | Role | Icon |
 | --- | --- |
 | `shipped` | Galloping horse |
-| `questions` | Walking cat |
+| `questions` | Cat |
 | `stalls_aging` | Cow |
 | `stalls_no_pr` | Pig |
 | `stalls_silent` | Chicken |
-| `stalls_blocked` | Mule |
-| `changes_scope` | Signpost |
+| `stalls_blocked` | Closed gate |
+| `changes_scope` | Windmill |
 | `changes_date` | Rooster |
 | `quality` | Goose |
 | `retrospective` | Dog |
-| `changes_scope` drift | Spider (overrides Signpost) |
+| `changes_scope` drift | Spider (overrides Windmill) |
 | Setup mascot | Barn |
 | Empty-brief mascot | Puzzled face |
 
 ## Provenance
 
 The art in this file is sourced from established ASCII art collections
-in the public commons, with two pieces (signpost, broken fence) built
-freehand because no compact canonical form exists. Artist signatures
-were stripped from the glyphs for visual consistency and recorded
-below.
+in the public commons, with one piece (signpost) built freehand
+because no compact canonical form exists. Artist signatures were
+stripped from the glyphs for visual consistency and recorded below.
 
-- **ejm96** — galloping horse. Source:
-  `ascii-art.de/ascii/ghi/horse.txt`. Used verbatim.
-- **BP** — walking cat. Source: `ascii-art.de/ascii/c/cat.txt`. Used
+- **Neil Smith** — galloping horse (frontal face with motion lines).
+  Source: `ascii-art.de/ascii/ghi/horse.txt`. Used verbatim with the
+  artist signature stripped.
+- **Asik** — pig. Source: `ascii-art.de/ascii/pqr/pig.txt`. Used
   verbatim with the artist signature stripped.
-- **Asik** — pig and mule (donkey). Sources:
-  `ascii-art.de/ascii/pqr/pig.txt`,
-  `ascii-art.de/ascii/def/donkey.txt`. Used verbatim with signatures
-  stripped.
+- **PhS** — windmill. Source:
+  `ascii-art.de/ascii/uvw/windmill.txt`. Used verbatim with the
+  artist signature stripped and common leading whitespace removed.
 - **Neil Smith** — chicken. Source:
   `ascii-art.de/ascii/c/chicken.txt`. Used verbatim with the artist
   signature stripped.
 - **ejm97** — rooster. Source: `ascii-art.de/ascii/pqr/rooster.txt`.
   Used as the seven-row form.
-- **Hayley Wakenshaw** (`hjw`) — goose (head crop) and dog. Sources:
-  `ascii-art.de/ascii/ghi/goose.txt` (cropped to head + neck),
-  ASCII commons (dog).
-- **Uncredited canonical** — barn (small barn from
-  `asciiart.eu/buildings-and-places/houses`), cow, spider, puzzled
-  face. Treated as effectively public-domain.
-- **Freehand** — signpost. Composed for this cast because no
+- **Hayley Wakenshaw** (`hjw`) — goose (head crop). Source:
+  `ascii-art.de/ascii/ghi/goose.txt`. Cropped to head + neck.
+- **Uncredited canonical** — cat, cow, dog (floppy-eared sitting),
+  spider, puzzled face, plus the small barn from
+  `asciiart.eu/buildings-and-places/houses`. Treated as effectively
+  public-domain.
+- **Freehand** — closed gate. Composed for this cast because no
   canonical compact piece exists in the surveyed collections. Replace
   with canonical art if a fit is found.
