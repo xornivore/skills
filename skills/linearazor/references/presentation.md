@@ -314,8 +314,8 @@ linearazor_render | freeze \
   --background "$PRIMARY_BG" \
   --font.family "JetBrains Mono" \
   --font.size 13 \
-  --padding 24 \
-  --margin 12 \
+  --padding 40 \
+  --margin 60 \
   --border.radius 8 \
   --shadow.blur 20 \
   --shadow.y 6
