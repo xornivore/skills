@@ -10,29 +10,30 @@ audit cues) see [`../assets/animation.md`](../assets/animation.md).
 
 ## Cast
 
-### shipped — Tractor
+### shipped — Galloping horse
 
-Plowing a field, exhaust trailing. Reads as "work just rolled
-through." Tom Bampton (`tom`), trimmed from
-`ascii-art.de/ascii/t/tractor.txt`.
+Slanted body, mane streaming, motion implied. `ejm96` form from
+`ascii-art.de/ascii/ghi/horse.txt`.
 
 ```text
-              ~~
-:::          o  _||
-:::---------[|<[___]
-:::| | | |  (_)    o
+ _,,
+"-=\~     _
+   \\~___( ~
+  _|/---\\_
+  \        \
 ```
 
 ### questions — Walking cat
 
-Side-profile cat in motion — alert, sniffing forward. `fsc/as` form
-from `ascii-art.de/ascii/c/cat.txt`.
+Side-profile walking cat — alert head on the left, body extending
+right. `BP` form from `ascii-art.de/ascii/c/cat.txt`.
 
 ```text
-_                ___       _.--.
-\`.|\..----...-'`   `-._.-'_.-'`
-/  ' `         ,       __.--'
-)/' _/     \   `-_,   /
+  /\_/\
+  >^.^<.---.
+ _'-`-'     )\
+(6--\ |--\ (`.`-.
+    --'  --'  ``-'
 ```
 
 ### stalls_aging — Cow
@@ -47,30 +48,29 @@ canonical form from the ASCII commons.
   ||w--||     \|/
 ```
 
-### stalls_no_pr — Lamb
+### stalls_no_pr — Pig
 
-Small, hesitant, soft outline. Freehand for this cast — no compact
-canonical lamb (the only one in the commons is `jgs`'s 11-row piece,
-too tall for the cast envelope).
+Lying-down pig, curly tail — present and slow, doing pig things,
+producing nothing visible to a PR. `Asik` form from
+`ascii-art.de/ascii/pqr/pig.txt`.
 
 ```text
- _.~~._
-( o.o  )
- `~~~~`
- /|  |\
+  ___&
+e'^_ )
+  " "
 ```
 
-### stalls_silent — Chickens on nests
+### stalls_silent — Chicken
 
-Brooding hens, plural — present and patient, not moving. Two-hen strip
-extracted from `jgs`'s 12-row grid in
-`ascii-art.de/ascii/c/chicken.txt`.
+A chicken sitting still in the coop — present, alert, not moving
+forward. Neil Smith form from `ascii-art.de/ascii/c/chicken.txt`.
 
 ```text
-   _       _
- _-(_)-  _-(_)-
-`(___)  `(___)
- // \\   // \\
+   \\
+   (o>
+\\_//)
+ \_/_)
+  _|_
 ```
 
 ### stalls_blocked — Mule
@@ -128,40 +128,46 @@ Long-necked sentinel — geese alert at anything off. Head crop from
 
 ### retrospective — Dog
 
-Looking back, loyal — the run that just ended. Uncredited canonical
-form from the ASCII commons.
+Looking back, loyal — the run that just ended. `hjw` (Hayley
+Wakenshaw) form from the ASCII commons.
 
 ```text
-_      __
-\\____{(``o
-(      \_'
- \_)-\_)_)
+   __
+o-''|\_____/)
+ \_/|_)     )
+    \  __  /
+    (_/ (_/
 ```
 
-### changes_scope drift — Tumbleweed
+### changes_scope drift — Spider
 
-Sub-flavor of `changes_scope` when the total scope-changes count
-across all in-scope projects in the primary horizon is at least 3.
-Inherits the `changes_scope` palette color. Freehand for this cast; no
-canonical tumbleweed exists in the public commons.
+Barn spider — eight legs, sideways and multidirectional. Sub-flavor
+of `changes_scope` when the total scope-changes count across all
+in-scope projects in the primary horizon is at least 3, signalling
+sustained drift rather than a one-off change. Inherits the
+`changes_scope` palette color. Uncredited canonical form from the
+ASCII commons.
 
 ```text
- .-.    .-.    .-.
-((.))  ((.))  ((.))   ~~~
- `-'    `-'    `-'
+ ||  ||
+ \\()//
+//(__)\\
+||    ||
 ```
 
-## Setup mascot — Farmhouse
+## Setup mascot — Barn
 
 "Welcome to the farm — let's set things up." Appears only in the setup
 flow ([`../references/setup-flow.md`](../references/setup-flow.md))
-and in the first ritual run after a fresh `reconfigure`. `StfoReK`
-form from `ascii-art.de/ascii/ghi/house.txt`.
+and in the first ritual run after a fresh `reconfigure`. Compact
+silo-and-barn form from `asciiart.eu/buildings-and-places/houses`.
 
 ```text
-  _m_
-/\___\
-|_|""|
+ x
+.-. _______|
+|=|/     /  \
+| |_____|_""_|
+|_|_[X]_|____|
 ```
 
 ## Empty-brief mascot — Puzzled face
@@ -181,47 +187,47 @@ Theme-agnostic uncredited canonical form from the ASCII commons.
 
 | Role | Icon |
 | --- | --- |
-| `shipped` | Tractor |
+| `shipped` | Galloping horse |
 | `questions` | Walking cat |
 | `stalls_aging` | Cow |
-| `stalls_no_pr` | Lamb |
-| `stalls_silent` | Chickens on nests |
+| `stalls_no_pr` | Pig |
+| `stalls_silent` | Chicken |
 | `stalls_blocked` | Mule |
 | `changes_scope` | Signpost |
 | `changes_date` | Rooster |
 | `quality` | Goose |
 | `retrospective` | Dog |
-| `changes_scope` drift | Tumbleweed (overrides Signpost) |
-| Setup mascot | Farmhouse |
+| `changes_scope` drift | Spider (overrides Signpost) |
+| Setup mascot | Barn |
 | Empty-brief mascot | Puzzled face |
 
 ## Provenance
 
 The art in this file is sourced from established ASCII art collections
-in the public commons, with two pieces (signpost, tumbleweed) built
+in the public commons, with two pieces (signpost, broken fence) built
 freehand because no compact canonical form exists. Artist signatures
 were stripped from the glyphs for visual consistency and recorded
 below.
 
-- **Tom Bampton** (`tom`) — tractor. Source:
-  `ascii-art.de/ascii/t/tractor.txt`. Trimmed: shorter field on the
-  left.
-- **fsc / as** — walking cat. Source: `ascii-art.de/ascii/c/cat.txt`.
-  Cropped to the top four rows of the piece (head + walking body).
-- **Asik** — mule (donkey). Source:
-  `ascii-art.de/ascii/def/donkey.txt`. Used verbatim.
-- **Joan G. Stark** (`jgs`) — chickens on nests (two-hen strip from a
-  larger grid). Source: `ascii-art.de/ascii/c/chicken.txt`.
+- **ejm96** — galloping horse. Source:
+  `ascii-art.de/ascii/ghi/horse.txt`. Used verbatim.
+- **BP** — walking cat. Source: `ascii-art.de/ascii/c/cat.txt`. Used
+  verbatim with the artist signature stripped.
+- **Asik** — pig and mule (donkey). Sources:
+  `ascii-art.de/ascii/pqr/pig.txt`,
+  `ascii-art.de/ascii/def/donkey.txt`. Used verbatim with signatures
+  stripped.
+- **Neil Smith** — chicken. Source:
+  `ascii-art.de/ascii/c/chicken.txt`. Used verbatim with the artist
+  signature stripped.
 - **ejm97** — rooster. Source: `ascii-art.de/ascii/pqr/rooster.txt`.
   Used as the seven-row form.
-- **Hayley Wakenshaw** (`hjw`) — goose (head crop). Source:
-  `ascii-art.de/ascii/ghi/goose.txt`. Cropped from a 16-row canon to
-  the top five rows (head + long neck).
-- **StfoReK** — farmhouse. Source: `ascii-art.de/ascii/ghi/house.txt`.
-  Trimmed ground line.
-- **Uncredited canonical** — cow, dog, puzzled face. Treated as
-  effectively public-domain.
-- **Freehand** — lamb, signpost, tumbleweed. Composed for this cast
-  because no canonical compact piece exists in the surveyed
-  collections (`ascii-art.de`, `asciiart.eu`, `ascii.co.uk`,
-  `chris.com/ASCII`). Replace with canonical art if a fit is found.
+- **Hayley Wakenshaw** (`hjw`) — goose (head crop) and dog. Sources:
+  `ascii-art.de/ascii/ghi/goose.txt` (cropped to head + neck),
+  ASCII commons (dog).
+- **Uncredited canonical** — barn (small barn from
+  `asciiart.eu/buildings-and-places/houses`), cow, spider, puzzled
+  face. Treated as effectively public-domain.
+- **Freehand** — signpost. Composed for this cast because no
+  canonical compact piece exists in the surveyed collections. Replace
+  with canonical art if a fit is found.
