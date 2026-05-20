@@ -38,22 +38,23 @@ than three colored tokens on a line is a presentation-layer bug.
 
 ## Animation placement
 
-The animation cast lives in [`../assets/animation.md`](../assets/animation.md).
-One creature per signal category per brief — not one per project, not
-one per item.
+The theming contract lives in [`../assets/animation.md`](../assets/animation.md);
+the active theme's cast lives at `../themes/<animation_theme>.md`
+(default `farm`). One icon per signal category per brief — not one per
+project, not one per item.
 
 For each lane that has at least one finding across the in-scope
-project set, render the creature once at the top of the lane, before
-the lane title and the finding lines. All creatures face right toward
-the finding list below.
+project set, render the icon once at the top of the lane, before the
+lane title and the finding lines. Where the art allows, icons orient
+toward the finding list below; canonical asymmetric art is fine as-is.
 
-If a lane is empty across every project, no creature renders for that
+If a lane is empty across every project, no icon renders for that
 lane — the whole lane is omitted (see
 [signals.md](./signals.md) "Lane order").
 
 ### ASCII art padding (universal)
 
-Every ASCII art block — creature art, the setup duck, the empty-brief
+Every ASCII art block — lane icons, the setup mascot, the empty-brief
 mascot, the optional razor glyph in the run header — is bracketed by
 exactly one blank line above and one blank line below. No exceptions,
 no second blank for "breathing room," no zero-line tight-coupling
@@ -134,37 +135,40 @@ the trailing `(default threshold:` substring when present.
 
 ### Sub-flavor overrides
 
-A lane may swap its default creature for a sub-flavor variant when a
+A lane may swap its default icon for a sub-flavor variant when a
 stronger condition matches. The sub-flavor inherits the same palette
-role as the lane it overrides.
+role as the lane it overrides. Icon names per theme live in the active
+theme's file under [`../themes/`](../themes/); the lane / fires-when
+mapping below is theme-agnostic.
 
 | Lane | Default | Sub-flavor (when) | Color |
 | --- | --- | --- | --- |
-| `changes_scope` | Penguin | Spider — when the total scope-changes count across all in-scope projects in the primary horizon is at least 3 ("scope drift") | `changes_scope` |
+| `changes_scope` | `changes_scope` icon | `changes_scope` drift icon — when the total scope-changes count across all in-scope projects in the primary horizon is at least 3 ("scope drift") | `changes_scope` |
 
-When a sub-flavor renders, the default creature is suppressed for that
+When a sub-flavor renders, the default icon is suppressed for that
 lane — never both.
 
-### Stalls lane creature precedence
+### Stalls lane icon precedence
 
-The stalls lane has four sub-flavors and one project-level scope-hygiene
-variant (per [signals.md](./signals.md) "Stalls"). The lane carries one
-creature for the brief. Precedence — top-down, first non-empty wins:
+The stalls lane has two sub-flavors. The lane carries one icon for
+the brief. Precedence — top-down, first non-empty wins:
 
-| Precedence | Sub-flavor | Creature | Fires when |
-| --- | --- | --- | --- |
-| 1 | `stalls_blocked` | Fish | any Blocked-without-blocker fires |
-| 2 | `stalls_silent` | Turtle | any Silent fires OR any project-level scope-hygiene fires |
-| 3 | `stalls_no_pr` | Snail | any No-PR fires OR any PR-linked-but-stuck fires |
-| 4 | `stalls_aging` | Cow | any Aging-WIP / Review-aging / Awaiting-merge / Reverted fires |
+| Precedence | Sub-flavor | Fires when |
+| --- | --- | --- |
+| 1 | `stalls_blocked` | any Blocked-without-blocker fires |
+| 2 | `stalls_aging` | any Aging-WIP / Review-aging / Awaiting-merge / Reverted / PR-linked-but-stuck / No-PR / Silent / Reverted / scope-hygiene fires |
 
-New stall patterns map onto existing creatures — no new art, no new
-palette roles. A project with no work tracked is quiet, not slow, so
-a brief with only the scope-hygiene stall renders the turtle — same
-family as a single silent issue, not the cow that marks aging WIP.
+The icon for each sub-flavor comes from the active theme's lane → icon
+mapping under [`../themes/`](../themes/). All non-blocked stall
+patterns collapse onto the same generic `stalls_aging` sub-flavor —
+one icon, one palette color. The scope-hygiene stall (empty project
+or unpopulated cycle field) also renders the `stalls_aging` icon, not
+the `stalls_blocked` icon — scope-hygiene is "no work moving," not
+"work constrained."
 
-**Audit:** the stalls lane's creature corresponds to the highest-
-precedence non-empty sub-flavor in the brief.
+**Audit:** the stalls lane's icon corresponds to the highest-precedence
+non-empty sub-flavor in the brief, looked up in the active theme's
+lane → icon table.
 
 ## Unicode flourishes
 

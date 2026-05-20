@@ -19,6 +19,7 @@ scope_min_issues = 1             # Project below this in-scope issue count -> sc
 
 [render]
 palette                       = "catppuccin-mocha"
+animation_theme               = "farm"   # one of skills/linearazor/themes/<name>.md
 parallel_project_threshold    = 6
 lookahead_unclarities         = true
 lookahead_appetite            = true
