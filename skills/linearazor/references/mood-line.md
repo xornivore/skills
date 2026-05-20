@@ -36,7 +36,7 @@ A patient goose watches the June runtime cut for acceptance criteria.
 ```
 
 ```text
-A galloping horse blows past ENG-481 — the backplane shipped Tuesday.
+A cheering crowd raises hands over ENG-481 — the backplane shipped Tuesday.
 ```
 
 ```text
@@ -66,8 +66,8 @@ target slides.
 ```
 
 ```text
-A horse outruns a cow — runtime shipped Tuesday, but the scheduler
-still hasn't moved.
+A cheering crowd outruns a cow — runtime shipped Tuesday, but the
+scheduler still hasn't moved.
 ```
 
 ```text
@@ -93,7 +93,7 @@ patterns:
 
 | Wrong | Right |
 | --- | --- |
-| "Best week yet — 8 horses!" | "A galloping horse blows past ENG-481." |
+| "Best week yet — most cheers this cycle!" | "A cheering crowd raises hands over ENG-481." |
 | "Stall count up 30% from last cycle." | "A stubborn cow lingers on the scheduler refactor." |
 | "Bob: 4 horses · Carol: 3 horses" | (No per-person framing in the mood line.) |
 | "Icons as emoji decorations" | (No emoji. Color and prose carry the cast.) |

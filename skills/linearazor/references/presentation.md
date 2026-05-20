@@ -322,9 +322,12 @@ linearazor_render | freeze \
 echo "$RENDER_OUT"
 ```
 
-`$PRIMARY_BG` is the background hex from the active palette. For
-`catppuccin-mocha`, `#1e1e2e` (base). For palettes without an
-explicit background hex, default to black (`#000000`).
+`$PRIMARY_BG` is the `background` role hex from the active palette.
+For `catppuccin-mocha`, `#24282f` (matches Ghostty's default terminal
+background for thematic consistency — divergent from canonical
+Catppuccin Mocha base `#1e1e2e`, but the render substrate is the
+terminal, not the colorscheme). For palettes without an explicit
+`background` role, default to black (`#000000`).
 
 The margin, border-radius, and shadow flags give the PNG a framed
 card look that reads well when pasted into Slack and document chat
