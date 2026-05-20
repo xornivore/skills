@@ -29,7 +29,10 @@ the same global order in every lane: by Linear `status.type`
 within each tier. A project with zero items in a given lane is
 omitted from that lane.
 
-Each lane carries exactly one ASCII creature at the top of the lane.
+Each lane carries exactly one ASCII icon at the top of the lane —
+which icon depends on the configured `animation_theme` (see
+[`../assets/animation.md`](../assets/animation.md) and
+[`../themes/`](../themes/)).
 Hard rule 8 (celebrate first) binds: when `shipped` has content it
 leads the brief; when `shipped` is empty it is omitted and the next
 non-empty lane leads — never opening with `stalls` while `shipped`
@@ -197,14 +200,13 @@ When `K == 1`, the literal becomes `1 open issue here, not on the
 cycle` (singular, "not on" replaces "none on"); the ID list is the
 single ID; no ellipsis.
 
-### Creature and precedence
+### Icon and precedence
 
-Both variants map to the `stalls_silent` palette role and the turtle
-creature — same family as a single silent issue, not the cow that
-marks aging WIP. This affects which creature renders in the stalls
-lane when multiple sub-flavors fire — see
-[presentation.md](./presentation.md) "Stalls lane creature
-precedence."
+Both variants map to the `stalls_silent` palette role and that lane's
+icon in the active theme — same family as a single silent issue, not
+the `stalls_aging` icon that marks aging WIP. This affects which icon
+renders in the stalls lane when multiple sub-flavors fire — see
+[presentation.md](./presentation.md) "Stalls lane icon precedence."
 
 **Audit:**
 
