@@ -220,6 +220,66 @@ In `markdown` mode, wrap each rendered animation block in a fenced
 ` ```text ` code block so the chat renderer preserves monospace and
 the cast does not reflow.
 
+### Hierarchy in `markdown` mode
+
+`markdown` mode renders to chat surfaces that collapse leading
+whitespace. The column-precise indent contract from
+[signal-modes.md](./signal-modes.md) "Indent and continuation" is for
+the `ansi` and `plain` substrates only. In `markdown` mode you MUST
+carry hierarchy through markdown headings, not through leading
+spaces.
+
+| Element | `markdown` shape |
+| --- | --- |
+| Lane title (e.g. `Shipped`, `Stalls`) | `## <Lane>` |
+| Project sub-header inside a lane | `### <Project name>` |
+| Bullet | `- <bullet content>` at root indent (no leading spaces) |
+| Bullet continuation line | normal markdown soft-wrap, no indent tricks |
+| Cross-project bullet group inside `questions` | `### (cross-project)` |
+
+You MUST NOT use HTML entities — `&nbsp;`, `&emsp;`, `&#160;`, or any
+other non-breaking-space substitute — to fake indentation in
+`markdown` mode. The renderer treats them as literal text on some
+surfaces and the bytes leak into copy-paste, the share PNG fallback,
+and Slack ingest. Use the heading shape above instead.
+
+You MUST NOT wrap the lane stack, project sub-headers, or bullets in
+a fenced code block to preserve whitespace alignment. Fences are
+reserved for the animation cast and the optional empty-brief mascot.
+A fenced lane stack disables identifier links and bold, which is the
+opposite of what `markdown` mode is for.
+
+**Wrong** (leading spaces collapse; identifiers lose their link):
+
+```text
+  Shipped
+    Project name
+      - **CON-1053** title
+```
+
+**Wrong** (HTML entity hack):
+
+```text
+&nbsp;&nbsp;Project name
+- **[CON-1053](url)** title
+```
+
+**Right** (heading hierarchy carries the structure):
+
+```text
+## Shipped
+
+### Project name
+
+- **[CON-1053](url)** title
+```
+
+**Audit:** in `markdown` mode the brief contains zero `&nbsp;`,
+`&emsp;`, `&#160;`, `&#xa0;` byte sequences; every lane title is a
+level-2 heading (`##` prefix); every project sub-header inside a
+lane is a level-3 heading (`###` prefix); bullets carry no leading
+spaces.
+
 ### Why three modes
 
 `ansi` is right for terminals — truecolor SGR escapes and OSC 8
@@ -256,7 +316,9 @@ where `freeze` consumes the ANSI substrate. Both routes are
 explicit user choices made outside chat.
 
 **Wrong:** trying to fake color in chat with diff fences, emoji
-swatches, or HTML spans.
+swatches, HTML spans, or HTML entities (`&nbsp;`, `&emsp;` — see
+"Hierarchy in `markdown` mode" above for the indentation rule those
+get reached for).
 
 **Right:** treat chat as colorless; offer ANSI for terminals and
 PNG share-out for visual artifacts.
@@ -264,6 +326,11 @@ PNG share-out for visual artifacts.
 ### Audit
 
 - In `markdown` mode, the brief contains zero `\x1b` bytes.
+- In `markdown` mode, the brief contains zero HTML-entity sequences
+  (`&nbsp;`, `&emsp;`, `&#160;`, `&#xa0;`) and zero fenced code
+  blocks outside the animation cast and optional empty-brief mascot.
+- In `markdown` mode, every lane title renders as `## <Lane>` and
+  every project sub-header inside a lane renders as `### <Project>`.
 - In `ansi` mode, every issue identifier is wrapped in `\x1b[1m`
   (bold) and an OSC 8 hyperlink — no accent color, consistent with
   the "Palette routing" rule.

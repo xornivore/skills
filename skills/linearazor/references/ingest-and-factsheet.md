@@ -128,7 +128,16 @@ stable.
 5. **Compute derived fields** per issue (no MCP calls):
    - `daysInStatus`: now minus the timestamp of the latest status
      transition into the current status.
-   - `lastCommentDaysAgo`: now minus last comment timestamp.
+   - `lastCommentDaysAgo`: now minus last comment timestamp when the
+     Linear MCP surfaces comment timestamps for the issue; otherwise
+     you MUST fall back to `now - updatedAt` so the questions lane's
+     staleness check still fires
+     ([signals.md](./signals.md) "Activity proxy"). You MUST NOT emit
+     a null or absent value here — null suppresses the staleness
+     pattern and the lane goes silent on issues that are in fact
+     stale. The alias `lastActivityDaysAgo` carries the same value
+     and is acceptable on the wire; Phase 2 treats both names as the
+     same field.
    - `bodyHasAcceptanceCriteria`: heuristic match against the
      acceptance-criteria regex set (see "Heuristics" below).
    - `bodyIsEmpty`: `body == null` OR `body.trim() == ""`.
