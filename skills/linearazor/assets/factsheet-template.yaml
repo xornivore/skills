@@ -84,7 +84,14 @@ projects:
         status: "<status>"
         assigneeIdentifier: "<linear-user-id>"
         daysInStatus: 0
-        lastCommentDaysAgo: 0
+        lastCommentDaysAgo: 0   # days since the most recent of last-comment
+                                # and last-update. When the Linear MCP surfaces
+                                # comment timestamps, set to (today - lastCommentAt);
+                                # otherwise fall back to (today - updatedAt) so the
+                                # questions lane's staleness check still fires
+                                # (signals.md "Activity proxy"). The alias
+                                # lastActivityDaysAgo carries the same value;
+                                # Phase 2 reads either name.
         estimate:
           value: null
           name: null

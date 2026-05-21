@@ -62,10 +62,30 @@ omitted entirely (the lane is empty, no literal placeholder).
 ## 2. Questions
 
 Phrased as questions. Hard rule 5 binds: every line ends with `?`.
+
+**Lane firing rule.** When at least one detection pattern below
+matches a fact-sheet issue or milestone, you MUST render the
+questions lane with every matching finding. You MUST NOT skip the
+lane on the grounds that "the question is implicit elsewhere" or
+"the user can infer it from the stalls lane" — questions are the
+distinct conversational ask, and the stalls lane never replaces
+them. The lane is omitted only when no pattern matches at all
+(see "Lane order" above).
+
+**Activity proxy.** Detection reads `lastActivityDaysAgo`, defined
+as the smaller (more recent) of `today - lastCommentAt` and
+`today - updatedAt`. When `lastCommentAt` is absent on the fact
+sheet, you MUST fall back to `today - updatedAt` rather than
+suppressing the firing — the question is about staleness, not the
+specific surface the staleness shows up on. The fact-sheet field
+`lastCommentDaysAgo` may carry the same value; either name is
+acceptable on the schema, and you MUST treat them as the same field
+when both appear.
+
 Detection patterns:
 
 - `daysInStatus("In Progress") > thresholds.agingWipDays`
-  AND `lastCommentDaysAgo > thresholds.agingWipDays`:
+  AND `lastActivityDaysAgo > thresholds.agingWipDays`:
   "What's the next concrete step on <ID>, and is anything blocking it?"
 - Status `Blocked` AND `blockedBy == []`:
   "Is <ID> still actually blocked? Nothing is recorded as blocking it."
@@ -80,6 +100,14 @@ Detection patterns:
   slide? (ID1, ID2, …)". This is a cross-project question; render it
   under the project sub-header `(cross-project)` inside the questions
   lane, not promoted to a separate top-level block.
+
+**Audit:** for every fact-sheet issue where `statusType == "started"`
+AND `daysInStatus > thresholds.agingWipDays` AND
+`lastActivityDaysAgo > thresholds.agingWipDays`, exactly one bullet
+appears in the questions lane under that issue's project sub-header.
+A run that emits a stalls bullet for an aging-WIP issue but no
+matching question line for the same issue when the activity proxy
+also exceeds the threshold is a violation.
 
 ## 3. Changes
 

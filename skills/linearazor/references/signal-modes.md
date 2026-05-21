@@ -72,6 +72,14 @@ the relevant event:
 
 ## Indent and continuation (column-precise)
 
+The column-precise table below applies to the `ansi` and `plain`
+substrates only. In `markdown` mode the chat renderer collapses
+leading whitespace, so hierarchy is carried by markdown headings —
+see [presentation.md](./presentation.md) "Hierarchy in `markdown`
+mode" for the heading-level contract. You MUST NOT pad with leading
+spaces or HTML entities in `markdown` mode to approximate these
+columns.
+
 Inside every lane (except `brief`-mode flat lists), items render at
 these column positions. Numbers are 0-indexed source columns, after the
 universal ASCII-art padding rule in
