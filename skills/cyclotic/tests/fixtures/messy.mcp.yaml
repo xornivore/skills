@@ -1,0 +1,167 @@
+# Fixture: messy — over, empty, unsized, oversized, unassigned, unlisted.
+#
+# Exercises every prep-mode flag at once, plus the two traps that produce a
+# plausible-looking wrong report:
+#   - ENG-260 is sized `-` (explicit zero). It must NOT count as unestimated,
+#     so Avery keeps a real delta.
+#   - Chen holds unestimated work, so Chen's load renders with `+`, the delta
+#     is suppressed, and the verdict is `UNDER?` — never a bare `UNDER`.
+
+config:
+  group: infra
+  team: Engineering
+  team_id: c739cf23-0000-0000-0000-000000000000
+  members: [Avery Stone, Blake Ruiz, Chen Ito, Dara Okafor]
+  labels: []
+  capacity:
+    oncall_cost_days: 5
+    sizes:
+      0:  { label: "-",    days: 0 }
+      1:  { label: XS,     days: 0.5 }
+      2:  { label: S,      days: 1 }
+      3:  { label: M,      days: 2 }
+      5:  { label: L,      days: 3.5 }
+      8:  { label: XL,     days: 5 }
+      13: { label: XXL,    days: 10 }
+      21: { label: XXXL,   days: 15 }
+  oncall:
+    schedules: []            # empty: on-call lookup disabled entirely
+
+mode: prep
+
+list_cycles_current:
+  - id: cccccccc-0000-0000-0000-000000000000
+    title: FY27Q3-10
+    number: 47
+    startsAt: "2026-08-03T05:00:00.000Z"
+    endsAt: "2026-08-17T05:00:00.000Z"     # exclusive: last day is Aug 16
+    completedIssueCountHistory: [0]
+    issueCountHistory: [14]
+    completedScopeHistory: [0]
+    scopeHistory: [58]
+    isCurrent: true
+
+list_cycles_previous:
+  - id: dddddddd-0000-0000-0000-000000000000
+    title: FY27-9
+    number: 46
+    startsAt: "2026-07-20T05:00:00.000Z"
+    endsAt: "2026-08-03T05:00:00.000Z"
+    completedIssueCountHistory: [0, 3, 8]
+    issueCountHistory: [9, 9, 9]
+    completedScopeHistory: [0, 6, 19]
+    scopeHistory: [24, 24, 24]
+    isCurrent: false
+
+list_projects:
+  - { id: p1-0000, name: Ingest v2,       lead: Avery Stone }
+  - { id: p2-0000, name: Gateway rework,  lead: null }
+  - { id: p3-0000, name: Auth migration,  lead: Chen Ito }
+
+target_cycle_issues:
+  # Avery — sized work plus one deliberate zero
+  - { id: ENG-204, title: retry budget for ingest, estimate: { value: 3, name: M },  assignee: Avery Stone, status: In Progress, statusType: started,   project: Ingest v2, startedAt: "2026-08-04T13:33:00.000Z", createdAt: "2026-08-01T09:00:00.000Z" }
+  - { id: ENG-205, title: replay from offset,      estimate: { value: 5, name: L },  assignee: Avery Stone, status: Todo,        statusType: unstarted, project: Ingest v2, createdAt: "2026-08-01T09:10:00.000Z" }
+  - { id: ENG-206, title: drop the unused flag,    estimate: { value: 1, name: XS }, assignee: Avery Stone, status: Todo,        statusType: unstarted, project: Ingest v2, createdAt: "2026-08-01T09:20:00.000Z" }
+  # Sized `-`: someone decided this costs nothing. Sized, not unestimated.
+  - { id: ENG-260, title: close the stale ticket,  estimate: { value: 0, name: "-" }, assignee: Avery Stone, status: Todo,       statusType: unstarted, project: Ingest v2, createdAt: "2026-08-01T09:30:00.000Z" }
+
+  # Blake — no issues at all. Absence from this list is what fires F2.
+
+  # Chen — three sized, three with NO estimate key
+  - { id: ENG-210, title: auth cache warmup,       estimate: { value: 3, name: M },  assignee: Chen Ito, status: Todo, statusType: unstarted, project: Auth migration, createdAt: "2026-08-01T11:00:00.000Z" }
+  - { id: ENG-211, title: session store cutover,   estimate: { value: 5, name: L },  assignee: Chen Ito, status: Todo, statusType: unstarted, project: Auth migration, createdAt: "2026-08-01T11:10:00.000Z" }
+  - { id: ENG-212, title: log the reject reason,   estimate: { value: 1, name: XS }, assignee: Chen Ito, status: Todo, statusType: unstarted, project: Auth migration, createdAt: "2026-08-01T11:20:00.000Z" }
+  - { id: ENG-201, title: token refresh race,      assignee: Chen Ito, status: Todo, statusType: unstarted, project: Auth migration, createdAt: "2026-08-01T11:30:00.000Z" }
+  - { id: ENG-233, title: audit the scope claims,  assignee: Chen Ito, status: Todo, statusType: unstarted, project: Auth migration, createdAt: "2026-08-01T11:40:00.000Z" }
+  - { id: ENG-240, title: rotate the signing key,  assignee: Chen Ito, status: Todo, statusType: unstarted, project: Auth migration, createdAt: "2026-08-01T11:50:00.000Z" }
+
+  # Dara — over capacity, and holding one oversized ticket
+  - { id: ENG-190, title: rewrite ingest pipeline, estimate: { value: 13, name: XXL }, assignee: Dara Okafor, status: Todo, statusType: unstarted, project: Ingest v2, createdAt: "2026-08-01T12:00:00.000Z" }
+  - { id: ENG-191, title: partition the queue,     estimate: { value: 5, name: L },   assignee: Dara Okafor, status: Todo, statusType: unstarted, project: Ingest v2, createdAt: "2026-08-01T12:10:00.000Z" }
+  - { id: ENG-192, title: alert on lag,            estimate: { value: 2, name: S },   assignee: Dara Okafor, status: Todo, statusType: unstarted, project: Ingest v2, createdAt: "2026-08-01T12:20:00.000Z" }
+
+  # Unassigned: no `assignee` key. Sized and committed, in nobody's load.
+  - { id: ENG-244, title: cache the label lookup,  estimate: { value: 3, name: M }, status: Todo, statusType: unstarted, project: Gateway rework, createdAt: "2026-08-01T13:00:00.000Z" }
+  - { id: ENG-249, title: trim the debug output,   estimate: { value: 2, name: S }, status: Todo, statusType: unstarted, project: Gateway rework, createdAt: "2026-08-01T13:10:00.000Z" }
+
+  # Not in the roster. Their work is invisible unless F8 fires.
+  - { id: ENG-270, title: split the ingest reader, estimate: { value: 3, name: M }, assignee: Priya Raman, status: Todo, statusType: unstarted, project: Ingest v2, createdAt: "2026-08-01T14:00:00.000Z" }
+  - { id: ENG-271, title: docs for the new flag,   estimate: { value: 1, name: XS }, assignee: Priya Raman, status: Todo, statusType: unstarted, project: Ingest v2, createdAt: "2026-08-01T14:10:00.000Z" }
+  - { id: ENG-272, title: prune the old fixtures,  estimate: { value: 2, name: S }, assignee: Priya Raman, status: Todo, statusType: unstarted, project: Ingest v2, createdAt: "2026-08-01T14:20:00.000Z" }
+
+prior_cycle_incomplete_issues: []
+
+# No target-cycle issue has startedAt before 2026-08-03, and every unstarted
+# one was created after it, so no carryover classifies. Section omitted.
+
+backlog_by_project:
+  Gateway rework:
+    - { id: ENG-421, estimate: { value: 3, name: M }, statusType: backlog }
+    - { id: ENG-422, estimate: { value: 2, name: S }, statusType: backlog }
+    - { id: ENG-423, estimate: { value: 5, name: L }, statusType: backlog }
+    - { id: ENG-424, statusType: backlog }
+    - { id: ENG-425, statusType: backlog }
+    - { id: ENG-426, statusType: backlog }
+    - { id: ENG-427, statusType: backlog }
+    - { id: ENG-428, statusType: backlog }
+    - { id: ENG-429, statusType: backlog }
+    - { id: ENG-430, statusType: backlog }
+    - { id: ENG-431, statusType: backlog }
+    - { id: ENG-432, statusType: backlog }
+    - { id: ENG-248, estimate: { value: 3, name: M }, assignee: Avery Stone, statusType: backlog }
+    - { id: ENG-251, statusType: backlog, assignee: Blake Ruiz }
+  Ingest v2:
+    - { id: ENG-441, estimate: { value: 3, name: M }, statusType: backlog }
+    - { id: ENG-442, estimate: { value: 2, name: S }, statusType: backlog }
+    - { id: ENG-443, estimate: { value: 5, name: L }, statusType: backlog }
+    - { id: ENG-444, estimate: { value: 1, name: XS }, statusType: backlog }
+  Auth migration:
+    - { id: ENG-451, statusType: backlog }
+    - { id: ENG-452, statusType: backlog }
+    - { id: ENG-453, statusType: backlog }
+    - { id: ENG-454, statusType: backlog }
+    - { id: ENG-455, statusType: backlog }
+    - { id: ENG-456, statusType: backlog }
+    - { id: ENG-263, statusType: backlog, assignee: Chen Ito }
+
+oncall_shifts: []            # schedules list is empty, so none fetched
+
+expected:
+  working_days: 10          # Aug 3 (Mon) - Aug 16 (Sun)
+  capacity:
+    # Avery: M 2 + L 3.5 + XS 0.5 + `-` 0 = 6.0. Sized `-` adds no
+    # unestimated count, so the delta is NOT suppressed.
+    - { person: Avery, load: 6.0,  available: 10.0, delta: -4.0, verdict: UNDER }
+    # Blake: zero issues. EMPTY outranks UNDER.
+    - { person: Blake, load: 0.0,  available: 10.0, delta: null, verdict: EMPTY }
+    # Chen: M 2 + L 3.5 + XS 0.5 = 6.0 sized, plus 3 with no estimate.
+    - { person: Chen,  load: 6.0,  available: 10.0, delta: null, verdict: "UNDER?",
+        render_load: "6.0d+", notes: "3 unestimated" }
+    # Dara: XXL 10 + L 3.5 + S 1 = 14.5 against 10.0
+    - { person: Dara,  load: 14.5, available: 10.0, delta: 4.5,  verdict: OVER }
+  no_estimate: [ENG-201, ENG-233, ENG-240]     # ENG-260 must NOT appear
+  needs_split:
+    - { id: ENG-190, assignee: Dara Okafor, size: XXL, title: rewrite ingest pipeline }
+  unassigned_in_cycle:
+    heading: "UNASSIGNED IN CYCLE (2, 3.0d)"   # M 2.0 + S 1.0
+    issues: [ENG-244, ENG-249]
+  unlisted_in_roster:
+    - { name: Priya Raman, issue_count: 3 }
+  backlog_readiness:
+    projects:
+      - { project: Gateway rework, ready: 3, unsized: 9, owned_unsched: 2, notes: no lead }
+      - { project: Ingest v2,      ready: 4, unsized: 0, owned_unsched: 0 }
+      - { project: Auth migration, ready: 0, unsized: 6, owned_unsched: 1 }
+    owned_unsched_issues: ["ENG-248 Avery", "ENG-251 Blake", "ENG-263 Chen"]
+  sections_omitted: [CARRYOVER]
+  footer:
+    - "rotations not checked (no schedules configured); available days may be overstated."
+    - "3 issues excluded from day totals for having no estimate."
+  traps:
+    - ENG-260 is sized `-`. Counting it as unestimated would wrongly suppress
+      Avery's -4.0 delta and add a fourth entry to NO ESTIMATE.
+    - Chen's row must never render a bare `UNDER` or a computed delta. The
+      three unestimated tickets could be anything from 1.5d to 30d.
+    - Priya's 3 issues are 3.5d of committed work that appears in no capacity
+      row. Without F8 the report silently loses it.

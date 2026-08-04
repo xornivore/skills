@@ -1,0 +1,154 @@
+# cyclotic fact sheet
+#
+# Emitted at the end of ingest, before any arithmetic. Rendering reads only
+# this structure — never Linear or incident.io again. A fact the report needs
+# that is missing here is an ingest bug, not a reason to re-query.
+
+mode: prep                    # prep | review
+filter_person: null           # set when the run is `for someone`
+
+cycle:                        # the TARGET cycle, resolved from Linear
+  id: 364ef080-0000-0000-0000-000000000000
+  number: 47
+  title: FY27Q3-10            # may be empty; fall back to the number
+  starts_at: 2026-08-03T05:00:00.000Z
+  ends_at: 2026-08-17T05:00:00.000Z   # EXCLUSIVE: names the day after the last
+  first_day: 2026-08-03
+  last_day: 2026-08-16        # ends_at minus one day
+  working_days: 10            # weekdays from first_day to last_day inclusive
+  # Last element of each history array is the value at cycle close.
+  issue_count_at_close: 48
+  completed_count_at_close: 28
+  scope_at_close: 102
+  completed_scope_at_close: 69
+
+neighbour_cycle:              # named in the carryover heading
+  number: 46
+  title: FY27-9
+
+carryover_source_cycle:       # the cycle work rolled OUT of
+  number: 46
+  issues_that_left: 16        # issue_count_at_close minus current members
+  attributed: 13              # classified below; difference is a blind spot
+
+roster:
+  - name: Avery Stone
+    short: Avery
+    linear_user_id: 6ca9e4ab-0000-0000-0000-000000000000
+    resolved: true
+    load_days: 6.0
+    unestimated: 0
+    available_days: 10.0
+    verdict: UNDER            # EMPTY | OVER | full | UNDER | UNDER?
+    delta: -4.0               # null when unestimated is above zero
+    oncall: []
+    issues:
+      - id: ENG-204
+        title: retry budget for ingest
+        estimate_value: 3
+        estimate_label: M
+        days: 2.0
+        status: In Progress
+        status_type: started
+        project: Ingest v2
+        started_at: 2026-08-04T13:33:00.697Z
+        created_at: 2026-08-01T09:12:00.000Z
+
+  - name: Chen Ito
+    short: Chen
+    linear_user_id: 7db0f5bc-0000-0000-0000-000000000000
+    resolved: true
+    load_days: 6.0
+    unestimated: 3            # above zero: load renders 6.0d+, delta suppressed
+    available_days: 10.0
+    verdict: UNDER?
+    delta: null
+    oncall: []
+    issues: []
+
+  - name: Blake Ruiz
+    short: Blake
+    linear_user_id: 8ec1a6cd-0000-0000-0000-000000000000
+    resolved: true
+    load_days: 4.0
+    unestimated: 0
+    available_days: 5.0       # 10 working days minus a 5-day rotation
+    verdict: UNDER
+    delta: -1.0
+    oncall:
+      - schedule: Interrupts
+        first_day: 2026-08-04
+        last_day: 2026-08-08
+        weekdays_in_cycle: 5
+        charged_days: 5       # capped at capacity.oncall_cost_days
+    issues: []
+
+unassigned_in_cycle:          # F5 — sized, committed, in nobody's load
+  total_days: 3.0
+  issues:
+    - id: ENG-244
+      estimate_label: M
+      days: 2.0
+    - id: ENG-249
+      estimate_label: S
+      days: 1.0
+
+no_estimate:                  # F3 — no `estimate` key at all
+  - id: ENG-201
+    assignee: Chen Ito
+# A ticket sized `-` (estimate.value 0) is SIZED and never appears here.
+
+needs_split:                  # F4 — estimate_label XL or larger
+  - id: ENG-190
+    assignee: Dara Okafor
+    estimate_label: XXL
+    title: rewrite ingest pipeline
+
+carryover:                    # F6 — read from the cycle work rolled INTO
+  never_started:
+    - id: ENG-155
+      assignee: Blake Ruiz
+      estimate_label: M
+      title: retry budget for ingest
+      created_at: 2026-07-19T10:00:00.000Z
+  in_progress:
+    - id: ENG-160
+      assignee: Avery Stone
+      estimate_label: L
+      days_since_started: 9   # from startedAt; no per-state timestamp exists
+  in_review:
+    - id: ENG-171
+      assignee: Chen Ito
+      estimate_label: S
+      days_since_started: 4
+
+projects:                     # F7 — every in-scope project, not only troubled
+  - name: Gateway rework
+    id: 721d8f28-0000-0000-0000-000000000000
+    lead: null
+    ready: 3                  # unassigned + sized
+    unsized: 9                # unassigned + unsized
+    owned_unsched: 2          # assigned + either
+    owned_unsched_issues:
+      - id: ENG-248
+        assignee: Avery Stone
+    truncated: false          # true when the page cap was hit
+
+unlisted_contributors:        # F8 — cycle assignees absent from the roster
+  - name: Priya Raman
+    issue_count: 3
+
+landed:                       # review mode only; TEAM LEVEL ONLY
+  issues_completed: 28
+  issues_total: 48            # from issue_count_at_close, NOT current members
+  days_completed: 41.0        # summed per issue; never from scope history
+  days_total: 79.5
+
+blind_spots:                  # rendered one line each, only when true
+  - kind: rotations_unchecked
+    detail: incident.io MCP not installed
+  - kind: unestimated_excluded
+    count: 3
+  - kind: carryover_unattributed
+    count: 3
+    cycle_number: 46

@@ -1,0 +1,60 @@
+# cyclotic scope config
+# Location: ~/.config/cyclotic/<group>.toml
+# Hand-editable. cyclotic rewrites this only from `init` / `configure`,
+# and only after showing the rendered result and getting confirmation.
+
+version = 1
+
+group   = "infra"
+team    = "Engineering"
+team_id = "c739cf23-0000-0000-0000-000000000000"
+
+# Roster. Names are resolved to Linear users at init time; any name that
+# never resolved is kept verbatim and surfaces as a footer note every run.
+members = ["Avery Stone", "Blake Ruiz", "Chen Ito", "Dara Okafor"]
+
+# PROJECT labels (not issue labels). AND semantics: a project must carry
+# every listed label to be in scope. Empty means the whole team.
+# To widen the scope, use one broader label rather than several narrow ones.
+labels = []
+
+[capacity]
+oncall_cost_days = 5     # cost of one rotation week, in working days
+backlog_page_cap = 4     # pages of 250 per project before truncating
+
+# Cycle length is NOT set here. It is read from Linear's cycle start and
+# end dates on every run, so an unusually long or short cycle gets the
+# right denominator without anyone editing this file.
+
+# Linear estimate points -> label + working days.
+# Keys are Linear's numeric `estimate.value`. Labels mirror `estimate.name`
+# as reported by the team's own issues. Linear treats points as complexity,
+# not calendar time; the `days` column is cyclotic's translation and is
+# yours to edit.
+#
+# XL and larger are flagged for splitting: a ticket estimated at a week or
+# more offers no checkpoint inside the cycle. A team whose scale tops out
+# at L never sees that flag, and should not — L is three to four days.
+#
+# An issue with NO estimate contributes zero days and is reported as
+# unknown, never silently treated as an XS. An issue sized `-` (Linear's
+# explicit zero) is sized, contributes zero days, and is not flagged.
+[capacity.sizes]
+0  = { label = "-",    days = 0   }
+1  = { label = "XS",   days = 0.5 }
+2  = { label = "S",    days = 1   }
+3  = { label = "M",    days = 2   }
+5  = { label = "L",    days = 3.5 }
+8  = { label = "XL",   days = 5   }
+13 = { label = "XXL",  days = 10  }
+21 = { label = "XXXL", days = 15  }
+
+# One table per rotation, so a group covering several rotations charges
+# each. An empty list disables on-call lookup entirely, and the footer
+# then says rotations were not checked.
+[[oncall.schedules]]
+name = "Interrupts"
+id   = "01ABCDEFGHIJKLMNOPQRSTUVWX"
+
+# No [render] section. Output is plain text — no palette, no theme, no
+# image export.

@@ -1,0 +1,130 @@
+# Fixture: healthy — everything sized, everything assigned, cycle in balance.
+#
+# Agent-verifiable scenario, not an automated test. Read it, run the arithmetic
+# from references/capacity.md by hand, and compare against `expected` below.
+#
+# Shapes mirror real Linear MCP responses: null fields are OMITTED, issue `id`
+# is the human identifier, `estimate` is an object with `value` and `name`.
+
+config:
+  group: infra
+  team: Engineering
+  team_id: c739cf23-0000-0000-0000-000000000000
+  members: [Avery Stone, Blake Ruiz, Chen Ito, Dara Okafor]
+  labels: []
+  capacity:
+    oncall_cost_days: 5
+    sizes:
+      0:  { label: "-",    days: 0 }
+      1:  { label: XS,     days: 0.5 }
+      2:  { label: S,      days: 1 }
+      3:  { label: M,      days: 2 }
+      5:  { label: L,      days: 3.5 }
+      8:  { label: XL,     days: 5 }
+      13: { label: XXL,    days: 10 }
+      21: { label: XXXL,   days: 15 }
+  oncall:
+    schedules:
+      - { name: Interrupts, id: 01ABCDEFGHIJKLMNOPQRSTUVWX }
+
+mode: prep
+
+# list_cycles(teamId, type: current)
+list_cycles_current:
+  - id: aaaaaaaa-0000-0000-0000-000000000000
+    title: FY27Q4-2
+    number: 51
+    startsAt: "2026-09-07T05:00:00.000Z"
+    endsAt: "2026-09-21T05:00:00.000Z"     # exclusive: last day is Sep 20
+    completedIssueCountHistory: [0, 2]
+    issueCountHistory: [18, 18]
+    completedScopeHistory: [0, 5]
+    scopeHistory: [61, 61]
+    isCurrent: true
+
+# list_cycles(teamId, type: previous) — closed, so only completed/canceled
+list_cycles_previous:
+  - id: bbbbbbbb-0000-0000-0000-000000000000
+    title: FY27Q4-1
+    number: 50
+    startsAt: "2026-08-24T05:00:00.000Z"
+    endsAt: "2026-09-07T05:00:00.000Z"
+    completedIssueCountHistory: [0, 4, 9, 14]
+    issueCountHistory: [14, 14, 14, 14]
+    completedScopeHistory: [0, 8, 22, 40]
+    scopeHistory: [40, 40, 40, 40]
+    isCurrent: false
+
+list_projects:
+  - { id: p1-0000, name: Ingest v2,      lead: Avery Stone }
+  - { id: p2-0000, name: Gateway rework, lead: Dara Okafor }
+
+# list_issues(cycle: current.id)
+target_cycle_issues:
+  - { id: ENG-301, title: shard the write path,     estimate: { value: 8, name: XL }, assignee: Avery Stone,  status: In Progress, statusType: started,   project: Ingest v2,      startedAt: "2026-09-08T09:00:00.000Z", createdAt: "2026-09-02T09:00:00.000Z" }
+  - { id: ENG-302, title: backfill tooling,         estimate: { value: 5, name: L },  assignee: Avery Stone,  status: Todo,        statusType: unstarted, project: Ingest v2,      createdAt: "2026-09-02T09:10:00.000Z" }
+  - { id: ENG-303, title: metrics for the shard cut, estimate: { value: 2, name: S },  assignee: Avery Stone,  status: Todo,        statusType: unstarted, project: Ingest v2,      createdAt: "2026-09-02T09:20:00.000Z" }
+  - { id: ENG-304, title: rename the config key,    estimate: { value: 1, name: XS }, assignee: Avery Stone,  status: Todo,        statusType: unstarted, project: Ingest v2,      createdAt: "2026-09-02T09:30:00.000Z" }
+
+  - { id: ENG-305, title: retry budget,             estimate: { value: 5, name: L },  assignee: Blake Ruiz,   status: Todo,        statusType: unstarted, project: Gateway rework, createdAt: "2026-09-02T10:00:00.000Z" }
+  - { id: ENG-306, title: drop the dead header,     estimate: { value: 1, name: XS }, assignee: Blake Ruiz,   status: Todo,        statusType: unstarted, project: Gateway rework, createdAt: "2026-09-02T10:10:00.000Z" }
+
+  - { id: ENG-307, title: auth cache warmup,        estimate: { value: 3, name: M },  assignee: Chen Ito,     status: Todo,        statusType: unstarted, project: Gateway rework, createdAt: "2026-09-02T11:00:00.000Z" }
+  - { id: ENG-308, title: token refresh race,       estimate: { value: 3, name: M },  assignee: Chen Ito,     status: Todo,        statusType: unstarted, project: Gateway rework, createdAt: "2026-09-02T11:10:00.000Z" }
+  - { id: ENG-309, title: session store cutover,    estimate: { value: 5, name: L },  assignee: Chen Ito,     status: Todo,        statusType: unstarted, project: Gateway rework, createdAt: "2026-09-02T11:20:00.000Z" }
+  - { id: ENG-310, title: log the reject reason,    estimate: { value: 2, name: S },  assignee: Chen Ito,     status: Todo,        statusType: unstarted, project: Gateway rework, createdAt: "2026-09-02T11:30:00.000Z" }
+  - { id: ENG-311, title: fix the flaky auth test,  estimate: { value: 1, name: XS }, assignee: Chen Ito,     status: Todo,        statusType: unstarted, project: Gateway rework, createdAt: "2026-09-02T11:40:00.000Z" }
+  - { id: ENG-312, title: bump the client dep,      estimate: { value: 1, name: XS }, assignee: Chen Ito,     status: Todo,        statusType: unstarted, project: Gateway rework, createdAt: "2026-09-02T11:50:00.000Z" }
+
+  - { id: ENG-313, title: partition the queue,      estimate: { value: 5, name: L },  assignee: Dara Okafor,  status: Todo,        statusType: unstarted, project: Ingest v2,      createdAt: "2026-09-02T12:00:00.000Z" }
+  - { id: ENG-314, title: replay from offset,       estimate: { value: 5, name: L },  assignee: Dara Okafor,  status: Todo,        statusType: unstarted, project: Ingest v2,      createdAt: "2026-09-02T12:10:00.000Z" }
+  - { id: ENG-315, title: dead-letter handling,     estimate: { value: 3, name: M },  assignee: Dara Okafor,  status: Todo,        statusType: unstarted, project: Ingest v2,      createdAt: "2026-09-02T12:20:00.000Z" }
+  - { id: ENG-316, title: alert on lag,             estimate: { value: 2, name: S },  assignee: Dara Okafor,  status: Todo,        statusType: unstarted, project: Ingest v2,      createdAt: "2026-09-02T12:30:00.000Z" }
+
+# Prior cycle queried for un-rolled leftovers: empty, as a closed cycle is.
+prior_cycle_incomplete_issues: []
+
+# No issue in the current cycle has startedAt before 2026-09-07, so nothing
+# classifies as carryover.
+
+# list_issues(project) filtered client-side to issues with NO cycleId key
+backlog_by_project:
+  Ingest v2:
+    - { id: ENG-401, estimate: { value: 3, name: M }, statusType: backlog }
+    - { id: ENG-402, estimate: { value: 2, name: S }, statusType: backlog }
+    - { id: ENG-403, estimate: { value: 5, name: L }, statusType: backlog }
+    - { id: ENG-404, estimate: { value: 1, name: XS }, statusType: backlog }
+  Gateway rework:
+    - { id: ENG-411, estimate: { value: 3, name: M }, statusType: backlog }
+    - { id: ENG-412, estimate: { value: 2, name: S }, statusType: backlog }
+    - { id: ENG-413, estimate: { value: 2, name: S }, statusType: backlog }
+
+oncall_shifts:
+  - schedule: Interrupts
+    user_email: blake@example.com
+    start: "2026-09-07T00:00:00.000Z"
+    end: "2026-09-12T00:00:00.000Z"       # Mon Sep 7 - Fri Sep 11, 5 weekdays
+
+expected:
+  working_days: 10          # Sep 7 (Mon) - Sep 20 (Sun); Sep 7-11 + Sep 14-18
+  capacity:
+    # Avery: XL 5 + L 3.5 + S 1 + XS 0.5 = 10.0 against 10.0
+    - { person: Avery, load: 10.0, available: 10.0, delta:  0.0, verdict: full }
+    # Blake: L 3.5 + XS 0.5 = 4.0 against 10 - 5 rotation = 5.0
+    - { person: Blake, load:  4.0, available:  5.0, delta: -1.0, verdict: UNDER,
+        notes: "oncall: Interrupts Sep 7-11" }
+    # Chen: M 2 + M 2 + L 3.5 + S 1 + XS 0.5 + XS 0.5 = 9.5 against 10.0
+    - { person: Chen,  load:  9.5, available: 10.0, delta: -0.5, verdict: UNDER }
+    # Dara: L 3.5 + L 3.5 + M 2 + S 1 = 10.0 against 10.0
+    - { person: Dara,  load: 10.0, available: 10.0, delta:  0.0, verdict: full }
+  sections_omitted: [CARRYOVER, NO ESTIMATE, NEEDS SPLIT, UNASSIGNED IN CYCLE, UNLISTED IN ROSTER]
+  backlog_readiness:
+    # every issue is unassigned and sized, so all land in `ready`
+    - { project: Ingest v2,      ready: 4, unsized: 0, owned_unsched: 0 }
+    - { project: Gateway rework, ready: 3, unsized: 0, owned_unsched: 0 }
+  footer:
+    - "rotations checked: Interrupts."
+  notes: >
+    The capacity table still renders even though every row is unremarkable —
+    four balanced rows are the answer to "is this cycle allocated." No other
+    section appears.

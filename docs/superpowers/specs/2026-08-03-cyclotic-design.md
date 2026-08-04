@@ -1,10 +1,14 @@
 # cyclotic — design spec
 
-**Status:** authoritative
+**Status:** authoritative, implemented
 **Author:** xornivore
 **Date:** 2026-08-03
-**Skill folder (planned):** `skills/cyclotic/`
+**Skill folder:** `skills/cyclotic/`
 **Branch:** `feat/cyclotic`
+
+The Linear MCP shapes and constraints in [ingest](#5-ingest-and-fact-sheet)
+were verified against a live workspace. They are what the MCP returns, not
+what the GraphQL API documents.
 
 ## 1. Summary
 
@@ -122,20 +126,26 @@ Notes:
   (`list_project_labels`), not issue labels. Multiple labels intersect: a
   project must carry every listed label to be in scope. To widen the scope, use
   one broader label rather than several narrow ones.
-- **`capacity.sizes`** keys are Linear's numeric `estimate` values. Linear's
+- **`capacity.sizes`** keys are Linear's numeric `estimate.value`. Linear's
   T-shirt scale sits on top of Fibonacci points, which is where the keys above
   come from. Linear treats points as complexity, not calendar time; the `days`
-  column is this skill's translation and is the user's to edit. `init` detects
-  the team's configured estimation scale and shows the derived mapping for
-  confirmation. See [init flow](#61-estimation-scale-detection).
+  column is this skill's translation and is the user's to edit. `init` derives
+  the scale from the team's own issues and shows the mapping for confirmation.
+  See [init flow](#61-estimation-scale-detection).
 - **`XL` and larger are always flagged for splitting**, by label — `XL`, `XXL`,
   `XXXL`, and anything above. A ticket estimated at a week or more offers no
   checkpoint inside the cycle. A team whose scale tops out at `L` never sees
   this flag, and should not: `L` is three to four days.
 - **Linear counts an unestimated issue as 1 point. `cyclotic` does not.** An
-  issue with no estimate contributes zero days and is reported as unknown, never
-  silently treated as an `XS`. See
+  issue with no `estimate` key contributes zero days and is reported as unknown,
+  never silently treated as an `XS`. See
   [hard rule 4](#94-unestimated-work-never-reads-as-spare-capacity).
+- **An explicit zero estimate is sized.** Linear's estimate picker offers
+  `No estimate` and `-` as separate choices, and teams can enable `-` to mean a
+  deliberate zero. A `-` issue (`estimate.value` of `0`) contributes zero days,
+  does not increment the unestimated counter, and is not flagged. Only a missing
+  `estimate` key is unestimated. Conflating the two would nag about a decision
+  already made and would suppress that person's capacity delta for no reason.
 - **`oncall.schedules`** is a list of tables so a group covering several
   rotations charges each. Empty list disables on-call lookup entirely.
 - **No `[render]` section.** Output is plain text. There is no palette, no
@@ -150,20 +160,55 @@ only the fact sheet ([hard rule 3](#93-never-re-query-after-ingest)).
 ### 5.1 Linear queries
 
 1. `list_cycles` for the configured team → resolve the target cycle, plus the
-   **carryover source cycle** and the **neighbour cycle name** per the table in
-   [carryover source](#54-carryover-source).
+   **landing cycle** and the **neighbour cycle name** per the table in
+   [carryover](#54-carryover).
 2. `list_projects` for the team, filtered by `labels` when set → the in-scope
    project set, with each project's `lead`.
-3. `list_issues` for the target cycle → id, identifier, title, assignee,
-   estimate, state, state type, project.
-4. `list_issues` for the carryover source cycle, restricted to issues whose
-   state type is not `completed` and not `canceled` → carryover.
-5. `list_issues` for in-scope projects, restricted to issues in no cycle →
-   the backlog behind the cycle, with assignee and estimate.
+3. `list_issues` for the target cycle → id, title, assignee, estimate, status,
+   status type, project, `startedAt`, `createdAt`.
+4. `list_issues` for the landing cycle → carryover candidates, classified per
+   [carryover](#54-carryover).
+5. `list_issues` per in-scope project, filtered client-side to issues with no
+   `cycleId` → the backlog behind the cycle, with assignee and estimate.
 
-Query 5 is the widest. Bound it: request only the fields the backlog table
-needs, and cap at a configurable page depth, reporting the cap in the footer
-when it truncates ([hard rule 6](#96-state-blind-spots-once)).
+Query 5 is the widest, for two reasons. `list_issues` has no "in no cycle"
+filter — the `cycle` parameter matches one specific cycle — so the exclusion
+happens on the client. And it runs once per project. Bound it: request only the
+fields the backlog table needs, and cap at a configurable page depth, reporting
+the cap in the footer when it truncates
+([hard rule 6](#96-state-blind-spots-once)).
+
+### 5.1.1 MCP response shapes
+
+Four shapes decide whether the report is right:
+
+- **Null fields are omitted, not null.** An unestimated issue has no
+  `estimate` key; an unassigned one has no `assignee` key; an issue outside a
+  project has no `project` key. Test key presence.
+- **An issue's `id` is the human identifier** (`ENG-201`). There is no separate
+  `identifier` field.
+- **`estimate` is an object**: `{ "value": 3, "name": "M" }`. `name` is the
+  team's own label, which makes the team's scale readable at query time and is
+  where [estimation scale detection](#61-estimation-scale-detection) gets its
+  labels from.
+- **Cycles carry four daily-snapshot history arrays.** The last element of
+  `issueCountHistory` is the issue count at close; `completedIssueCountHistory`,
+  `scopeHistory`, and `completedScopeHistory` mirror it for completions and
+  points. These are the only record of a closed cycle's true size.
+
+`list_cycles` accepts only `teamId` and a `type` of `current`, `previous`, or
+`next`. There is no way to enumerate cycles, so each one costs its own call.
+
+Point totals never convert to days. The points-to-days map is not linear (3
+points is 2 days, 5 is 3.5), so a summed `scopeHistory` figure cannot be
+translated. Day totals are always summed per issue.
+
+**Working days.** `startsAt` is the first day; `endsAt` is **exclusive** — it
+names the day after the last. Working days are the weekdays from
+`date(startsAt)` to `date(endsAt) - 1 day` inclusive. A cycle running
+`2026-08-03T05:00:00Z` to `2026-08-17T05:00:00Z` covers Aug 3-16 and has 10
+working days; treating `endsAt` as inclusive yields 11 and overstates
+everyone's available days.
 
 ### 5.2 incident.io queries (optional)
 
@@ -187,20 +232,66 @@ mapped to roster members, and a list of blind spots accumulated during ingest.
 
 Template ships at `assets/factsheet-template.yaml`.
 
-### 5.4 Carryover source
+### 5.4 Carryover
 
-The two modes read carryover from different cycles. Getting this backwards
-produces a plausible-looking but wrong report, so it is stated explicitly.
+Linear moves unfinished work forward on its own. When a cycle ends, every open
+issue rolls into the next cycle, and per Linear's documentation there is no way
+to keep unfinished issues in a closed cycle. A closed cycle therefore holds
+**only** `completed` and `canceled` issues — verified live: a cycle that closed
+with 48 issues and 28 completions now returns 32, every one of them completed
+or canceled.
 
-| Mode | Target cycle | Carryover read from | Section heading |
+So carryover is read from the cycle the work rolled **into**. Reading the cycle
+it rolled out of returns an empty set every time, which renders as a clean
+close and is the most dangerous possible wrong answer.
+
+| Mode | Target cycle | Landing cycle | Section heading |
 | --- | --- | --- | --- |
-| `prep` | active (or next) | the cycle **before** the target | `CARRYOVER FROM <prior>` |
-| `review` | most recently completed | **the target cycle itself** | `CARRYING INTO <next>` |
+| `prep` | active C | C itself, plus prior cycle P | `CARRYOVER FROM P` |
+| `prep next` | next N | N itself, plus active cycle C | `CARRYOVER FROM C` |
+| `review` | most recently completed T | the cycle after T, i.e. the active one | `CARRYING INTO active` |
 
-In `prep`, the question is "what arrived here already in flight," so the source
-is the preceding cycle. In `review`, the question is "what is leaving this cycle
-unfinished," so the source is the closing cycle itself; the next cycle is
-resolved only to name it in the heading.
+In `prep` the question is "what arrived here already in flight," so the landing
+cycle is the target. In `review` the question is "what is leaving this cycle
+unfinished," so the landing cycle is the one after the target; the target is
+read only for what landed.
+
+**Classification.** Let `B` be the boundary — the target's `startsAt` in
+`prep`, its `endsAt` in `review`. For each issue in the landing cycle that is
+not completed and not canceled:
+
+- **in progress** — `startedAt` present and earlier than `B`, status type
+  `started`. Work demonstrably began before the boundary.
+- **in review** — as above, and `status` matches the team's review wording.
+- **never started** — status type `backlog` or `unstarted`, `createdAt` earlier
+  than `B`. Planned before the boundary, and nothing happened.
+
+An issue whose `startedAt` is at or after `B` is new work in the landing cycle,
+not carryover. The prior cycle is also queried directly for unfinished issues —
+normally empty, but it catches a run made before rollover and an issue pinned
+in place. Merge and dedupe by `id`.
+
+**Reconciliation.** Classification is a judgment from timestamps; it cannot
+recover which issues belonged to the cycle at the moment it closed. The cycle's
+own totals are exact, so they bound the report:
+
+```text
+left = issueCountHistory[last] - count(issues currently in the cycle)
+```
+
+The only issues that leave a closed cycle are those that rolled forward or were
+moved to backlog or triage during cooldown. When the classified set is smaller
+than `left`, the difference is a footer blind spot. The list is never padded to
+match the total.
+
+**Days-in-state is not available.** The MCP surface exposes no per-state
+transition timestamp. `startedAt` records when work first began, so the figure
+rendered is days since `startedAt`, labelled `since started`.
+
+**The `review` landed denominator comes from `issueCountHistory`**, not from
+counting current members. The unfinished issues have already left, so counting
+members reports `28 of 32` when the truth is `28 of 48` — a flattering number
+built by hiding the work that rolled out.
 
 ## 6. Init flow
 
@@ -234,9 +325,21 @@ Cycle length is never asked for. It is read from Linear on every run.
 
 ### 6.1 Estimation scale detection
 
-Read the team's issue-estimation configuration. When the scale is exposed, map
-its ordered values onto labels and propose day values from this cheat sheet,
-taking the midpoint of any range:
+The MCP surface does not expose a team's estimation configuration — `get_team`
+returns id, name, icon, and timestamps only. So the scale is derived from the
+team's own issues rather than described by the user:
+
+1. `list_issues` for the team with `fields` of `estimate`, limit 250.
+2. Collect the distinct `estimate` objects. Each is
+   `{ "value": 3, "name": "M" }` — the team's real point values paired with the
+   team's real labels.
+3. Sort by `value` and propose a `days` figure per row from the cheat sheet
+   below, taking the midpoint of any range.
+4. Show the derived table; the user confirms or edits the `days` column.
+
+Labels and point values come from evidence, so only `days` is a judgment. A
+label of `-` maps to zero days and is not offered for editing — zero days is
+what it means.
 
 | Label | Points | Days |
 | --- | --- | --- |
@@ -248,20 +351,26 @@ taking the midpoint of any range:
 | XXL | 13 | ~2 weeks |
 | XXXL | 21 | 3+ weeks |
 
-When the scale is not exposed through MCP, present this mapping and ask the user
-to confirm or edit it. Either way the derived table is shown before it is
-written — the user confirms the numbers, the skill never assumes them silently.
+When the sample turns up no estimates at all, present this full table, say that
+no sized issues were found to derive from, and ask the user to confirm or edit
+it. Either way the table is shown before it is written — the user confirms the
+numbers, the skill never assumes them silently.
 
-A team using raw Fibonacci or a custom scale keeps its own point keys; only the
-labels and day values need agreeing on.
+A team using raw Fibonacci or a custom scale keeps its own point keys and
+labels; only the day values need agreeing on.
 
 ## 7. Capacity math
 
 Pure arithmetic over the fact sheet. No queries.
 
-**Load.** For each roster member, sum `capacity.sizes[estimate].days` over
-their issues in the target cycle. An issue with a null or zero estimate
-contributes `0` and increments that person's `unestimated` counter.
+**Load.** For each roster member, sum `capacity.sizes[estimate.value].days`
+over their issues in the target cycle. An issue with no `estimate` key
+contributes `0` and increments that person's `unestimated` counter. An issue
+whose `estimate.value` is `0` contributes `0` and does **not** increment it —
+it is sized, and the answer was zero. An issue whose `estimate.value` has no
+entry in `capacity.sizes` contributes `0`, increments `unestimated`, and adds a
+blind spot naming the unmapped value; this happens when a team extends its scale
+after `init` ran.
 
 **Available days.** Start at the cycle's weekday count, from Linear's start and
 end dates. For each on-call shift mapped to that person, subtract the count of
@@ -307,10 +416,10 @@ Every flag below fires from the fact sheet alone.
 | --- | --- | --- | --- | --- |
 | F1 | over capacity | `load > available` | capacity-table verdict | prep |
 | F2 | empty | roster member with zero issues in the target cycle | capacity-table verdict | prep |
-| F3 | no estimate | assigned target-cycle issue with null or zero estimate | own section | prep, review |
+| F3 | no estimate | assigned target-cycle issue with no `estimate` key | own section | prep, review |
 | F4 | needs split | target-cycle issue labelled `XL` or larger | own section | prep |
-| F5 | unassigned in cycle | target-cycle issue with no assignee | own section | prep |
-| F6 | carryover | issue in the carryover source cycle that never completed | own section | prep, review |
+| F5 | unassigned in cycle | target-cycle issue with no `assignee` key | own section | prep |
+| F6 | carryover | unfinished work that crossed a cycle boundary, per [carryover](#54-carryover) | own section | prep, review |
 | F7 | backlog readiness | per in-scope project, see below | own section | prep |
 | F8 | unlisted contributor | target-cycle assignee absent from the roster | own section | prep |
 
@@ -326,13 +435,19 @@ being planned, not the one already closed.
 sized and committed but sit in nobody's load, so without the total they are the
 one pool of cycle work that no figure in the report accounts for.
 
-**F6 carryover** subdivides by why it did not land, using state type:
+**F6 carryover** subdivides by why it did not land, using state type and the
+boundary comparison in [carryover](#54-carryover):
 
-- **never started** — state type `backlog` or `unstarted`. The sharpest signal:
-  it was planned, and nothing happened.
-- **in progress** — state type `started`. Rendered with days-in-state.
+- **never started** — state type `backlog` or `unstarted`, created before the
+  boundary. The sharpest signal: it was planned, and nothing happened.
+- **in progress** — state type `started`, work began before the boundary.
+  Rendered with days since `startedAt`.
 - **in review** — a `started` state whose name matches review wording, when the
-  team has one. Rendered with days-in-state.
+  team has one. Rendered with days since `startedAt`.
+
+The heading carries the authoritative issue count from the cycle's history
+arrays, so it can exceed the number of issues named beneath it; the shortfall is
+a footer blind spot.
 
 **F7 backlog readiness** classifies each in-scope project's issues that are in
 no cycle across two axes, assigned and sized:
@@ -553,8 +668,9 @@ conditions can be checked against a known input without a live workspace.
 - Add `skills/cyclotic/` per the layout above.
 - Delete `skills/linearazor/` in full.
 - Delete the five `linearazor` design specs under `docs/superpowers/specs/`
-  (`2026-05-13`, `2026-05-14`, and three dated `2026-05-19`). They document a
-  skill that no longer exists; git history retains them.
+  (`2026-05-13`, `2026-05-14`, and three dated `2026-05-19`), and the
+  implementation plan at `docs/superpowers/plans/2026-05-14-linearazor.md`. They
+  document a skill that no longer exists; git history retains them.
 - Replace the `linearazor` row in the top-level `README.md` skills table with a
   `cyclotic` row.
 
