@@ -16,8 +16,14 @@ claude mcp add linear --transport sse https://mcp.linear.app/sse
 ```
 
 Optional: incident.io MCP, for deducting on-call rotation weeks from a
-person's available days. Without it the report still runs and the footer says
-rotations were not checked.
+person's available days:
+
+```bash
+claude mcp add incident-io --transport http https://mcp.incident.io/mcp
+```
+
+Without it the report still runs and the footer says rotations were not
+checked.
 
 ## What it answers
 
