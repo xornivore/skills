@@ -46,8 +46,15 @@ Requires Linear MCP:
 claude mcp add linear --transport sse https://mcp.linear.app/sse
 ```
 
-On-call deduction additionally requires incident.io MCP. It is optional —
-see [ingest.md](./references/ingest.md).
+On-call deduction additionally requires incident.io MCP, which is optional:
+
+```bash
+claude mcp add incident-io --transport http https://mcp.incident.io/mcp
+```
+
+Without it the report still runs, no rotation days come off anyone's available
+days, and the footer says rotations were not checked — see
+[ingest.md](./references/ingest.md).
 
 ## When to use
 
