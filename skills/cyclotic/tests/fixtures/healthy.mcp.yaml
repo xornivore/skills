@@ -39,7 +39,7 @@ list_cycles_current:
     completedIssueCountHistory: [0, 2]
     issueCountHistory: [18, 18]
     completedScopeHistory: [0, 5]
-    scopeHistory: [61, 61]
+    scopeHistory: [60, 60]
     isCurrent: true
 
 # list_cycles(teamId, type: previous) — closed, so only completed/canceled
@@ -61,10 +61,12 @@ list_projects:
 
 # list_issues(cycle: current.id)
 target_cycle_issues:
-  - { id: ENG-301, title: shard the write path,     estimate: { value: 8, name: XL }, assignee: Avery Stone,  status: In Progress, statusType: started,   project: Ingest v2,      startedAt: "2026-09-08T09:00:00.000Z", createdAt: "2026-09-02T09:00:00.000Z" }
+  # Nothing here is XL or larger. This fixture must fire no flag at all, and
+  # F4 fires on the LABEL, so a single XL would break that.
+  - { id: ENG-301, title: shard the write path,     estimate: { value: 5, name: L }, assignee: Avery Stone,  status: In Progress, statusType: started,   project: Ingest v2,      startedAt: "2026-09-08T09:00:00.000Z", createdAt: "2026-09-02T09:00:00.000Z" }
   - { id: ENG-302, title: backfill tooling,         estimate: { value: 5, name: L },  assignee: Avery Stone,  status: Todo,        statusType: unstarted, project: Ingest v2,      createdAt: "2026-09-02T09:10:00.000Z" }
-  - { id: ENG-303, title: metrics for the shard cut, estimate: { value: 2, name: S },  assignee: Avery Stone,  status: Todo,        statusType: unstarted, project: Ingest v2,      createdAt: "2026-09-02T09:20:00.000Z" }
-  - { id: ENG-304, title: rename the config key,    estimate: { value: 1, name: XS }, assignee: Avery Stone,  status: Todo,        statusType: unstarted, project: Ingest v2,      createdAt: "2026-09-02T09:30:00.000Z" }
+  - { id: ENG-303, title: metrics for the shard cut, estimate: { value: 3, name: M },  assignee: Avery Stone,  status: Todo,        statusType: unstarted, project: Ingest v2,      createdAt: "2026-09-02T09:20:00.000Z" }
+  - { id: ENG-304, title: rename the config key,    estimate: { value: 2, name: S }, assignee: Avery Stone,  status: Todo,        statusType: unstarted, project: Ingest v2,      createdAt: "2026-09-02T09:30:00.000Z" }
 
   - { id: ENG-305, title: retry budget,             estimate: { value: 5, name: L },  assignee: Blake Ruiz,   status: Todo,        statusType: unstarted, project: Gateway rework, createdAt: "2026-09-02T10:00:00.000Z" }
   - { id: ENG-306, title: drop the dead header,     estimate: { value: 1, name: XS }, assignee: Blake Ruiz,   status: Todo,        statusType: unstarted, project: Gateway rework, createdAt: "2026-09-02T10:10:00.000Z" }
@@ -84,8 +86,14 @@ target_cycle_issues:
 # Prior cycle queried for un-rolled leftovers: empty, as a closed cycle is.
 prior_cycle_incomplete_issues: []
 
-# No issue in the current cycle has startedAt before 2026-09-07, so nothing
-# classifies as carryover.
+# Nothing classifies as carryover, on both tests:
+#   in_flight     = cycle 51 startsAt = 2026-09-07. ENG-301 is the only started
+#                   issue and it began Sep 8, after the cycle opened.
+#   never_started = cycle 50 startsAt = 2026-08-24. Every ticket was created
+#                   Sep 2, well after that, so all of it is work planned into
+#                   cycle 51 during cooldown.
+# Testing created_at against cycle 51's start instead would match all 15
+# unstarted tickets and report this balanced cycle as almost entirely carryover.
 
 # list_issues(project) filtered client-side to issues with NO cycleId key
 backlog_by_project:
@@ -106,9 +114,10 @@ oncall_shifts:
     end: "2026-09-12T00:00:00.000Z"       # Mon Sep 7 - Fri Sep 11, 5 weekdays
 
 expected:
+  header: "CYCLE 51  prep   Sep 7-20   10 working days"
   working_days: 10          # Sep 7 (Mon) - Sep 20 (Sun); Sep 7-11 + Sep 14-18
   capacity:
-    # Avery: XL 5 + L 3.5 + S 1 + XS 0.5 = 10.0 against 10.0
+    # Avery: L 3.5 + L 3.5 + M 2 + S 1 = 10.0 against 10.0
     - { person: Avery, load: 10.0, available: 10.0, delta:  0.0, verdict: full }
     # Blake: L 3.5 + XS 0.5 = 4.0 against 10 - 5 rotation = 5.0
     - { person: Blake, load:  4.0, available:  5.0, delta: -1.0, verdict: UNDER,
@@ -124,6 +133,10 @@ expected:
     - { project: Gateway rework, ready: 3, unsized: 0, owned_unsched: 0 }
   footer:
     - "rotations checked: Interrupts."
+    # Renders even though the bucket came back empty. An empty bucket is
+    # exactly the case a reader would otherwise take as proof.
+    - "never-started carryover is inferred from creation date; an issue created
+       during cycle 50 and never started cannot be told apart from new work."
   notes: >
     The capacity table still renders even though every row is unremarkable —
     four balanced rows are the answer to "is this cycle allocated." No other

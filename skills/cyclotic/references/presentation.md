@@ -11,15 +11,34 @@ No queries in this phase. Everything rendered here comes from the fact sheet.
 2. **Capacity table** — one row per roster member: load, available, signed
    delta, verdict, notes.
 3. **CARRYOVER FROM prior-cycle** — grouped never-started, in-progress,
-   in-review.
-4. **NO ESTIMATE** — identifier and assignee.
+   in-review. Headed `ALREADY IN FLIGHT` in `prep next`.
+4. **NO ESTIMATE** — identifier, assignee, title.
 5. **NEEDS SPLIT** — identifier, assignee, size, title.
-6. **UNASSIGNED IN CYCLE** — identifier and size, with the day total in the
+6. **UNASSIGNED IN CYCLE** — identifier, size, title, with the day total in the
    heading.
 7. **BACKLOG BEHIND THE CYCLE** — readiness table, one row per project, with a
    trailing list of the owned-but-unscheduled identifiers.
-8. **UNLISTED IN ROSTER** — name and issue count.
+8. **UNLISTED IN ROSTER** — name, issue count, day total.
 9. **Footer** — blind spots.
+
+Every section that names an issue renders its title. Titles arrive in the same
+query as the estimate, so they cost nothing, and an identifier alone cannot be
+discussed without opening Linear — which defeats the point of a report someone
+reads during planning.
+
+### Header date range
+
+Render the cycle's **calendar** range, from `first_day` to `last_day`. The
+working-day count is stated beside it and does the other job.
+
+Correct: `CYCLE 47  prep   Aug 3-16   10 working days`
+
+Wrong: `CYCLE 47  prep   Aug 3-14   10 working days` — Aug 14 is the last
+weekday, not the last day. It silently contradicts `last_day` in the fact sheet
+and makes the cycle look shorter than Linear shows it.
+
+Use `Mon D-D` inside one month and `Mon D-Mon D` across a boundary, as in
+`Jul 20-Aug 2`.
 
 Omit empty sections entirely. The capacity table is the exception: in `prep` it
 renders even when every row is unremarkable, because a table of four `full`
@@ -59,6 +78,12 @@ Correct, for `cyclotic prep for chen`: Chen's row, Chen's issues, the
 Wrong: the full four-row capacity table with Chen's row marked, which invites
 exactly the comparison the rule exists to prevent.
 
+## Verbose and drill-down runs
+
+Verbose runs, the full ticket inventory, and `explain` requests have their own
+layouts in [verbose.md](./verbose.md). Load that file only when the run asks for
+one; a plain `prep` never needs it.
+
 ## Column alignment
 
 Use a fixed-width block for the capacity table and the readiness table.
@@ -73,30 +98,31 @@ a `d` suffix, so `6d` renders as `6.0d`.
 ## Reference layout
 
 ```text
-CYCLE 47  prep   Aug 3-14   10 working days
+CYCLE 47  prep   Aug 3-16   10 working days
 
                 load     avail     delta  verdict  notes
- Avery          6.0d     10.0d      -4.0  UNDER
- Blake          4.0d      5.0d      -1.0  UNDER    oncall: Interrupts Aug 4-8
+ Avery          9.0d     10.0d      -1.0  UNDER
+ Blake          0.0d     10.0d            EMPTY
  Chen           6.0d+    10.0d            UNDER?   3 unestimated
  Dara          14.5d     10.0d      +4.5  OVER
 
-CARRYOVER FROM 46 (6)
-  never started (3)
-    ENG-155  Blake   M    "retry budget for ingest"
-  in progress (2)
-    ENG-160  Avery   L    9d since started
-  in review (1)
-    ENG-171  Chen    S    4d since started
+CARRYOVER FROM 46 (2)
+  never started (1)
+    ENG-155  Avery   M    "retry budget for ingest"
+  in progress (1)
+    ENG-160  Avery   S    7d since started
 
 NO ESTIMATE (3)
-  ENG-201 Chen · ENG-233 Chen · ENG-240 Chen
+  ENG-201  Chen  "token refresh race"
+  ENG-233  Chen  "audit the scope claims"
+  ENG-240  Chen  "rotate the signing key"
 
 NEEDS SPLIT (1)
   ENG-190  Dara  XXL  "rewrite ingest pipeline"
 
 UNASSIGNED IN CYCLE (2, 3.0d)
-  ENG-244  M · ENG-249  S
+  ENG-244  M  "cache the label lookup"
+  ENG-249  S  "trim the debug output"
 
 BACKLOG BEHIND THE CYCLE
                     ready   unsized   owned/unsched
@@ -105,35 +131,48 @@ BACKLOG BEHIND THE CYCLE
  Auth migration         0         6         1
   owned/unsched: ENG-248 Avery · ENG-251 Blake · ENG-263 Chen
 
-UNLISTED IN ROSTER (1)
-  Priya Raman  3 issues  — add to config?
+UNLISTED IN ROSTER (1, 3.5d)
+  Priya Raman  3 issues  3.5d  — add to config?
 
-rotations checked: Interrupts. 3 issues excluded from day totals for
-having no estimate.
+rotations not checked (no schedules configured); available days may be
+overstated. 3 issues excluded from day totals for having no estimate.
+never-started carryover is inferred from creation date; an issue created
+during cycle 46 and never started cannot be told apart from new work.
 ```
+
+This layout is the `messy` fixture rendered, so the arithmetic in it can be
+checked against `tests/fixtures/messy.mcp.yaml`.
 
 ## `review` reference layout
 
 ```text
-CYCLE 46  review   Jul 20-31   10 working days
+CYCLE 46  review   Jul 20-Aug 2   10 working days
 
-landed 28 of 48 issues, 41.0d of 79.5d+
+landed 7 of 14 issues, 15.0d of 24.5d+
 
-CARRYING INTO 47 (16 issues, 33 pts)
-  never started (7)
-    ENG-155  Blake   M    "retry budget for ingest"
-  in progress (5)
-    ENG-160  Avery   L    9d since started
+CARRYING INTO 47 (5 issues, 10 pts)
+  never started (2)
+    ENG-111  Blake   M    "retry budget"
+    ENG-252  Chen    --   "audit the scope claims"
+  in progress (1)
+    ENG-110  Chen    L    12d since started
   in review (1)
-    ENG-171  Chen    S    4d since started
+    ENG-112  Avery   S    6d since started
 
-NO ESTIMATE, SO UNCOUNTED (4)
-  ENG-201 Chen · ENG-233 Chen · ENG-240 Avery · ENG-252 Blake
+NO ESTIMATE, SO UNCOUNTED (1)
+  ENG-252  Chen  "audit the scope claims"
 
-3 issues left cycle 46 that could not be matched to a named ticket.
+1 issue left cycle 46 that could not be matched to a named ticket.
 rotations not checked (incident.io MCP not installed); available days
-may be overstated.
+may be overstated. 1 issue excluded from day totals for having no
+estimate. never-started carryover is inferred from creation date; an
+issue created during cycle 46 and never started cannot be told apart
+from new work.
 ```
+
+The heading says 5 issues while 4 are named, because the heading count is
+authoritative and the fifth cannot be attributed. The footer carries the gap.
+This layout is the `cycle-close` fixture rendered.
 
 ## Footer wording
 
@@ -147,6 +186,13 @@ One line per blind spot, and only when true. Fixed wording so it is greppable:
 | backlog truncated | `backlog query truncated at the page cap for PROJECTS.` |
 | roster unresolved | `roster names not resolved to a Linear user: NAMES.` |
 | carryover unattributed | `N issues left cycle NUMBER that could not be matched to a named ticket.` |
+| carryover overshoot | `N classified issues exceed the NUMBER that left cycle NUMBER; some are not carryover.` |
+| never-started inferred | `never-started carryover is inferred from creation date; an issue created during cycle NUMBER and never started cannot be told apart from new work.` |
+| no prior cycle | `no prior cycle, so never-started carryover was not checked.` |
 | unmapped size | `estimate value N has no entry in capacity.sizes; counted as unknown.` |
+
+The never-started line renders whenever that bucket is evaluated, hit or miss.
+An empty bucket is exactly the case a reader would otherwise take as proof that
+nothing was left unstarted.
 
 See [hard rule 6](../SKILL.md#6-state-blind-spots-once).

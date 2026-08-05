@@ -37,17 +37,25 @@ rotation split across two cycles costs each cycle only its own days.
 
 ## Verdict
 
-In precedence order:
+In precedence order, where `unestimated` is that person's count of issues with
+no `estimate` key:
 
 | Verdict | Condition |
 | --- | --- |
 | `EMPTY` | zero issues in the target cycle |
-| `OVER` | load is greater than available |
-| `full` | load equals available |
-| `UNDER` | load is less than available |
+| `OVER` | `unestimated` is zero and load is greater than available |
+| `OVER` | `unestimated` is above zero and load is greater than **or equal to** available |
+| `full` | `unestimated` is zero and load equals available |
+| `UNDER` | `unestimated` is zero and load is less than available |
+| `UNDER?` | `unestimated` is above zero and load is less than available |
 
 `EMPTY` outranks `UNDER`. Having no work at all is a different problem from
 having light work, and collapsing the two hides the person nobody planned for.
+
+`full` requires `unestimated` to be zero. A person whose sized work exactly
+fills the cycle and who also holds unsized tickets is not full — they are over
+by an unknown amount, so the verdict is `OVER`. Reporting `full` there would
+read as a cycle in balance.
 
 There is no tolerance band and no configurable threshold. Render the signed
 delta next to the verdict so magnitude is visible without inventing a knob. A
@@ -59,9 +67,11 @@ row reading `-0.5 UNDER` is half a day short and needs no attention, while
 When a person's `unestimated` count is above zero:
 
 - Render their load with a trailing `+`, meaning "plus an unknown amount."
-- Render no signed delta. The real delta is unknown, and a number computed
-  over the sized issues alone is made up.
-- Render the verdict as `UNDER?` with the count, never a bare `UNDER`.
+- Render no signed delta, in any verdict. The real delta is unknown, and a
+  number computed over the sized issues alone is made up.
+- Render the count in the notes column.
+- Never render a bare `UNDER` or a `full`. Below available, the verdict is
+  `UNDER?`; at or above it, `OVER`.
 
 Correct:
 

@@ -33,8 +33,15 @@ config:
 
 mode: review
 run_date: 2026-08-03        # pinned so days-since-started is reproducible
-# review targets the most recently completed cycle: list_cycles type=previous.
-# The cycle work rolled INTO is the active one, so the heading names cycle 47.
+# One list_cycles(teamId) call returns both cycles below; `type` is omitted.
+# Sorted by startsAt, the isCurrent entry is cycle 47 and review targets the
+# entry before it. The cycle work rolled INTO is the active one, so the
+# heading names cycle 47.
+#
+# Both review boundaries are cycle 46's endsAt, 2026-08-03T05:00:00Z: work in
+# flight is proven by startedAt before it, never-started is inferred from
+# createdAt before it. Unlike prep, one boundary serves both, because "before
+# this cycle ended" genuinely means "existed while it ran."
 
 list_cycles_previous:                     # TARGET
   - id: dddddddd-0000-0000-0000-000000000000
@@ -102,6 +109,7 @@ team_review_state_names: [In Review]
 oncall_shifts: []            # incident.io MCP unavailable in this fixture
 
 expected:
+  header: "CYCLE 46  review   Jul 20-Aug 2   10 working days"
   working_days: 10          # Jul 20 (Mon) - Aug 2 (Sun)
   landed:
     # Numerator: cycle 46 members with statusType completed = 7.
@@ -116,7 +124,10 @@ expected:
     days: "15.0d of 24.5d+"
   carryover:
     # Heading count and point total come from the cycle's own history:
-    # 14 at close minus 9 current members = 5 issues left; 39 - 29 = 10 pts.
+    #   issues: issueCountHistory last (14) - current members (9)      = 5
+    #   points: scopeHistory last (39) - points now in the cycle (29)  = 10
+    # The 29 is 3+5+2+1+3+8+2+3+2 over the nine issues still in cycle 46.
+    # Points, not days: a summed point total cannot be converted to days.
     heading: "CARRYING INTO 47 (5 issues, 10 pts)"
     never_started:
       - { id: ENG-111, assignee: Blake Ruiz, size: M, title: retry budget }
@@ -137,6 +148,8 @@ expected:
     - "rotations not checked (incident.io MCP not installed); available days may be overstated."
     - "1 issue excluded from day totals for having no estimate."
     - "1 issue left cycle 46 that could not be matched to a named ticket."
+    - "never-started carryover is inferred from creation date; an issue created
+       during cycle 46 and never started cannot be told apart from new work."
   sections_omitted: [capacity table, NEEDS SPLIT, UNASSIGNED IN CYCLE,
                      BACKLOG BEHIND THE CYCLE, UNLISTED IN ROSTER]
   traps:

@@ -1,11 +1,18 @@
 # Fixture: messy — over, empty, unsized, oversized, unassigned, unlisted.
 #
-# Exercises every prep-mode flag at once, plus the two traps that produce a
+# Exercises every prep-mode flag at once, plus the traps that produce a
 # plausible-looking wrong report:
 #   - ENG-260 is sized `-` (explicit zero). It must NOT count as unestimated,
 #     so Avery keeps a real delta.
 #   - Chen holds unestimated work, so Chen's load renders with `+`, the delta
 #     is suppressed, and the verdict is `UNDER?` — never a bare `UNDER`.
+#   - Every ordinary ticket here was created Aug 1, two days before the cycle
+#     started. That is normal planning, NOT carryover. Testing created_at
+#     against the TARGET cycle's start would report 17 of 20 tickets as
+#     carryover. The boundary is the PRIOR cycle's start, Jul 20.
+#   - ENG-155 and ENG-160 are the only real carryover, and they are found by
+#     two different tests: one inferred from created_at, one proven by
+#     started_at.
 
 config:
   group: infra
@@ -28,23 +35,31 @@ config:
     schedules: []            # empty: on-call lookup disabled entirely
 
 mode: prep
+run_date: 2026-08-04        # pinned so days-since-started is reproducible
 
+# One list_cycles(teamId) call returns both of these; `type` is omitted.
+# Sorted by startsAt, the isCurrent entry is the target and the one before it
+# is the prior cycle.
 list_cycles_current:
   - id: cccccccc-0000-0000-0000-000000000000
     title: FY27Q3-10
     number: 47
     startsAt: "2026-08-03T05:00:00.000Z"
     endsAt: "2026-08-17T05:00:00.000Z"     # exclusive: last day is Aug 16
+    # Today's snapshot, not a close value. prep reads none of these: the
+    # reconciliation is review-only, because the closed cycle is never
+    # queried in full here.
     completedIssueCountHistory: [0]
-    issueCountHistory: [14]
+    issueCountHistory: [20]
     completedScopeHistory: [0]
-    scopeHistory: [58]
+    scopeHistory: [57]
     isCurrent: true
 
 list_cycles_previous:
   - id: dddddddd-0000-0000-0000-000000000000
     title: FY27-9
     number: 46
+    # startsAt is the never-started carryover boundary for prep mode.
     startsAt: "2026-07-20T05:00:00.000Z"
     endsAt: "2026-08-03T05:00:00.000Z"
     completedIssueCountHistory: [0, 3, 8]
@@ -65,6 +80,12 @@ target_cycle_issues:
   - { id: ENG-206, title: drop the unused flag,    estimate: { value: 1, name: XS }, assignee: Avery Stone, status: Todo,        statusType: unstarted, project: Ingest v2, createdAt: "2026-08-01T09:20:00.000Z" }
   # Sized `-`: someone decided this costs nothing. Sized, not unestimated.
   - { id: ENG-260, title: close the stale ticket,  estimate: { value: 0, name: "-" }, assignee: Avery Stone, status: Todo,       statusType: unstarted, project: Ingest v2, createdAt: "2026-08-01T09:30:00.000Z" }
+  # CARRYOVER, never started: created Jul 15, before cycle 46 began on Jul 20.
+  # It has now sat through a whole cycle untouched. Inferred, not proven.
+  - { id: ENG-155, title: retry budget for ingest, estimate: { value: 3, name: M },  assignee: Avery Stone, status: Todo,        statusType: unstarted, project: Ingest v2, createdAt: "2026-07-15T09:00:00.000Z" }
+  # CARRYOVER, in progress: started Jul 28, before cycle 47 began on Aug 3.
+  # Proven by startedAt, so no inference is involved.
+  - { id: ENG-160, title: replay the dead letters, estimate: { value: 2, name: S },  assignee: Avery Stone, status: In Progress, statusType: started,   project: Ingest v2, startedAt: "2026-07-28T11:00:00.000Z", createdAt: "2026-07-25T09:00:00.000Z" }
 
   # Blake — no issues at all. Absence from this list is what fires F2.
 
@@ -90,10 +111,14 @@ target_cycle_issues:
   - { id: ENG-271, title: docs for the new flag,   estimate: { value: 1, name: XS }, assignee: Priya Raman, status: Todo, statusType: unstarted, project: Ingest v2, createdAt: "2026-08-01T14:10:00.000Z" }
   - { id: ENG-272, title: prune the old fixtures,  estimate: { value: 2, name: S }, assignee: Priya Raman, status: Todo, statusType: unstarted, project: Ingest v2, createdAt: "2026-08-01T14:20:00.000Z" }
 
+# Queried for issues that are neither completed nor canceled. Empty, because
+# cycle 46 is closed and Linear rolled its unfinished work into cycle 47.
 prior_cycle_incomplete_issues: []
 
-# No target-cycle issue has startedAt before 2026-08-03, and every unstarted
-# one was created after it, so no carryover classifies. Section omitted.
+# Carryover boundaries for this fixture:
+#   in_flight     = cycle 47 startsAt = 2026-08-03  (proven, via startedAt)
+#   never_started = cycle 46 startsAt = 2026-07-20  (inferred, via createdAt)
+# Only ENG-155 and ENG-160 cross them. The Aug 1 tickets do not.
 
 backlog_by_project:
   Gateway rework:
@@ -130,9 +155,10 @@ oncall_shifts: []            # schedules list is empty, so none fetched
 expected:
   working_days: 10          # Aug 3 (Mon) - Aug 16 (Sun)
   capacity:
-    # Avery: M 2 + L 3.5 + XS 0.5 + `-` 0 = 6.0. Sized `-` adds no
-    # unestimated count, so the delta is NOT suppressed.
-    - { person: Avery, load: 6.0,  available: 10.0, delta: -4.0, verdict: UNDER }
+    # Avery: M 2 + L 3.5 + XS 0.5 + `-` 0 + M 2 + S 1 = 9.0. Sized `-` adds no
+    # unestimated count, so the delta is NOT suppressed. The two carryover
+    # tickets are cycle members and count toward load like any other.
+    - { person: Avery, load: 9.0,  available: 10.0, delta: -1.0, verdict: UNDER }
     # Blake: zero issues. EMPTY outranks UNDER.
     - { person: Blake, load: 0.0,  available: 10.0, delta: null, verdict: EMPTY }
     # Chen: M 2 + L 3.5 + XS 0.5 = 6.0 sized, plus 3 with no estimate.
@@ -146,22 +172,47 @@ expected:
   unassigned_in_cycle:
     heading: "UNASSIGNED IN CYCLE (2, 3.0d)"   # M 2.0 + S 1.0
     issues: [ENG-244, ENG-249]
+  carryover:
+    # prep heading carries the CLASSIFIED count only. No reconciliation here:
+    # cycle 46 is never queried in full, so `issues_that_left` is unknowable.
+    heading: "CARRYOVER FROM 46 (2)"
+    never_started:
+      - { id: ENG-155, assignee: Avery Stone, size: M, title: retry budget for ingest }
+    in_progress:
+      - { id: ENG-160, assignee: Avery Stone, size: S, days_since_started: 7 }
+    in_review: []             # no review-state ticket crosses the boundary
+    # Created Aug 1, after cycle 46 started. Planned into 47, not carried over.
+    excluded: [ENG-204, ENG-205, ENG-206, ENG-260, ENG-210, ENG-211, ENG-212,
+               ENG-201, ENG-233, ENG-240, ENG-190, ENG-191, ENG-192, ENG-244,
+               ENG-249, ENG-270, ENG-271, ENG-272]
   unlisted_in_roster:
-    - { name: Priya Raman, issue_count: 3 }
+    # Day total in the heading: M 2.0 + XS 0.5 + S 1.0 = 3.5d, counted in no
+    # capacity row. Same reasoning as UNASSIGNED IN CYCLE.
+    heading: "UNLISTED IN ROSTER (1, 3.5d)"
+    people:
+      - { name: Priya Raman, issue_count: 3, days: 3.5 }
   backlog_readiness:
     projects:
       - { project: Gateway rework, ready: 3, unsized: 9, owned_unsched: 2, notes: no lead }
       - { project: Ingest v2,      ready: 4, unsized: 0, owned_unsched: 0 }
       - { project: Auth migration, ready: 0, unsized: 6, owned_unsched: 1 }
     owned_unsched_issues: ["ENG-248 Avery", "ENG-251 Blake", "ENG-263 Chen"]
-  sections_omitted: [CARRYOVER]
+  sections_omitted: []
+  header: "CYCLE 47  prep   Aug 3-16   10 working days"
   footer:
     - "rotations not checked (no schedules configured); available days may be overstated."
     - "3 issues excluded from day totals for having no estimate."
+    - "never-started carryover is inferred from creation date; an issue created
+       during cycle 46 and never started cannot be told apart from new work."
   traps:
     - ENG-260 is sized `-`. Counting it as unestimated would wrongly suppress
-      Avery's -4.0 delta and add a fourth entry to NO ESTIMATE.
+      Avery's -1.0 delta and add a fourth entry to NO ESTIMATE.
     - Chen's row must never render a bare `UNDER` or a computed delta. The
       three unestimated tickets could be anything from 1.5d to 30d.
     - Priya's 3 issues are 3.5d of committed work that appears in no capacity
-      row. Without F8 the report silently loses it.
+      row. Without F8 the report silently loses it, and without the day total
+      in the heading it understates the hole.
+    - Testing created_at against cycle 47's start instead of cycle 46's turns
+      17 ordinary tickets into carryover and buries the two real ones.
+    - The header renders the calendar range Aug 3-16, not the last weekday
+      Aug 14. The working-day count is stated separately.

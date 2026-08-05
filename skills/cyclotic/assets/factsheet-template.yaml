@@ -6,30 +6,47 @@
 
 mode: prep                    # prep | review
 filter_person: null           # set when the run is `for someone`
+verbosity: summary            # summary | verbose | inventory | explain
 
 cycle:                        # the TARGET cycle, resolved from Linear
   id: 364ef080-0000-0000-0000-000000000000
   number: 47
-  title: FY27Q3-10            # may be empty; fall back to the number
+  title: FY27Q3-10            # key absent when the cycle has no name; use number
   starts_at: 2026-08-03T05:00:00.000Z
   ends_at: 2026-08-17T05:00:00.000Z   # EXCLUSIVE: names the day after the last
   first_day: 2026-08-03
   last_day: 2026-08-16        # ends_at minus one day
   working_days: 10            # weekdays from first_day to last_day inclusive
-  # Last element of each history array is the value at cycle close.
-  issue_count_at_close: 48
-  completed_count_at_close: 28
-  scope_at_close: 102
-  completed_scope_at_close: 69
+  # Last element of each history array. Authoritative only for a CLOSED cycle;
+  # for the active one it is today's snapshot. All four are EMPTY for a cycle
+  # that has not started, so `prep next` leaves these null.
+  issue_count_at_close: null
+  completed_count_at_close: null
+  scope_at_close: null
+  completed_scope_at_close: null
 
-neighbour_cycle:              # named in the carryover heading
+prior_cycle:                  # the cycle before the target; null if none
   number: 46
   title: FY27-9
+  starts_at: 2026-07-20T05:00:00.000Z   # the never-started boundary in `prep`
+  ends_at: 2026-08-03T05:00:00.000Z
 
-carryover_source_cycle:       # the cycle work rolled OUT of
-  number: 46
-  issues_that_left: 16        # issue_count_at_close minus current members
-  attributed: 13              # classified below; difference is a blind spot
+next_cycle:                   # the cycle after the target; null if none
+  number: 48
+  title: FY27Q3-11
+
+carryover_boundaries:         # resolved once, so classification cannot drift
+  in_flight: 2026-08-03T05:00:00.000Z   # cycle.starts_at in prep, prior.ends_at in review
+  never_started: 2026-07-20T05:00:00.000Z  # prior.starts_at in prep, prior.ends_at in review
+  never_started_checked: true # false when there is no prior cycle, or in `prep next`
+
+reconciliation:               # REVIEW ONLY; null in prep, where the closed
+  cycle_number: 46            # cycle is never queried in full
+  issue_count_at_close: 14
+  current_members: 9
+  issues_that_left: 5         # the authoritative carryover count
+  attributed: 4               # classified below; difference is a blind spot
+  points_left: 10             # scope_at_close minus points of current members
 
 roster:
   - name: Avery Stone
@@ -77,8 +94,8 @@ roster:
     delta: -1.0
     oncall:
       - schedule: Interrupts
-        first_day: 2026-08-04
-        last_day: 2026-08-08
+        first_day: 2026-08-03   # Mon
+        last_day: 2026-08-07    # Fri
         weekdays_in_cycle: 5
         charged_days: 5       # capped at capacity.oncall_cost_days
     issues: []
@@ -87,15 +104,21 @@ unassigned_in_cycle:          # F5 — sized, committed, in nobody's load
   total_days: 3.0
   issues:
     - id: ENG-244
+      title: cache the label lookup
       estimate_label: M
       days: 2.0
+      project: Gateway rework
     - id: ENG-249
+      title: trim the debug output
       estimate_label: S
       days: 1.0
+      project: Gateway rework
 
 no_estimate:                  # F3 — no `estimate` key at all
   - id: ENG-201
+    title: token refresh race
     assignee: Chen Ito
+    project: Auth migration
 # A ticket sized `-` (estimate.value 0) is SIZED and never appears here.
 
 needs_split:                  # F4 — estimate_label XL or larger
@@ -105,21 +128,24 @@ needs_split:                  # F4 — estimate_label XL or larger
     title: rewrite ingest pipeline
 
 carryover:                    # F6 — read from the cycle work rolled INTO
-  never_started:
+  heading_count: 2            # classified count in prep; `issues_that_left` in review
+  never_started:              # INFERRED from created_at, never proven
     - id: ENG-155
-      assignee: Blake Ruiz
+      assignee: Avery Stone
       estimate_label: M
       title: retry budget for ingest
-      created_at: 2026-07-19T10:00:00.000Z
-  in_progress:
+      created_at: 2026-07-15T10:00:00.000Z   # before prior_cycle.starts_at
+  in_progress:                # PROVEN by started_at
     - id: ENG-160
       assignee: Avery Stone
-      estimate_label: L
-      days_since_started: 9   # from startedAt; no per-state timestamp exists
+      estimate_label: S
+      title: replay the dead letters
+      days_since_started: 7   # from startedAt; no per-state timestamp exists
   in_review:
     - id: ENG-171
       assignee: Chen Ito
       estimate_label: S
+      title: token refresh race
       days_since_started: 4
 
 projects:                     # F7 — every in-scope project, not only troubled
@@ -137,12 +163,20 @@ projects:                     # F7 — every in-scope project, not only troubled
 unlisted_contributors:        # F8 — cycle assignees absent from the roster
   - name: Priya Raman
     issue_count: 3
+    days: 3.5                 # in no capacity row; the heading carries it
+    issues:                   # needed by the verbose inventory
+      - id: ENG-270
+        title: split the ingest reader
+        estimate_label: M
+        days: 2.0
+        project: Ingest v2
 
 landed:                       # review mode only; TEAM LEVEL ONLY
-  issues_completed: 28
-  issues_total: 48            # from issue_count_at_close, NOT current members
-  days_completed: 41.0        # summed per issue; never from scope history
-  days_total: 79.5
+  issues_completed: 7
+  issues_total: 14            # from issue_count_at_close, NOT current members
+  days_completed: 15.0        # summed per issue; never from scope history
+  days_total: 24.5            # current members + sized attributed carryover
+  days_total_partial: true    # renders the `+`: unestimated or unattributed work
 
 blind_spots:                  # rendered one line each, only when true
   - kind: rotations_unchecked
@@ -150,5 +184,7 @@ blind_spots:                  # rendered one line each, only when true
   - kind: unestimated_excluded
     count: 3
   - kind: carryover_unattributed
-    count: 3
+    count: 1
+    cycle_number: 46
+  - kind: never_started_inferred
     cycle_number: 46

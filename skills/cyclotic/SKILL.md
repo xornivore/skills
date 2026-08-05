@@ -7,10 +7,13 @@ description: |
   did not finish last cycle, on-call rotation cost, and how groomed the
   backlog behind the cycle is. Invoke when the user says "cyclotic",
   "cyclotic prep", "cyclotic prep next", "cyclotic review", "cyclotic init",
-  "cyclotic configure", "cyclotic for" a person's name, or asks whether a
-  cycle or sprint is ready, who is over or under capacity, what carried over
-  from last cycle, which tickets still need estimates, or how the backlog
-  looks going into planning. Read-only against Linear.
+  "cyclotic configure", "cyclotic for" a person's name, "cyclotic show
+  cards", "cyclotic list tickets", "cyclotic explain" a person's name, or
+  adds "-v" or "verbose" to any of those. Also invoke when the user asks
+  whether a cycle or sprint is ready, who is over or under capacity, what
+  carried over from last cycle, which tickets still need estimates, how the
+  backlog looks going into planning, what is in the cycle and at what sizes,
+  or how one person's load adds up. Read-only against Linear.
 license: MIT
 compatibility: |
   Requires Linear MCP installed and authenticated. Optional: incident.io MCP
@@ -53,9 +56,12 @@ Invoke when the user:
 - Uses an explicit phrase: `cyclotic`, `cyclotic prep`, `cyclotic prep next`,
   `cyclotic review`, `cyclotic init`, `cyclotic configure`.
 - Adds a person filter: `cyclotic prep for avery`, `cyclotic review for avery`.
+- Asks for detail: `cyclotic prep -v`, `cyclotic show cards`,
+  `cyclotic list tickets`, `cyclotic explain chen`, `cyclotic why chen`.
 - Asks a planning question: "is this cycle ready", "who is overloaded this
   sprint", "what carried over from last cycle", "which tickets still need
-  estimates", "is the backlog groomed enough to plan from".
+  estimates", "is the backlog groomed enough to plan from", "show me the
+  tickets with their sizes", "how does Chen's load add up".
 
 Do not invoke for:
 
@@ -81,6 +87,18 @@ Parse the user message into a mode plus an optional person filter:
 
 Bare `cyclotic` with no mode word routes to `prep`.
 
+Three modifiers compose with any mode above. Each has its own layout in
+[verbose.md](./references/verbose.md), loaded only when one is present:
+
+| Modifier | Phrasings | Adds |
+| --- | --- | --- |
+| verbose | `-v`, `--verbose`, `verbose`, `in detail` | ticket inventory and per-person arithmetic, after the normal report |
+| inventory | `show cards`, `list tickets`, `list cards`, `with sizes` | the ticket inventory alone |
+| explain | `explain avery`, `why avery`, `break down avery` | one person's arithmetic alone |
+
+So `cyclotic review -v` is a verbose review and `cyclotic show cards for next`
+lists the next cycle's tickets.
+
 Match the person filter on first name or full name, case-insensitively,
 against the config roster. When one first name matches two roster members,
 ask which one — never guess. When nothing matches, exit with a one-line
@@ -105,7 +123,9 @@ When invoked in any non-setup mode, do these in order:
 4. **Fire flags.** Evaluate each flag against the fact sheet per
    [flags.md](./references/flags.md).
 5. **Render.** Emit sections in the order set by
-   [presentation.md](./references/presentation.md). Plain text only.
+   [presentation.md](./references/presentation.md). Plain text only. When the
+   run carries a verbose, inventory, or explain modifier, also load
+   [verbose.md](./references/verbose.md).
 6. **Footer.** State every blind spot accumulated during ingest, one line
    each, and only when true.
 
@@ -151,9 +171,27 @@ project-id set derived from config.
 When rendering needs a fact that is not in the fact sheet, that is an ingest
 bug. Fix it in ingest rather than reaching for another query.
 
+This holds after the report too. Keep the fact sheet for the rest of the
+conversation and answer follow-up questions from it — it carries every ticket's
+project, status, timestamps, and day value, which is far more than any layout
+renders. Answer in a sentence or a few rows rather than re-rendering the report.
+
+A question the fact sheet cannot answer is a **new run**, not a new query. Name
+the mode that would answer it and offer to run it.
+
+Correct: asked mid-conversation "what project is `ENG-233` in?", answer from the
+fact sheet.
+
+Correct: asked "what did Chen finish last cycle?" during a `prep` run, say the
+run holds only the active cycle and offer `cyclotic review`.
+
+Wrong: querying the previous cycle mid-conversation to answer it, which mixes
+two ingest passes in one thread with nothing marking the seam.
+
 **Audit:** [presentation.md](./references/presentation.md),
-[capacity.md](./references/capacity.md), and
-[flags.md](./references/flags.md) contain no instruction to call Linear or
+[capacity.md](./references/capacity.md),
+[flags.md](./references/flags.md), and
+[verbose.md](./references/verbose.md) contain no instruction to call Linear or
 incident.io MCP.
 
 ### 4. Unestimated work never reads as spare capacity
@@ -164,11 +202,17 @@ unestimated tickets understates reality, and rendering it bare invites the
 reader to hand that person more work.
 
 For any person holding unestimated tickets, render load with a trailing `+`,
-suppress the signed delta, and render the verdict as `UNDER?` with the count.
+suppress the signed delta, and put the count in the notes column. Their verdict
+is never a bare `UNDER` and never `full`: below available it is `UNDER?`, and at
+or above it, `OVER` — unknown work can only push a full cycle further over.
 
 Correct: `Chen   6.0d+   10.0d           UNDER?   3 unestimated`
 
+Correct: `Dara  14.5d+   10.0d           OVER     2 unestimated`
+
 Wrong: `Chen   6.0d    10.0d    -4.0   UNDER`
+
+Wrong: `Avery 10.0d+   10.0d            full     1 unestimated`
 
 A ticket sized `-` (Linear's explicit zero estimate) is **sized**, not
 unestimated. It contributes zero days and triggers none of this.
@@ -240,6 +284,7 @@ the Emoji property range.
 | Capacity math | [capacity.md](./references/capacity.md) |
 | Flags | [flags.md](./references/flags.md) |
 | Render | [presentation.md](./references/presentation.md) |
+| Render, when verbose or `show cards` or `explain` | [verbose.md](./references/verbose.md) |
 
 All references are one level deep from `SKILL.md`.
 

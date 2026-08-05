@@ -67,17 +67,26 @@ Wrong: `UNASSIGNED IN CYCLE (2)`
 
 ## F6 carryover
 
-Fires on unfinished work that crossed a cycle boundary, classified per
-[ingest.md](./ingest.md). Subdivide by why it did not land:
+Fires on unfinished work that crossed a cycle boundary. The boundary differs per
+mode and per bucket — take it from
+[classifying carryover](./ingest.md#classifying-carryover) rather than assuming
+one boundary serves all three:
 
 - **never started** — `statusType` of `backlog` or `unstarted`, created before
-  the boundary. The sharpest signal: it was planned, and nothing happened.
+  the **prior cycle's start** in `prep`, or before the target's end in `review`.
+  The sharpest signal: it was planned, and nothing happened. Inferred from
+  `createdAt`, not proven, so it always carries a footer caveat.
 - **in progress** — `statusType` of `started`, work began before the boundary.
+  Proven by `startedAt`.
 - **in review** — a `started` issue whose `status` matches the team's review
   wording, when the team has such a state.
 
 Order the buckets never-started, in-progress, in-review. Never-started leads
 because it is the one that needs a decision rather than a nudge.
+
+In `prep next` the section is headed `ALREADY IN FLIGHT` and carries no
+never-started bucket. Nothing has rolled out of the active cycle, because it has
+not closed.
 
 ### Days figure
 
@@ -100,12 +109,19 @@ the review state, which is not available.
 
 ### Heading
 
-Carry the issue count. In `review`, also carry the point total that left the
-cycle, taken from the cycle's own history arrays.
+In `prep`, carry the classified issue count. In `review`, carry the
+authoritative count and point total that left the cycle, both derived in
+[reconciling](./ingest.md#reconciling-against-the-cycles-own-totals) — the count
+is `left`, and the point total is `scopeHistory[last]` minus the points of the
+issues still in the cycle.
 
-When the reconciliation in [ingest.md](./ingest.md) shows fewer classified
-issues than the cycle's totals imply, the difference goes in the footer as a
-blind spot. Never pad the list to match the total.
+Correct, for `review`: `CARRYING INTO 47 (5 issues, 10 pts)`
+
+Correct, for `prep`: `CARRYOVER FROM 46 (6)`
+
+The `review` heading is authoritative, so it can exceed the number of issues
+named beneath it. That shortfall goes in the footer as a blind spot. Never pad
+the list to match the total.
 
 ## F7 backlog readiness
 
@@ -132,7 +148,17 @@ cell: each one is a decision someone already made and then dropped.
 
 Fires when a target-cycle issue's assignee is not in the config roster.
 
-Name the person, their issue count, and offer to add them to the roster.
+Name the person, their issue count, their day total, and offer to add them to
+the roster.
+
+Carry the **day total in the heading**, for the same reason F5 does: an unlisted
+contributor has no capacity row, so their committed work is counted nowhere else
+in the report. Reporting three issues without their 3.5 days hides the size of
+the hole.
+
+Correct: `UNLISTED IN ROSTER (1, 3.5d)`
+
+Wrong: `UNLISTED IN ROSTER (1)`
 
 Without this flag, someone who joins the team and is never added to `members`
 has their work dropped from every report, and nothing in the output says so.
@@ -147,6 +173,13 @@ automated suite. Read a fixture, run the arithmetic by hand, and compare.
 
 | Fixture | Expected |
 | --- | --- |
-| `healthy.mcp.yaml` | every row `full` or a small negative `UNDER`; no F3, F4, F5, F8; F7 shows non-zero `ready` for every project |
-| `messy.mcp.yaml` | one `OVER`, one `EMPTY`, one `UNDER?` with suppressed delta, F4 on one `XXL`, F5 with a day total, F8 naming one person |
+| `healthy.mcp.yaml` | every row `full` or a small negative `UNDER`; no F3, F4, F5, F6, F8; F7 shows non-zero `ready` for every project |
+| `messy.mcp.yaml` | one `OVER`, one `EMPTY`, one `UNDER?` with suppressed delta, F4 on one `XXL`, F5 and F8 both carrying a day total, F6 with exactly two issues out of twenty |
 | `cycle-close.mcp.yaml` | `review` mode; landed line denominator from `issueCountHistory`, not current members; carryover split across all three buckets; a reconciliation blind spot in the footer |
+
+The prep-mode carryover boundary is the one both prep fixtures are built to
+catch. `healthy` has 15 unstarted tickets and `messy` has 17, all created before
+their target cycle opened. Testing `createdAt` against the target's `startsAt`
+reports every one of them as carryover; testing it against the prior cycle's
+`startsAt` reports none in `healthy` and exactly the two planted in `messy`. A
+run that fires F6 on more than two tickets in `messy` has the wrong boundary.

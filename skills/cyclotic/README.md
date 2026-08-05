@@ -45,6 +45,18 @@ rotations were not checked.
 
 Bare `cyclotic` routes to `prep`.
 
+Three modifiers compose with any of those:
+
+| Modifier | What it adds |
+| --- | --- |
+| `-v`, `verbose` | The full ticket inventory and per-person arithmetic, after the normal report |
+| `show cards`, `list tickets` | The ticket inventory alone: every ticket with its size, days, status, and title |
+| `explain avery`, `why avery` | How one person's load adds up, including the available-day derivation and every ticket left out of the total |
+
+So `cyclotic review -v` is a verbose review, and `cyclotic show cards for next`
+lists the next cycle's tickets. Follow-up questions after a report are answered
+from the data already read, without querying Linear again.
+
 ## What it does not do
 
 It never writes to Linear, and it never judges a person. There are no
