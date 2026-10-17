@@ -1,0 +1,260 @@
+import importlib.util
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+
+import pytest
+
+
+SCRIPT = Path(__file__).resolve().parents[1] / "scripts/codex_review.py"
+SPEC = importlib.util.spec_from_file_location("codex_review", SCRIPT)
+REVIEW = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(REVIEW)
+HEAD = "a" * 40
+OLD_HEAD = "b" * 40
+BOT = "chatgpt-codex-connector[bot]"
+BEFORE = "2026-10-16T10:00:00Z"
+TRIGGER = "2026-10-16T10:01:00Z"
+AFTER = "2026-10-16T10:05:00Z"
+NOW = datetime(2026, 10, 16, 10, 2, tzinfo=timezone.utc)
+
+
+def summary(status="completed", findings=False, commit=HEAD, **overrides):
+    state = {"code_review": {"commit_sha": commit, "has_any_findings": findings,
+                             "has_unresolved_findings": findings, "status": status}}
+    body = (f"{REVIEW.SUMMARY_MARKER}\n<!-- codex-review-state:v1 {json.dumps(state)} -->\n\n"
+            "## Codex Review Summary\n")
+    return {"id": 10, "user": {"login": BOT}, "updated_at": AFTER, "body": body,
+            "html_url": "https://github.com/o/r/pull/1#issuecomment-10", **overrides}
+
+
+def receipt(commit=HEAD[:10], **overrides):
+    body = ("<!-- codex-review-receipt:v1 -->\n\nCodex Review: Didn’t find any major issues. "
+            f"Keep them coming!\n\n**Reviewed commit:** `{commit}`\n")
+    return {"id": 20, "user": {"login": BOT}, "updated_at": AFTER, "body": body, **overrides}
+
+
+def review(**overrides):
+    body = "### 💡 Codex Review\n\n**Reviewed commit:** `aaaaaaaaaa`\n"
+    return {"id": 30, "user": {"login": BOT}, "commit_id": HEAD, "submitted_at": AFTER,
+            "body": body, "html_url": "https://github.com/o/r/pull/1#pullrequestreview-30", **overrides}
+
+
+def attempt(**overrides):
+    return {
+        "status": "triggered", "repo": "owner/repo", "pr": 1, "head": HEAD,
+        "triggered_at": TRIGGER, "bots": [BOT], "comments": [], "reviews": [], "reactions": [],
+        **overrides,
+    }
+
+
+def evaluate(state=None, comments=(), reviews=(), reactions=()):
+    return REVIEW.evaluate(state or attempt(), HEAD, list(comments), list(reviews), list(reactions))
+
+
+def test_fresh_review_with_findings_is_not_clean():
+    result = evaluate(reviews=[review()], comments=[summary(findings=True)])
+    assert (result["status"], result["clean"], result["source_id"]) == ("review_ready", False, 30)
+
+
+def test_review_before_trigger_or_on_old_commit_is_ignored():
+    stale = [review(submitted_at=BEFORE), review(id=31, commit_id=OLD_HEAD)]
+    assert evaluate(reviews=stale)["status"] == "pending"
+
+
+def test_review_already_in_snapshot_is_ignored():
+    old = review()
+    assert evaluate(state=attempt(reviews=[old]), reviews=[old])["status"] == "pending"
+
+
+def test_clean_receipt_for_head_is_clean():
+    result = evaluate(comments=[receipt()])
+    assert (result["status"], result["clean"], result["source"]) == ("review_ready", True, "comment")
+
+
+def test_clean_receipt_for_other_commit_is_ignored():
+    assert evaluate(comments=[receipt(commit=OLD_HEAD[:10])])["status"] == "pending"
+
+
+def test_completed_summary_without_findings_is_clean():
+    result = evaluate(comments=[summary()])
+    assert (result["clean"], result["source"]) == (True, "summary")
+
+
+def test_completed_summary_with_findings_waits_for_the_review():
+    result = evaluate(comments=[summary(findings=True)])
+    assert result["status"] == "pending"
+
+
+def test_running_summary_keeps_waiting():
+    assert evaluate(comments=[summary(status="running")])["reason"] == "Codex review is running"
+
+
+def test_summary_for_another_commit_cannot_complete_the_attempt():
+    assert evaluate(comments=[summary(commit=OLD_HEAD)])["status"] == "pending"
+
+
+def test_unchanged_summary_body_cannot_refresh_an_old_result():
+    old = summary(updated_at=BEFORE)
+    edited = summary()  # same body, newer timestamp
+    assert evaluate(state=attempt(comments=[old]), comments=[edited])["status"] == "pending"
+
+
+def test_failed_summary_stops():
+    with pytest.raises(REVIEW.ReviewError, match="failed review"):
+        evaluate(comments=[summary(status="failed", findings=True)])
+
+
+def test_usage_limit_comment_stops():
+    limit = {"id": 40, "user": {"login": BOT}, "updated_at": AFTER,
+             "body": "You have reached your Codex usage limits for code reviews."}
+    with pytest.raises(REVIEW.ReviewError, match="usage limit"):
+        evaluate(comments=[limit])
+
+
+def test_non_bot_comments_are_ignored():
+    impostor = receipt(user={"login": "someone"})
+    assert evaluate(comments=[impostor])["status"] == "pending"
+
+
+def test_new_thumbs_up_reaction_is_a_clean_fallback():
+    reaction = {"id": 50, "content": "+1", "user": {"login": BOT}, "created_at": AFTER}
+    result = evaluate(reactions=[reaction])
+    assert (result["clean"], result["source"]) == (True, "reaction")
+
+
+def test_old_thumbs_up_reaction_is_ignored():
+    reaction = {"id": 50, "content": "+1", "user": {"login": BOT}, "created_at": BEFORE}
+    assert evaluate(state=attempt(reactions=[reaction]), reactions=[reaction])["status"] == "pending"
+
+
+def test_changed_head_is_an_error():
+    with pytest.raises(REVIEW.ReviewError, match="head changed"):
+        REVIEW.evaluate(attempt(head=OLD_HEAD), HEAD, [], [], [])
+
+
+def test_finding_parses_badge_title_and_location():
+    comment = {
+        "body": "**<sub><sub>![P1 Badge](https://img.shields.io/badge/P1-orange?style=flat)</sub></sub>"
+                "  Reconcile when the base SHA changes**\n\nExplanation.\n\nUseful? React with 👍 / 👎.",
+        "path": "src/a.py", "line": None, "original_line": 12, "html_url": "u",
+    }
+    assert REVIEW.finding(comment) == {
+        "severity": "P1", "title": "Reconcile when the base SHA changes",
+        "path": "src/a.py", "line": 12, "url": "u",
+    }
+
+
+class FakeGitHub:
+    def __init__(self, comments=(), reviews=(), reactions=(), heads=None):
+        self.comments, self.reviews, self.reactions = list(comments), list(reviews), list(reactions)
+        self.heads = list(heads or [])
+        self.posted = []
+
+    def head(self, repo, pr):
+        return self.heads.pop(0) if self.heads else HEAD
+
+    def snapshot(self, repo, pr):
+        return {"comments": list(self.comments), "reviews": list(self.reviews), "reactions": list(self.reactions)}
+
+    def command(self, *args):
+        self.posted.append(args)
+        return {"id": 99, "created_at": TRIGGER}
+
+    def review_comments(self, repo, pr, review_id):
+        return [{"body": "**![P2 Badge](x) Tidy up**", "path": "a.py", "line": 3, "html_url": "c"}]
+
+
+def test_start_posts_trigger_and_records_attempt(tmp_path):
+    github = FakeGitHub()
+    output = tmp_path / "attempt.json"
+    result = REVIEW.start(github, "o/r", 1, output, [BOT], focus="for security", now=lambda: NOW)
+    assert result["mode"] == "posted" and result["triggered_at"] == TRIGGER
+    assert github.posted[0][-1] == "body=@codex review for security"
+    assert json.loads(output.read_text())["trigger_id"] == 99
+
+
+def test_start_refuses_to_overwrite_an_attempt(tmp_path):
+    output = tmp_path / "attempt.json"
+    output.write_text("{}")
+    with pytest.raises(FileExistsError):
+        REVIEW.start(FakeGitHub(), "o/r", 1, output, [BOT], now=lambda: NOW)
+
+
+def test_start_adopts_a_running_review_of_the_same_head(tmp_path):
+    running = summary(status="running", updated_at="2026-10-16T10:01:30Z")
+    github = FakeGitHub(comments=[running])
+    result = REVIEW.start(github, "o/r", 1, tmp_path / "a.json", [BOT], now=lambda: NOW)
+    assert (result["mode"], result["triggered_at"]) == ("adopted", "2026-10-16T10:01:30Z")
+    assert github.posted == []
+
+
+def test_start_refuses_while_an_older_commit_is_under_review(tmp_path):
+    running = summary(status="running", commit=OLD_HEAD, updated_at="2026-10-16T10:01:30Z")
+    output = tmp_path / "a.json"
+    with pytest.raises(REVIEW.ReviewError, match="still reviewing"):
+        REVIEW.start(FakeGitHub(comments=[running]), "o/r", 1, output, [BOT], now=lambda: NOW)
+    assert not output.exists()
+
+
+def test_start_ignores_a_stuck_running_review(tmp_path):
+    running = summary(status="running", commit=OLD_HEAD, updated_at="2026-10-16T08:00:00Z")
+    github = FakeGitHub(comments=[running])
+    assert REVIEW.start(github, "o/r", 1, tmp_path / "a.json", [BOT], now=lambda: NOW)["mode"] == "posted"
+
+
+def test_start_releases_reservation_when_head_moves(tmp_path):
+    output = tmp_path / "a.json"
+    with pytest.raises(REVIEW.ReviewError, match="before the trigger"):
+        REVIEW.start(FakeGitHub(heads=[HEAD, OLD_HEAD]), "o/r", 1, output, [BOT], now=lambda: NOW)
+    assert not output.exists()
+
+
+def test_wait_attaches_inline_findings():
+    github = FakeGitHub(reviews=[review()])
+    result = REVIEW.wait_for_review(github, attempt(), timeout=1, interval=1)
+    assert result["findings"] == [{"severity": "P2", "title": "Tidy up", "path": "a.py", "line": 3, "url": "c"}]
+
+
+def test_wait_times_out_with_reason():
+    ticks = iter([0, 0, 5])
+    with pytest.raises(REVIEW.ReviewError, match="timed out"):
+        REVIEW.wait_for_review(FakeGitHub(), attempt(), timeout=1, interval=1,
+                               clock=lambda: next(ticks), sleep=lambda _: None)
+
+
+def test_wait_requires_a_confirmed_trigger():
+    with pytest.raises(REVIEW.ReviewError, match="no confirmed trigger"):
+        REVIEW.wait_for_review(FakeGitHub(), attempt(status="preparing"), timeout=1, interval=1)
+
+
+class FakeGraphQL:
+    def __init__(self, pages):
+        self.pages = list(pages)
+        self.calls = []
+
+    def graphql(self, query, **variables):
+        self.calls.append(variables)
+        return self.pages.pop(0)
+
+
+def thread(id, resolved=False, author="chatgpt-codex-connector"):
+    return {"id": id, "isResolved": resolved, "isOutdated": False, "path": "a.py", "line": 1,
+            "comments": {"nodes": [{"body": "**![P1 Badge](x) Bug**", "url": "u", "createdAt": AFTER,
+                                    "author": {"login": author}}]}}
+
+
+def page(nodes, next_cursor=None):
+    info = {"hasNextPage": next_cursor is not None, "endCursor": next_cursor}
+    return {"data": {"repository": {"pullRequest": {"reviewThreads": {"pageInfo": info, "nodes": nodes}}}}}
+
+
+def test_threads_paginates_and_keeps_only_unresolved_codex_threads():
+    github = FakeGraphQL([
+        page([thread("T1"), thread("T2", resolved=True)], next_cursor="c1"),
+        page([thread("T3", author="human"), thread("T4")]),
+    ])
+    result = REVIEW.unresolved_threads(github, "o/r", 1, [BOT])
+    assert [item["id"] for item in result] == ["T1", "T4"]
+    assert result[0]["severity"] == "P1"
+    assert github.calls[1]["cursor"] == "c1"

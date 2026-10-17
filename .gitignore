@@ -14,3 +14,7 @@ node_modules/
 # skills CLI local installs
 .claude/
 skills-lock.json
+
+# python
+__pycache__/
+.pytest_cache/
