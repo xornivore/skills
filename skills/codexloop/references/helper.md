@@ -52,23 +52,30 @@ bot login, and is tied to the recorded head. Precedence:
    - `running` keeps waiting.
    - `failed` stops.
 4. **New 👍 reaction** on the PR by the bot. Result `clean: true` with
-   `source: reaction`. The reaction names no commit; it is accepted only
-   because the head was verified unchanged since the trigger. Mention
-   that in the report.
+   `source: reaction`. The reaction names no commit, so it counts only
+   when no other review can still finish. It is ignored while any Codex
+   summary shows a run for another commit, and for attempts whose
+   `start` posted past a running review (`bypassed_running`). Mention a
+   reaction-sourced result in the report.
+
+An adopted attempt snapshots after its review began, so a finished
+review or receipt can already be in the snapshot. For adopted attempts,
+only the timestamp (newer than the adopted start) decides freshness.
 
 A usage-limit comment from the bot stops the attempt immediately.
 The default timeout is 15 minutes. Observed reviews take 2.5 to 7.5
 minutes.
 
-The payload formats behind these rules are in
-[codex-signals](./codex-signals.md).
+The payload formats behind these rules are in `codex-signals.md`,
+linked from the `wait` step of `SKILL.md`.
 
 ## threads
 
 GraphQL `reviewThreads` paginated to the end. A thread is kept when it is
 unresolved and its first comment's author is Codex. GraphQL reports the
 login without the `[bot]` suffix; the helper normalizes that. Each entry
-has `id`, `outdated`, `severity`, `title`, `path`, `line`, `url`, and
+has `id`, `outdated`, `severity`, `title`, `path`, `line` (falling back to
+the original line for outdated threads), `url`, and
 `discussion` (up to 50 comments: author and body). Read the discussion
 before deciding a thread is addressed.
 

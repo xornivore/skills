@@ -31,7 +31,7 @@ query($owner: String!, $name: String!, $number: Int!, $cursor: String) {
       reviewThreads(first: 100, after: $cursor) {
         pageInfo { hasNextPage endCursor }
         nodes {
-          id isResolved isOutdated path line
+          id isResolved isOutdated path line originalLine
           comments(first: 50) {
             nodes { body url createdAt author { login } }
           }
@@ -106,19 +106,27 @@ def evaluate(attempt, current_head, comments, reviews, reactions):
         raise ReviewError("PR head changed; start a new attempt for the new revision")
     triggered = attempt["triggered_at"]
     bots = attempt["bots"]
+    # An adopted attempt snapshots after the review began, so a result can land in the
+    # snapshot itself; the timestamp check alone decides freshness for those.
+    adopted = attempt.get("mode") == "adopted"
 
     summary = None
+    other_running = False
     clean = None
     old_comments = {str(item["id"]): item for item in attempt["comments"]}
     for comment in comments:
-        if not by_bot(comment, bots) or (comment.get("updated_at") or "") <= triggered:
-            continue
-        if not changed(comment, old_comments.get(str(comment["id"]))):
+        if not by_bot(comment, bots):
             continue
         body = comment.get("body") or ""
+        state = review_state(body)
+        if state is not None and state.get("status") == "running" and state.get("commit_sha") != current_head:
+            other_running = True
+        if (comment.get("updated_at") or "") <= triggered:
+            continue
+        if not changed(comment, old_comments.get(str(comment["id"]))) and (state is not None or not adopted):
+            continue
         if is_usage_limit(body):
             raise ReviewError(f"Codex usage limit reached: {comment.get('html_url')}")
-        state = review_state(body)
         if state is not None:
             if state.get("commit_sha") == current_head:
                 if summary is None or comment["updated_at"] > summary[1]["updated_at"]:
@@ -134,7 +142,7 @@ def evaluate(attempt, current_head, comments, reviews, reactions):
         if by_bot(item, bots)
         and item.get("commit_id") == current_head
         and (item.get("submitted_at") or "") > triggered
-        and changed(item, old_reviews.get(str(item["id"])))
+        and (adopted or changed(item, old_reviews.get(str(item["id"]))))
     ]
     if fresh_reviews:
         review = max(fresh_reviews, key=lambda item: (item["submitted_at"], item["id"]))
@@ -164,7 +172,10 @@ def evaluate(attempt, current_head, comments, reviews, reactions):
             return {"status": "pending", "reason": "summary reports findings; waiting for the review to post"}
         return {"status": "pending", "reason": f"Codex review is {status or 'queued'}"}
 
-    old_reactions = {str(item["id"]) for item in attempt.get("reactions", [])}
+    if other_running or attempt.get("bypassed_running"):
+        # A 👍 names no commit; while another review may still finish, it cannot clear this head.
+        return {"status": "pending", "reason": "no commit-linked Codex result for the current head"}
+    old_reactions = set() if adopted else {str(item["id"]) for item in attempt.get("reactions", [])}
     for reaction in reactions:
         if (reaction.get("content") == "+1" and by_bot(reaction, bots)
                 and str(reaction["id"]) not in old_reactions
@@ -236,6 +247,9 @@ def start(github, repo, pr, output, bots, focus=None, stuck_after=STUCK_REVIEW_S
         snapshot = github.snapshot(repo, pr)
         attempt = {"repo": repo, "pr": pr, "head": head, "bots": list(bots), **snapshot}
         current = latest_summary(snapshot["comments"], bots)
+        if current and current[0].get("status") == "running":
+            # Recorded even when the run is stuck or forced past: its late 👍 must not count.
+            attempt["bypassed_running"] = current[0].get("commit_sha") != head
         if current and not force:
             state, comment = current
             fresh = parse_time(comment["updated_at"]) > now() - timedelta(seconds=stuck_after)
@@ -301,7 +315,8 @@ def unresolved_threads(github, repo, pr, bots):
             comments = node["comments"]["nodes"]
             if node["isResolved"] or not comments or not by_bot(comments[0], bots, key="author"):
                 continue
-            first = finding({**comments[0], "path": node["path"], "line": node["line"]})
+            first = finding({**comments[0], "path": node["path"], "line": node["line"],
+                             "original_line": node["originalLine"]})
             threads.append({
                 "id": node["id"], "outdated": node["isOutdated"], **first,
                 "discussion": [{"author": login(item["author"]), "body": item["body"]} for item in comments],

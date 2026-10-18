@@ -239,7 +239,7 @@ class FakeGraphQL:
 
 
 def thread(id, resolved=False, author="chatgpt-codex-connector"):
-    return {"id": id, "isResolved": resolved, "isOutdated": False, "path": "a.py", "line": 1,
+    return {"id": id, "isResolved": resolved, "isOutdated": False, "path": "a.py", "line": 1, "originalLine": 1,
             "comments": {"nodes": [{"body": "**![P1 Badge](x) Bug**", "url": "u", "createdAt": AFTER,
                                     "author": {"login": author}}]}}
 
@@ -258,3 +258,41 @@ def test_threads_paginates_and_keeps_only_unresolved_codex_threads():
     assert [item["id"] for item in result] == ["T1", "T4"]
     assert result[0]["severity"] == "P1"
     assert github.calls[1]["cursor"] == "c1"
+
+
+def test_adopted_attempt_accepts_a_review_already_in_its_snapshot():
+    # Codex finished between the comments and reviews reads of start().
+    done = review()
+    state = attempt(mode="adopted", reviews=[done])
+    result = evaluate(state=state, reviews=[done])
+    assert (result["status"], result["source_id"]) == ("review_ready", 30)
+
+
+def test_adopted_attempt_still_ignores_reviews_before_the_adopted_start():
+    old = review(submitted_at=BEFORE)
+    assert evaluate(state=attempt(mode="adopted", reviews=[old]), reviews=[old])["status"] == "pending"
+
+
+def test_reaction_cannot_clear_head_while_another_commit_is_under_review():
+    running = summary(status="running", commit=OLD_HEAD, updated_at=BEFORE)
+    reaction = {"id": 50, "content": "+1", "user": {"login": BOT}, "created_at": AFTER}
+    result = evaluate(comments=[running], reactions=[reaction])
+    assert result["status"] == "pending"
+
+
+def test_reaction_cannot_clear_head_after_bypassing_a_running_review():
+    reaction = {"id": 50, "content": "+1", "user": {"login": BOT}, "created_at": AFTER}
+    assert evaluate(state=attempt(bypassed_running=True), reactions=[reaction])["status"] == "pending"
+
+
+def test_start_records_a_bypassed_stuck_review(tmp_path):
+    running = summary(status="running", commit=OLD_HEAD, updated_at="2026-10-16T08:00:00Z")
+    output = tmp_path / "a.json"
+    REVIEW.start(FakeGitHub(comments=[running]), "o/r", 1, output, [BOT], now=lambda: NOW)
+    assert json.loads(output.read_text())["bypassed_running"] is True
+
+
+def test_threads_fall_back_to_original_line_for_outdated_findings():
+    node = {**thread("T1"), "isOutdated": True, "line": None, "originalLine": 42}
+    result = REVIEW.unresolved_threads(FakeGraphQL([page([node])]), "o/r", 1, [BOT])
+    assert (result[0]["line"], result[0]["outdated"]) == (42, True)

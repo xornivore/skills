@@ -87,7 +87,9 @@ produce no edits:
 
    It exits 0 with `review_ready` JSON, or exits 1 with an error message.
    An error is a stop condition. Do not retry `start` with the same file,
-   and do not fall back to reading older reviews.
+   and do not fall back to reading older reviews. When a result looks
+   wrong, or Codex's comment format seems to have changed, compare the
+   raw payloads against [codex-signals](./references/codex-signals.md).
 3. **Collect every open finding.** Take the `findings` from the result,
    then list all unresolved Codex threads, including ones from earlier
    commits:
@@ -119,6 +121,10 @@ produce no edits:
 
    If no code changed (every finding was rebutted), skip the commit and
    push. A clean re-review still needs a new attempt.
+
+   **Audit:** before each commit, `git diff --cached --name-only` must
+   list only files you edited for this cycle's findings. Any other path
+   is a violation; unstage it.
 7. **Next cycle.** Use a new attempt file (`attempt-2.json`, and so on).
    A changed head invalidates the previous attempt.
 
@@ -154,6 +160,23 @@ Stop and report when any of these hold:
   bot.
 
 Never resolve threads from other reviewers. Never merge unless asked.
+
+**Audit:** at the end of the run, check these three counts.
+
+- The number of `attempt-*.json` files in `.artifacts/codexloop/pr-N/`
+  must not exceed the cap.
+- Count the `@codex review` comments you authored during the run:
+
+  ```bash
+  gh api --paginate repos/OWNER/REPO/issues/N/comments \
+    --jq '[.[] | select(.user.login == "YOUR_LOGIN" and (.body | startswith("@codex review")))] | length'
+  ```
+
+  Comments from before the run don't count. The run's count must equal
+  the number of attempt files with `"mode": "posted"`. A higher count
+  means a manual re-trigger.
+- Every thread passed to `resolve` must be one that `threads` returned,
+  which guarantees it is a Codex thread.
 
 ## Report
 
