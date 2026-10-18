@@ -121,15 +121,24 @@ def changed(item, old):
     return old is None or item.get("body") != old.get("body")
 
 
-def fresh(item, stamp, old, triggered, adopted):
+def fresh(item, stamp, old, triggered, adopted, commit_linked=True):
     """True when an item is a result of this attempt rather than earlier activity."""
     # GitHub timestamps have one-second precision, so an item the snapshot did not
     # contain (or whose body changed) counts even when it shares the trigger's second.
     if changed(item, old):
         return (stamp or "") >= triggered
-    # Adopted attempts snapshot after their review began; an unchanged snapshot item
-    # still counts when it postdates the adopted start.
-    return adopted and (stamp or "") > triggered
+    # Adopted attempts snapshot after their review began, so their own result can sit
+    # unchanged in the snapshot, possibly within the adopted start's second. A result tied
+    # to the head is valid whichever run produced it; a commit-less reaction is not.
+    if not adopted:
+        return False
+    return (stamp or "") >= triggered if commit_linked else (stamp or "") > triggered
+
+
+def outstanding_elsewhere(state, head):
+    """True when the summary shows a not-yet-finished review of another commit (running or queued)."""
+    commit = (state or {}).get("commit_sha")
+    return bool(commit) and commit != head and state.get("status") not in ("completed", "failed")
 
 
 def evaluate(attempt, current_head, comments, reviews, reactions):
@@ -149,11 +158,13 @@ def evaluate(attempt, current_head, comments, reviews, reactions):
             continue
         body = comment.get("body") or ""
         state = review_state(body)
-        if state is not None and state.get("status") == "running" and state.get("commit_sha") != current_head:
+        if outstanding_elsewhere(state, current_head):
             other_running = True
         old = old_comments.get(str(comment["id"]))
-        if state is not None and not changed(comment, old):
-            continue  # an unchanged summary carries no new state, even for adopted attempts
+        if state is not None and old is not None and state == review_state(old.get("body") or ""):
+            # Only the code-review state matters; edits elsewhere in the shared summary
+            # (the security review, for example) carry no new code-review result.
+            continue
         if not fresh(comment, comment.get("updated_at"), old, triggered, adopted):
             continue
         if is_usage_limit(body):
@@ -209,7 +220,7 @@ def evaluate(attempt, current_head, comments, reviews, reactions):
     for reaction in reactions:
         if (reaction.get("content") == "+1" and by_bot(reaction, bots)
                 and fresh(reaction, reaction.get("created_at"), old_reactions.get(str(reaction["id"])),
-                          triggered, adopted)):
+                          triggered, adopted, commit_linked=False)):
             # The head was verified unchanged since the trigger, but the reaction names no commit.
             return {
                 "status": "review_ready", "clean": True, "head": current_head,
@@ -277,9 +288,10 @@ def start(github, repo, pr, output, bots, focus=None, stuck_after=STUCK_REVIEW_S
         snapshot = github.snapshot(repo, pr)
         attempt = {"repo": repo, "pr": pr, "head": head, "bots": list(bots), **snapshot}
         current = latest_summary(snapshot["comments"], bots)
-        if current and current[0].get("status") == "running":
-            # Recorded even when the run is stuck or forced past: its late 👍 must not count.
-            attempt["bypassed_running"] = current[0].get("commit_sha") != head
+        if current:
+            # A running or queued review of another commit can still post a commit-less 👍;
+            # recorded even when start proceeds past it, so that reaction never counts.
+            attempt["bypassed_running"] = outstanding_elsewhere(current[0], head)
         if current and not force:
             state, comment = current
             fresh = parse_time(comment["updated_at"]) > now() - timedelta(seconds=stuck_after)

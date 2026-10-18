@@ -64,17 +64,23 @@ whole seconds. Precedence:
    - `completed` with findings keeps waiting for the review to post.
    - `running` keeps waiting.
    - `failed` stops.
+
+   A summary counts as changed only when its `code_review` state
+   changed. Edits elsewhere in the shared comment, such as the security
+   review section, are ignored.
 4. **New 👍 reaction** on the PR by the bot. Result `clean: true` with
    `source: reaction`. The reaction names no commit, so it counts only
    when no other review can still finish. It is ignored while any Codex
-   summary shows a run for another commit, and for attempts whose
-   `start` posted past a running review (`bypassed_running`). Mention a
+   summary shows an unfinished (running or queued) review of another
+   commit, and for attempts that started while one was outstanding
+   (`bypassed_running`). Mention a
    reaction-sourced result in the report.
 
 An adopted attempt snapshots after its review began, so a finished
 review or receipt can already be in the snapshot. For adopted attempts,
-an unchanged snapshot item still counts if its timestamp is strictly
-after the adopted start. An unchanged summary never counts.
+an unchanged snapshot review or receipt still counts if its timestamp
+is at or after the adopted start, because it names the head commit. An
+unchanged reaction needs a strictly later timestamp.
 
 A usage-limit comment from the bot stops the attempt immediately.
 The default timeout is 15 minutes. Observed reviews take 2.5 to 7.5

@@ -373,3 +373,39 @@ def test_rest_identity_requires_the_exact_bot_login():
 def test_graphql_identity_requires_the_bot_type():
     github = FakeGraphQL([page([thread("T1", kind="User"), thread("T2")])])
     assert [item["id"] for item in REVIEW.unresolved_threads(github, "o/r", 1, [BOT])] == ["T2"]
+
+
+def test_adopted_review_in_the_snapshot_within_the_start_second_is_accepted():
+    done = review(submitted_at=TRIGGER)
+    result = evaluate(state=attempt(mode="adopted", reviews=[done]), reviews=[done])
+    assert result["source_id"] == 30
+
+
+def test_adopted_snapshot_reaction_within_the_start_second_stays_ignored():
+    reaction = {"id": 50, "content": "+1", "user": {"login": BOT}, "created_at": TRIGGER}
+    state = attempt(mode="adopted", reactions=[reaction])
+    assert evaluate(state=state, reactions=[reaction])["status"] == "pending"
+
+
+@pytest.mark.parametrize("status", [None, "queued"])
+def test_queued_older_review_blocks_the_reaction_fallback(status, tmp_path):
+    queued = summary(status=status, commit=OLD_HEAD, updated_at=BEFORE)
+    reaction = {"id": 50, "content": "+1", "user": {"login": BOT}, "created_at": AFTER}
+    assert evaluate(comments=[queued], reactions=[reaction])["status"] == "pending"
+    output = tmp_path / "a.json"
+    REVIEW.start(FakeGitHub(comments=[queued]), "o/r", 1, output, [BOT], now=lambda: NOW)
+    assert json.loads(output.read_text())["bypassed_running"] is True
+
+
+def test_finished_older_review_does_not_block_the_reaction_fallback(tmp_path):
+    done = summary(commit=OLD_HEAD, updated_at=BEFORE)
+    output = tmp_path / "a.json"
+    REVIEW.start(FakeGitHub(comments=[done]), "o/r", 1, output, [BOT], now=lambda: NOW)
+    assert json.loads(output.read_text())["bypassed_running"] is False
+
+
+def test_security_review_edit_does_not_refresh_a_stale_code_review():
+    old = summary(updated_at=BEFORE)
+    edited = summary()
+    edited["body"] = edited["body"].replace("## Codex Review Summary", "## Codex Review Summary\nsecurity: running")
+    assert evaluate(state=attempt(comments=[old]), comments=[edited])["status"] == "pending"
