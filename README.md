@@ -22,6 +22,7 @@ The `@<skill-name>` must match the skill's registered name, not article shorthan
 | [observablip](./skills/observablip/SKILL.md) | Audits a codebase for missing telemetry, poor o11y practices, and code structure that resists instrumentation. Read-only ranked finding list, FP-reviewed and bounded. |
 | 👀 [googly-eyes](./skills/googly-eyes/SKILL.md) | Reviews PRs and local diffs against Google's eng-practices code review guide (all 10 principles). Rich local diff rendering, principle-tagged ranked findings, opt-in posting via `gh`. |
 | [cyclotic](./skills/cyclotic/SKILL.md) | Read-only Linear cycle-prep reviewer. Per-person load in working days against available days, unsized and unassigned tickets, oversized tickets, carryover from the last cycle, on-call deduction, and backlog readiness. Modes: `prep`, `review`, `init`; `-v`, `show cards`, and `explain` for ticket-level detail. |
+| [codexloop](./skills/codexloop/SKILL.md) | Loops a GitHub PR through OpenAI Codex review (`@codex review`) until a fresh review of the head is clean: fixes or rebuts P0/P1/P2 findings, resolves threads, pushes. Bounded; Python helper for freshness. Adapted from Greptile's greploop. |
 
 ## Authoring
 
