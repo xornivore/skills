@@ -90,7 +90,7 @@ unresolved and its first comment's author is Codex. GraphQL reports the
 login without the `[bot]` suffix; the helper normalizes that. Each entry
 has `id`, `outdated`, `severity`, `title`, `path`, `line` (falling back to
 the original line for outdated threads), `url`, and
-`discussion` (up to 50 comments: author and body). Read the discussion
+`discussion` (every comment, all pages: author and body). Read the discussion
 before deciding a thread is addressed.
 
 ## Trusted logins

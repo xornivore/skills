@@ -240,7 +240,8 @@ class FakeGraphQL:
 
 def thread(id, resolved=False, author="chatgpt-codex-connector"):
     return {"id": id, "isResolved": resolved, "isOutdated": False, "path": "a.py", "line": 1, "originalLine": 1,
-            "comments": {"nodes": [{"body": "**![P1 Badge](x) Bug**", "url": "u", "createdAt": AFTER,
+            "comments": {"pageInfo": {"hasNextPage": False, "endCursor": None},
+                         "nodes": [{"body": "**![P1 Badge](x) Bug**", "url": "u", "createdAt": AFTER,
                                     "author": {"login": author}}]}}
 
 
@@ -344,3 +345,15 @@ def test_reconcile_reports_a_trigger_that_never_landed():
     state = attempt(status="posting", trigger_body="@codex review")
     with pytest.raises(REVIEW.ReviewError, match="never posted"):
         REVIEW.wait_for_review(FakeGitHub(), state, timeout=1, interval=1)
+
+
+def test_threads_fetch_every_page_of_a_long_discussion():
+    long = thread("T1")
+    long["comments"]["pageInfo"] = {"hasNextPage": True, "endCursor": "k1"}
+    reply = {"body": "late rebuttal", "url": "u2", "createdAt": AFTER, "author": {"login": "human"}}
+    rest = {"data": {"node": {"comments": {"pageInfo": {"hasNextPage": False, "endCursor": None},
+                                           "nodes": [reply]}}}}
+    github = FakeGraphQL([page([long]), rest])
+    result = REVIEW.unresolved_threads(github, "o/r", 1, [BOT])
+    assert [item["body"] for item in result[0]["discussion"]][-1] == "late rebuttal"
+    assert github.calls[1] == {"id": "T1", "cursor": "k1"}

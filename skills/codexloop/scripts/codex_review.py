@@ -32,10 +32,24 @@ query($owner: String!, $name: String!, $number: Int!, $cursor: String) {
         pageInfo { hasNextPage endCursor }
         nodes {
           id isResolved isOutdated path line originalLine
-          comments(first: 50) {
+          comments(first: 100) {
+            pageInfo { hasNextPage endCursor }
             nodes { body url createdAt author { login } }
           }
         }
+      }
+    }
+  }
+}
+"""
+
+THREAD_COMMENTS_QUERY = """
+query($id: ID!, $cursor: String) {
+  node(id: $id) {
+    ... on PullRequestReviewThread {
+      comments(first: 100, after: $cursor) {
+        pageInfo { hasNextPage endCursor }
+        nodes { body url createdAt author { login } }
       }
     }
   }
@@ -340,6 +354,17 @@ def wait_for_review(github, attempt, timeout, interval, clock=time.monotonic, sl
         sleep(min(interval, remaining))
 
 
+def thread_comments(github, node):
+    """All comments of one review thread, following the nested connection's pages."""
+    connection = node["comments"]
+    comments = list(connection["nodes"])
+    while connection["pageInfo"]["hasNextPage"]:
+        data = github.graphql(THREAD_COMMENTS_QUERY, id=node["id"], cursor=connection["pageInfo"]["endCursor"])
+        connection = data["data"]["node"]["comments"]
+        comments += connection["nodes"]
+    return comments
+
+
 def unresolved_threads(github, repo, pr, bots):
     owner, name = repo.split("/", 1)
     threads, cursor = [], None
@@ -354,7 +379,8 @@ def unresolved_threads(github, repo, pr, bots):
                              "original_line": node["originalLine"]})
             threads.append({
                 "id": node["id"], "outdated": node["isOutdated"], **first,
-                "discussion": [{"author": login(item["author"]), "body": item["body"]} for item in comments],
+                "discussion": [{"author": login(item["author"]), "body": item["body"]}
+                               for item in thread_comments(github, node)],
             })
         if not page["pageInfo"]["hasNextPage"]:
             return threads
