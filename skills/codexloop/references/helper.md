@@ -29,16 +29,29 @@ on stderr and exit 1.
     `--force` posts regardless.
 - Re-reads the head just before posting. If the head moved, `start`
   releases the reservation and errors.
-- If `start` fails after posting, inspect the PR before retrying. Run
-  `wait` on the written attempt rather than posting again.
+- Before posting, `start` writes the attempt with `status: posting` and
+  the exact trigger body. If the POST outcome is lost (a `gh` timeout,
+  for example), `start` errors with "trigger outcome unknown". Run
+  `wait` on that same file. Never post again by hand.
+
+## Attempt states
+
+| `status` | Meaning | What `wait` does |
+| --- | --- | --- |
+| `preparing` | `start` stopped before posting | Errors: remove the file, rerun `start` |
+| `posting` | POST sent, outcome unknown | Finds the trigger comment that is not in the snapshot and has the same body, saves it, then waits. Errors if none landed |
+| `triggered` | Trigger confirmed (`posted`) or review adopted (`adopted`) | Waits for the result |
 
 ## wait
 
 Each poll re-reads the head before and after fetching. A moved head is
 an error: start a new attempt for the new revision.
 
-A result counts only when it postdates the trigger, came from a trusted
-bot login, and is tied to the recorded head. Precedence:
+A result counts only when it is new since the trigger, came from a
+trusted bot login, and is tied to the recorded head. "New" means the
+snapshot did not contain it, or its body changed, and its timestamp is
+at or after the trigger. Equal timestamps count because GitHub records
+whole seconds. Precedence:
 
 1. **PR review** by the bot with `commit_id` equal to the head. Result
    `clean: false`, with inline `findings` attached (severity, title,
@@ -60,7 +73,8 @@ bot login, and is tied to the recorded head. Precedence:
 
 An adopted attempt snapshots after its review began, so a finished
 review or receipt can already be in the snapshot. For adopted attempts,
-only the timestamp (newer than the adopted start) decides freshness.
+an unchanged snapshot item still counts if its timestamp is strictly
+after the adopted start. An unchanged summary never counts.
 
 A usage-limit comment from the bot stops the attempt immediately.
 The default timeout is 15 minutes. Observed reviews take 2.5 to 7.5

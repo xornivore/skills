@@ -223,8 +223,8 @@ def test_wait_times_out_with_reason():
                                clock=lambda: next(ticks), sleep=lambda _: None)
 
 
-def test_wait_requires_a_confirmed_trigger():
-    with pytest.raises(REVIEW.ReviewError, match="no confirmed trigger"):
+def test_wait_on_a_preparing_attempt_says_nothing_was_posted():
+    with pytest.raises(REVIEW.ReviewError, match="before posting"):
         REVIEW.wait_for_review(FakeGitHub(), attempt(status="preparing"), timeout=1, interval=1)
 
 
@@ -296,3 +296,51 @@ def test_threads_fall_back_to_original_line_for_outdated_findings():
     node = {**thread("T1"), "isOutdated": True, "line": None, "originalLine": 42}
     result = REVIEW.unresolved_threads(FakeGraphQL([page([node])]), "o/r", 1, [BOT])
     assert (result[0]["line"], result[0]["outdated"]) == (42, True)
+
+
+def test_results_sharing_the_trigger_second_are_accepted():
+    assert evaluate(comments=[receipt(updated_at=TRIGGER)])["clean"] is True
+    assert evaluate(reviews=[review(submitted_at=TRIGGER)])["source"] == "review"
+    reaction = {"id": 50, "content": "+1", "user": {"login": BOT}, "created_at": TRIGGER}
+    assert evaluate(reactions=[reaction])["source"] == "reaction"
+
+
+def test_snapshot_items_sharing_the_trigger_second_stay_ignored():
+    old = review(submitted_at=TRIGGER)
+    assert evaluate(state=attempt(reviews=[old]), reviews=[old])["status"] == "pending"
+
+
+def test_adopted_running_summary_in_its_own_second_is_not_a_result():
+    running = summary(status="running", updated_at=TRIGGER)
+    state = attempt(mode="adopted", comments=[running])
+    assert evaluate(state=state, comments=[running])["status"] == "pending"
+
+
+class LostPostGitHub(FakeGitHub):
+    """Accepts the trigger but loses the response, like a gh timeout after the POST lands."""
+
+    def command(self, *args):
+        self.comments.append({"id": 77, "user": {"login": "me"}, "created_at": TRIGGER,
+                              "updated_at": TRIGGER, "body": args[-1].removeprefix("body=")})
+        raise REVIEW.ReviewError("timed out")
+
+
+def test_lost_post_leaves_a_reconcilable_attempt(tmp_path):
+    github = LostPostGitHub()
+    output = tmp_path / "a.json"
+    with pytest.raises(REVIEW.ReviewError, match="outcome unknown"):
+        REVIEW.start(github, "o/r", 1, output, [BOT], now=lambda: NOW)
+    saved = json.loads(output.read_text())
+    assert (saved["status"], saved["trigger_body"]) == ("posting", "@codex review")
+
+    github.reviews.append(review())
+    persisted = []
+    result = REVIEW.wait_for_review(github, saved, timeout=1, interval=1, save=persisted.append)
+    assert result["source_id"] == 30
+    assert (persisted[0]["status"], persisted[0]["trigger_id"]) == ("triggered", 77)
+
+
+def test_reconcile_reports_a_trigger_that_never_landed():
+    state = attempt(status="posting", trigger_body="@codex review")
+    with pytest.raises(REVIEW.ReviewError, match="never posted"):
+        REVIEW.wait_for_review(FakeGitHub(), state, timeout=1, interval=1)

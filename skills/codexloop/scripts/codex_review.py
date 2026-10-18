@@ -100,14 +100,23 @@ def changed(item, old):
     return old is None or item.get("body") != old.get("body")
 
 
+def fresh(item, stamp, old, triggered, adopted):
+    """True when an item is a result of this attempt rather than earlier activity."""
+    # GitHub timestamps have one-second precision, so an item the snapshot did not
+    # contain (or whose body changed) counts even when it shares the trigger's second.
+    if changed(item, old):
+        return (stamp or "") >= triggered
+    # Adopted attempts snapshot after their review began; an unchanged snapshot item
+    # still counts when it postdates the adopted start.
+    return adopted and (stamp or "") > triggered
+
+
 def evaluate(attempt, current_head, comments, reviews, reactions):
     """Return a fresh Codex review result for the current head, or a reason to keep waiting."""
     if current_head != attempt["head"]:
         raise ReviewError("PR head changed; start a new attempt for the new revision")
     triggered = attempt["triggered_at"]
     bots = attempt["bots"]
-    # An adopted attempt snapshots after the review began, so a result can land in the
-    # snapshot itself; the timestamp check alone decides freshness for those.
     adopted = attempt.get("mode") == "adopted"
 
     summary = None
@@ -121,9 +130,10 @@ def evaluate(attempt, current_head, comments, reviews, reactions):
         state = review_state(body)
         if state is not None and state.get("status") == "running" and state.get("commit_sha") != current_head:
             other_running = True
-        if (comment.get("updated_at") or "") <= triggered:
-            continue
-        if not changed(comment, old_comments.get(str(comment["id"]))) and (state is not None or not adopted):
+        old = old_comments.get(str(comment["id"]))
+        if state is not None and not changed(comment, old):
+            continue  # an unchanged summary carries no new state, even for adopted attempts
+        if not fresh(comment, comment.get("updated_at"), old, triggered, adopted):
             continue
         if is_usage_limit(body):
             raise ReviewError(f"Codex usage limit reached: {comment.get('html_url')}")
@@ -141,8 +151,7 @@ def evaluate(attempt, current_head, comments, reviews, reactions):
         item for item in reviews
         if by_bot(item, bots)
         and item.get("commit_id") == current_head
-        and (item.get("submitted_at") or "") > triggered
-        and (adopted or changed(item, old_reviews.get(str(item["id"]))))
+        and fresh(item, item.get("submitted_at"), old_reviews.get(str(item["id"])), triggered, adopted)
     ]
     if fresh_reviews:
         review = max(fresh_reviews, key=lambda item: (item["submitted_at"], item["id"]))
@@ -175,11 +184,11 @@ def evaluate(attempt, current_head, comments, reviews, reactions):
     if other_running or attempt.get("bypassed_running"):
         # A 👍 names no commit; while another review may still finish, it cannot clear this head.
         return {"status": "pending", "reason": "no commit-linked Codex result for the current head"}
-    old_reactions = set() if adopted else {str(item["id"]) for item in attempt.get("reactions", [])}
+    old_reactions = {str(item["id"]): item for item in attempt.get("reactions", [])}
     for reaction in reactions:
         if (reaction.get("content") == "+1" and by_bot(reaction, bots)
-                and str(reaction["id"]) not in old_reactions
-                and (reaction.get("created_at") or "") > triggered):
+                and fresh(reaction, reaction.get("created_at"), old_reactions.get(str(reaction["id"])),
+                          triggered, adopted)):
             # The head was verified unchanged since the trigger, but the reaction names no commit.
             return {
                 "status": "review_ready", "clean": True, "head": current_head,
@@ -272,16 +281,42 @@ def start(github, repo, pr, output, bots, focus=None, stuck_after=STUCK_REVIEW_S
         output.unlink()
         raise
     body = "@codex review" + (f" {focus}" if focus else "")
-    comment = github.command(
-        "api", f"repos/{repo}/issues/{pr}/comments", "--method", "POST", "-f", f"body={body}",
-    )
-    attempt.update(status="triggered", mode="posted", trigger_id=comment["id"],
-                   triggered_at=comment["created_at"])
+    # Persist everything needed to reconcile before posting: if the POST outcome is
+    # lost, `wait` can find the comment instead of anyone posting a second trigger.
+    attempt.update(status="posting", mode="posted", trigger_body=body)
+    output.write_text(json.dumps(attempt, indent=2) + "\n")
+    try:
+        comment = github.command(
+            "api", f"repos/{repo}/issues/{pr}/comments", "--method", "POST", "-f", f"body={body}",
+        )
+    except (ReviewError, subprocess.TimeoutExpired) as error:
+        raise ReviewError(f"trigger outcome unknown ({error}); run wait on {output} to reconcile") from error
+    attempt.update(status="triggered", trigger_id=comment["id"], triggered_at=comment["created_at"])
     output.write_text(json.dumps(attempt, indent=2) + "\n")
     return {key: value for key, value in attempt.items() if key not in snapshot}
 
 
-def wait_for_review(github, attempt, timeout, interval, clock=time.monotonic, sleep=time.sleep):
+def reconcile(github, attempt):
+    """Recover the trigger of an attempt whose POST outcome was lost."""
+    known = {str(item["id"]) for item in attempt["comments"]}
+    posted = [
+        comment for comment in github.snapshot(attempt["repo"], attempt["pr"])["comments"]
+        if str(comment["id"]) not in known and (comment.get("body") or "").strip() == attempt["trigger_body"]
+    ]
+    if not posted:
+        raise ReviewError("the trigger was never posted; remove the attempt file and rerun start")
+    comment = min(posted, key=lambda item: (item["created_at"], item["id"]))
+    return {**attempt, "status": "triggered", "trigger_id": comment["id"], "triggered_at": comment["created_at"]}
+
+
+def wait_for_review(github, attempt, timeout, interval, clock=time.monotonic, sleep=time.sleep, save=None):
+    if attempt.get("status") == "posting":
+        attempt = reconcile(github, attempt)
+        if save:
+            save(attempt)
+    if attempt.get("status") == "preparing":
+        # start writes "posting" before it posts, so nothing was posted for this attempt.
+        raise ReviewError("start stopped before posting; remove the attempt file and rerun start")
     if attempt.get("status") != "triggered":
         raise ReviewError("attempt has no confirmed trigger; inspect the PR before retrying")
     repo, pr = attempt["repo"], attempt["pr"]
@@ -377,7 +412,10 @@ def main():
             result = start(github, args.repo, args.pr, args.output, args.bot or DEFAULT_BOTS,
                            args.focus, args.stuck_after, args.force)
         elif args.command == "wait":
-            result = wait_for_review(github, json.loads(args.attempt.read_text()), args.timeout, args.interval)
+            result = wait_for_review(
+                github, json.loads(args.attempt.read_text()), args.timeout, args.interval,
+                save=lambda attempt: args.attempt.write_text(json.dumps(attempt, indent=2) + "\n"),
+            )
         elif args.command == "threads":
             result = unresolved_threads(github, args.repo, args.pr, args.bot or DEFAULT_BOTS)
         else:
