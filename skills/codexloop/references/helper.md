@@ -87,7 +87,10 @@ linked from the `wait` step of `SKILL.md`.
 
 GraphQL `reviewThreads` paginated to the end. A thread is kept when it is
 unresolved and its first comment's author is Codex. GraphQL reports the
-login without the `[bot]` suffix; the helper normalizes that. Each entry
+login without the `[bot]` suffix, so the helper also requires the
+author's `__typename` to be `Bot`. REST logins are compared exactly,
+suffix included, because a user account could register the bare name.
+Each entry
 has `id`, `outdated`, `severity`, `title`, `path`, `line` (falling back to
 the original line for outdated threads), `url`, and
 `discussion` (every comment, all pages: author and body). Read the discussion

@@ -34,7 +34,7 @@ query($owner: String!, $name: String!, $number: Int!, $cursor: String) {
           id isResolved isOutdated path line originalLine
           comments(first: 100) {
             pageInfo { hasNextPage endCursor }
-            nodes { body url createdAt author { login } }
+            nodes { body url createdAt author { login __typename } }
           }
         }
       }
@@ -49,7 +49,7 @@ query($id: ID!, $cursor: String) {
     ... on PullRequestReviewThread {
       comments(first: 100, after: $cursor) {
         pageInfo { hasNextPage endCursor }
-        nodes { body url createdAt author { login } }
+        nodes { body url createdAt author { login __typename } }
       }
     }
   }
@@ -62,12 +62,19 @@ class ReviewError(RuntimeError):
 
 
 def login(user):
-    # GraphQL drops the "[bot]" suffix that REST shows; compare without it.
-    return (user or {}).get("login", "").removesuffix("[bot]")
+    return (user or {}).get("login", "")
 
 
-def by_bot(item, bots, key="user"):
-    return login(item.get(key)) in {bot.removesuffix("[bot]") for bot in bots}
+def by_bot(item, bots):
+    # REST logins carry the "[bot]" suffix that user accounts cannot register; compare
+    # exactly, or a user named after the app could forge receipts and reactions.
+    return login(item.get("user")) in bots
+
+
+def by_graphql_bot(author, bots):
+    # GraphQL drops the suffix, so require the Bot type before comparing the bare login.
+    return ((author or {}).get("__typename") == "Bot"
+            and login(author) in {bot.removesuffix("[bot]") for bot in bots})
 
 
 def review_state(body):
@@ -373,7 +380,7 @@ def unresolved_threads(github, repo, pr, bots):
         page = data["data"]["repository"]["pullRequest"]["reviewThreads"]
         for node in page["nodes"]:
             comments = node["comments"]["nodes"]
-            if node["isResolved"] or not comments or not by_bot(comments[0], bots, key="author"):
+            if node["isResolved"] or not comments or not by_graphql_bot(comments[0]["author"], bots):
                 continue
             first = finding({**comments[0], "path": node["path"], "line": node["line"],
                              "original_line": node["originalLine"]})

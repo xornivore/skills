@@ -238,11 +238,11 @@ class FakeGraphQL:
         return self.pages.pop(0)
 
 
-def thread(id, resolved=False, author="chatgpt-codex-connector"):
+def thread(id, resolved=False, author="chatgpt-codex-connector", kind="Bot"):
     return {"id": id, "isResolved": resolved, "isOutdated": False, "path": "a.py", "line": 1, "originalLine": 1,
             "comments": {"pageInfo": {"hasNextPage": False, "endCursor": None},
                          "nodes": [{"body": "**![P1 Badge](x) Bug**", "url": "u", "createdAt": AFTER,
-                                    "author": {"login": author}}]}}
+                                    "author": {"login": author, "__typename": kind}}]}}
 
 
 def page(nodes, next_cursor=None):
@@ -357,3 +357,19 @@ def test_threads_fetch_every_page_of_a_long_discussion():
     result = REVIEW.unresolved_threads(github, "o/r", 1, [BOT])
     assert [item["body"] for item in result[0]["discussion"]][-1] == "late rebuttal"
     assert github.calls[1] == {"id": "T1", "cursor": "k1"}
+
+
+def test_rest_identity_requires_the_exact_bot_login():
+    # A user account named after the app has no "[bot]" suffix and must not be trusted.
+    impostor = {"login": "chatgpt-codex-connector"}
+    assert evaluate(comments=[receipt(user=impostor)])["status"] == "pending"
+    reaction = {"id": 50, "content": "+1", "user": impostor, "created_at": AFTER}
+    assert evaluate(reactions=[reaction])["status"] == "pending"
+    limit = {"id": 40, "user": impostor, "updated_at": AFTER,
+             "body": "You have reached your Codex usage limits for code reviews."}
+    assert evaluate(comments=[limit])["status"] == "pending"
+
+
+def test_graphql_identity_requires_the_bot_type():
+    github = FakeGraphQL([page([thread("T1", kind="User"), thread("T2")])])
+    assert [item["id"] for item in REVIEW.unresolved_threads(github, "o/r", 1, [BOT])] == ["T2"]
