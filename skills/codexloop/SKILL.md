@@ -12,7 +12,7 @@ description: |
   codex comments until it's clean", "keep running @codex review", or asks
   to address chatgpt-codex-connector feedback on a PR.
 license: MIT
-compatibility: Requires Python 3.10+, git, and authenticated gh with push access. The Codex GitHub integration (chatgpt-codex-connector) must be enabled on the repository.
+compatibility: Requires Python 3.10+, git, jq, and authenticated gh with push access. The Codex GitHub integration (chatgpt-codex-connector) must be enabled on the repository.
 metadata:
   author: xornivore
   version: "1.0"
@@ -56,9 +56,18 @@ Codex's feedback does not authorize edits, pushes, or trigger comments.
    its head branch is the branch checked out in your working tree. If it
    is not, stop and ask. Never switch another task's checkout.
 2. Set `REVIEW` to the absolute path of `scripts/codex_review.py` inside
-   this skill. Use a fresh attempt directory per run:
-   `.artifacts/codexloop/pr-N/`. Add `.artifacts/` to `.git/info/exclude`
-   so the attempt files are never committed.
+   this skill. Record the run's start time and give the run its own
+   attempt directory, so earlier runs never collide with or count toward
+   this one:
+
+   ```bash
+   RUN_START=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+   RUN_DIR=".artifacts/codexloop/pr-N/${RUN_START//:/}"   # e.g. .../2026-10-17T015314Z
+   ```
+
+   Shell variables do not persist between commands, so reuse the literal
+   values in later steps. Add `.artifacts/` to `.git/info/exclude` so
+   attempt files are never committed.
 3. Make sure the working tree has no unpushed task changes before the
    first trigger. Codex reviews the pushed head, not your local edits.
 
@@ -72,7 +81,7 @@ produce no edits:
 
    ```bash
    python3 "$REVIEW" start --repo OWNER/REPO --pr N \
-     --output .artifacts/codexloop/pr-N/attempt-1.json
+     --output RUN_DIR/attempt-1.json
    ```
 
    If Codex is already reviewing this exact head (an automatic review on
@@ -82,7 +91,7 @@ produce no edits:
 2. **Wait for the fresh result.**
 
    ```bash
-   python3 "$REVIEW" wait .artifacts/codexloop/pr-N/attempt-1.json
+   python3 "$REVIEW" wait RUN_DIR/attempt-1.json
    ```
 
    It exits 0 with `review_ready` JSON, or exits 1 with an error message.
@@ -163,18 +172,20 @@ Never resolve threads from other reviewers. Never merge unless asked.
 
 **Audit:** at the end of the run, check these three counts.
 
-- The number of `attempt-*.json` files in `.artifacts/codexloop/pr-N/`
-  must not exceed the cap.
-- Count the `@codex review` comments you authored during the run:
+- The number of `attempt-*.json` files in `RUN_DIR` must not exceed
+  the cap.
+- Count the `@codex review` comments you authored since `RUN_START`.
+  `--slurp` combines all pages, so `jq` prints one total:
 
   ```bash
-  gh api --paginate repos/OWNER/REPO/issues/N/comments \
-    --jq '[.[] | select(.user.login == "YOUR_LOGIN" and (.body | startswith("@codex review")))] | length'
+  gh api --paginate --slurp "repos/OWNER/REPO/issues/N/comments?per_page=100" \
+    | jq --arg me "$(gh api user --jq .login)" --arg since "RUN_START" \
+      '[add[] | select(.user.login == $me and .created_at >= $since
+          and (.body | startswith("@codex review")))] | length'
   ```
 
-  Comments from before the run don't count. The run's count must equal
-  the number of attempt files with `"mode": "posted"`. A higher count
-  means a manual re-trigger.
+  The total must equal the number of attempt files in `RUN_DIR` with
+  `"mode": "posted"`. A higher count means a manual re-trigger.
 - Every thread passed to `resolve` must be one that `threads` returned,
   which guarantees it is a Codex thread.
 

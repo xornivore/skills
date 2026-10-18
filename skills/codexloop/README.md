@@ -21,7 +21,7 @@ Changes from greploop:
 npx skills add xornivore/skills@codexloop --agent claude-code -y
 ```
 
-Needs Python 3.10+, `git`, and authenticated `gh`. The repository must
+Needs Python 3.10+, `git`, `jq`, and authenticated `gh`. The repository must
 have the Codex GitHub integration enabled.
 
 ## How to use
